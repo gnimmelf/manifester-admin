@@ -1,0 +1,966 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"com",
+				"componentKeys"
+			],
+			[
+				"date",
+				"dateObj"
+			],
+			[
+				"re",
+				"rendered"
+			],
+			[
+				"prop",
+				"propTypes"
+			],
+			[
+				"user",
+				"userGroups"
+			],
+			[
+				"login",
+				"makeLogincode"
+			],
+			[
+				"use",
+				"userId"
+			],
+			[
+				"pr",
+				"promise"
+			],
+			[
+				"comm",
+				"commit"
+			],
+			[
+				"j",
+				"json"
+			],
+			[
+				"watch",
+				"watchArgs"
+			],
+			[
+				"co",
+				"commit"
+			],
+			[
+				"throw",
+				"throw"
+			],
+			[
+				"deco",
+				"decoded"
+			],
+			[
+				"auth",
+				"authenticateToken"
+			],
+			[
+				"rel",
+				"relPath"
+			],
+			[
+				"de",
+				"deleteCookie"
+			],
+			[
+				"mail",
+				"mailgunAuth"
+			],
+			[
+				"no",
+				"nodemailerTransport"
+			],
+			[
+				"con",
+				"container"
+			],
+			[
+				"grou",
+				"groups_json_path"
+			],
+			[
+				"users",
+				"users_dir"
+			],
+			[
+				"module",
+				"module_paths"
+			],
+			[
+				"req",
+				"require"
+			],
+			[
+				"has",
+				"hashSecret"
+			],
+			[
+				"sensitive",
+				"sensitive_json"
+			],
+			[
+				"proto",
+				"prototype"
+			],
+			[
+				"cu",
+				"customApp"
+			],
+			[
+				"fir",
+				"firstName"
+			],
+			[
+				"pack",
+				"package_json"
+			],
+			[
+				"email",
+				"emailAddress"
+			],
+			[
+				"pa",
+				"path_diff_str"
+			],
+			[
+				"path",
+				"path"
+			],
+			[
+				"up",
+				"upquire"
+			],
+			[
+				"bower",
+				"bower_components"
+			],
+			[
+				"aut",
+				"authorize"
+			],
+			[
+				"pre",
+				"prettify"
+			],
+			[
+				"lgon",
+				"loginCode"
+			],
+			[
+				"recover",
+				"recoveryCode"
+			],
+			[
+				"survey",
+				"surveyId"
+			],
+			[
+				"get",
+				"getStorageWrite"
+			],
+			[
+				"remove",
+				"removeStorageFiles"
+			],
+			[
+				"sub",
+				"subject"
+			],
+			[
+				"stor",
+				"storage"
+			],
+			[
+				"ret",
+				"retries"
+			],
+			[
+				"b",
+				"be"
+			],
+			[
+				"page",
+				"pageToken"
+			],
+			[
+				"stored",
+				"stored_files"
+			],
+			[
+				"prime",
+				"changesPrimeStartPageToken"
+			],
+			[
+				"subs",
+				"subscribe"
+			],
+			[
+				"bin",
+				"bindables"
+			],
+			[
+				"res",
+				"res"
+			],
+			[
+				"start",
+				"startPageToken"
+			],
+			[
+				"comple",
+				"Completed"
+			],
+			[
+				"l",
+				"log"
+			],
+			[
+				"Qu",
+				"queryType"
+			],
+			[
+				"cons",
+				"console"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/home/gnimmelf/workspace/surveys/app.js",
+			"settings":
+			{
+				"buffer_size": 1885,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/gnimmelf/workspace/surveys/views/survey.knowledges.hbs",
+			"settings":
+			{
+				"buffer_size": 1920,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/gnimmelf/workspace/surveys/routes/survey.knowledges.js",
+			"settings":
+			{
+				"buffer_size": 1444,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/gnimmelf/workspace/surveys/surveys/survey.knowledges.form.js",
+			"settings":
+			{
+				"buffer_size": 2621,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 372.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"Package Control: ",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 449.0
+	},
+	"console":
+	{
+		"height": 126.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = 'df21e130d211cfc94d9b0905775a7c0f' + '1e3d39e33b79698005270310898eea76'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/home/gnimmelf/workspace",
+		"/home/gnimmelf/workspace/glimrende",
+		"/home/gnimmelf/workspace/glimrende/booking",
+		"/home/gnimmelf/workspace/glimrende/booking/client",
+		"/home/gnimmelf/workspace/glimrende/booking/client/actions",
+		"/home/gnimmelf/workspace/glimrende/booking/client/components",
+		"/home/gnimmelf/workspace/glimrende/booking/client/lib",
+		"/home/gnimmelf/workspace/glimrende/booking/client/reducers",
+		"/home/gnimmelf/workspace/surveys",
+		"/home/gnimmelf/workspace/surveys/routes",
+		"/home/gnimmelf/workspace/surveys/surveys"
+	],
+	"file_history":
+	[
+		"/home/gnimmelf/workspace/surveys/surveys/survey.knowledges.js",
+		"/home/gnimmelf/workspace/glimrende/booking/package.json",
+		"/home/gnimmelf/workspace/glimrende/booking/client/config.json",
+		"/home/gnimmelf/workspace/glimrende/booking/client/index.js",
+		"/home/gnimmelf/workspace/glimrende/booking/client/components/App.jsx",
+		"/home/gnimmelf/workspace/glimrende/booking/client/components/Booking.jsx",
+		"/home/gnimmelf/workspace/glimrende/booking/client/components/Calendar.jsx",
+		"/home/gnimmelf/workspace/glimrende/booking/client/reducers/index.js",
+		"/home/gnimmelf/workspace/glimrende/booking/client/reducers/bookingReducer.js",
+		"/home/gnimmelf/workspace/glimrende/booking/client/reducers/calendarReducer.js",
+		"/home/gnimmelf/workspace/glimrende/booking/client/actions/bookingActions.js",
+		"/home/gnimmelf/workspace/glimrende/booking/client/actions/calendarActions.js",
+		"/home/gnimmelf/workspace/glimrende/booking/client/state/RxState.js",
+		"/home/gnimmelf/workspace/glimrende/booking/client/lib/utils.js",
+		"/home/gnimmelf/workspace/glimrende/booking/_snippets/ajax.js",
+		"/home/gnimmelf/workspace/glimrende/booking/client/components/Counter.jsx",
+		"/home/gnimmelf/workspace/glimrende/booking/client/index.html",
+		"/home/gnimmelf/workspace/glimrende/booking/client/reducers/counterReducer.js",
+		"/home/gnimmelf/workspace/glimrende/booking/client/actions/counterActions.js",
+		"/home/gnimmelf/workspace/glimrende/booking/.babelrc",
+		"/home/gnimmelf/workspace/glimrende/booking/client/components/Services.jsx",
+		"/home/gnimmelf/workspace/glimrende/booking/client/lib/config.json",
+		"/home/gnimmelf/workspace/glimrende/booking/client/lib/configureContainer.js",
+		"/home/gnimmelf/workspace/workspace.sublime-project",
+		"/home/gnimmelf/workspace/package-lock.json",
+		"/home/gnimmelf/workspace/sublime.projects/manifester.sublime-project",
+		"/home/gnimmelf/workspace/manifester.sublime-project",
+		"/home/gnimmelf/workspace/manifester/src.server/routes/index/index.js",
+		"/home/gnimmelf/workspace/mf-sites/mfs-03/app.js",
+		"/home/gnimmelf/workspace/manifester/package.json",
+		"/home/gnimmelf/workspace/manifester/src.server/app.js",
+		"/home/gnimmelf/workspace/manifester/src.server/routes/authenticate/index.js",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/middleware/authorizeUser.js",
+		"/home/gnimmelf/workspace/mf-sites/mfs-03/db/users/groups.json",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/services/scoped/userService.js",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/middleware/authenticateHeaderToken.js",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/services/dbService.js",
+		"/home/gnimmelf/workspace/mf-sites/mfs-03/db/users/gnimmelf@gmail.com/auth.json",
+		"/home/gnimmelf/workspace/mf-sites/mfs-03/db/users/ainalauritsen@gmail.com/common.json",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/services/authService.js",
+		"/home/gnimmelf/workspace/manifester/src.server/apis/authenticate.js",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/index.js",
+		"/home/gnimmelf/workspace/manifester/README.md",
+		"/home/gnimmelf/workspace/snippets/nginx.php",
+		"/home/gnimmelf/workspace/mf-sites/mfs-03/db/users/gnimmelf@gmail.com/common.json",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/JsonSearch.js",
+		"/home/gnimmelf/workspace/manifester/index.js",
+		"/home/gnimmelf/workspace/mf-sites/mfs-03/sensitive.json",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/dotProp.js",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/Db.js",
+		"/home/gnimmelf/workspace/mf-sites/mfs-03/db/users/ainalauritsen@gmail.com/logincode.json",
+		"/home/gnimmelf/workspace/mf-sites/mfs-03/db/users/gnimmelf@gmail.com/logincode.json",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/configureContainer.js",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/RESTfulError.js",
+		"/home/gnimmelf/workspace/backups/manifester.cp(5)/src.server/routes/authenticate/index.js",
+		"/home/gnimmelf/workspace/mf-sites/mfs-03/test.js",
+		"/home/gnimmelf/workspace/mf-sites/mfs-03/db/tests/test2.json",
+		"/home/gnimmelf/workspace/mf-sites/mfs-03/db/tests/test.json",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/db-search.js",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/services/userService.js",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/repositories/dbService.js",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/db.js",
+		"/home/gnimmelf/workspace/manifester/generators/create-site/create-site.js",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/getBowerComponentsResources.js",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/customError.js",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/repositories/mailService.js",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/utils/make-single-invoker.js",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/utils/index.js",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/middleware/authenticateToken.js",
+		"/home/gnimmelf/workspace/manifester/generators/create-site/templates/sensitive.json",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/apis/auth.js",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/middleware/authenticate.js",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/repositories/nodemailerTransport.js",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/repositories/nodeMailerTransport.js",
+		"/home/gnimmelf/workspace/mf-sites/mfs-02/sensitive.json",
+		"/home/gnimmelf/workspace/mf-sites/mfs-02/app.js",
+		"/home/gnimmelf/workspace/mf-sites/mfs-02/db/users/groups.json",
+		"/home/gnimmelf/workspace/mf-sites/mfs-02/db/schemas/users.json",
+		"/home/gnimmelf/workspace/manifester/generators/create-site/templates/db/users/groups.json",
+		"/home/gnimmelf/workspace/manifester/src.server/services/dbService.js",
+		"/home/gnimmelf/workspace/mf-sites/mfs-04/app.js",
+		"/home/gnimmelf/workspace/manifester/generators/create-site/templates/package.json",
+		"/home/gnimmelf/workspace/mf-sites/mfs-04/db/users/2/common.json",
+		"/home/gnimmelf/workspace/manifester/src.server/routes/schemas/index.js",
+		"/home/gnimmelf/workspace/defiant.js-node/index.js",
+		"/home/gnimmelf/workspace/defiant.js/gulpfile.js",
+		"/home/gnimmelf/workspace/defiant.js/index.js",
+		"/home/gnimmelf/workspace/defiant.js/package.json",
+		"/home/gnimmelf/workspace/node-jsondir-livedb/index.js",
+		"/home/gnimmelf/workspace/mf-sites/mfs-02/db/users/1/common.json",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/json-tree.js",
+		"/home/gnimmelf/workspace/mf-sites/mfs-02/db/users/gnimmelf@gmail.com/common.json",
+		"/home/gnimmelf/workspace/mf-sites/mfs-02/db/users/common.json",
+		"/home/gnimmelf/workspace/manifester/generators/create-site/templates/app.js",
+		"/home/gnimmelf/workspace/manifester/src.server/services/userService.js",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/middleware/ioc-container.js",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/middleware/userService.js",
+		"/home/gnimmelf/workspace/manifester/.gitignore",
+		"/home/gnimmelf/workspace/backups/manifester.system/credentials/mailgun.js",
+		"/home/gnimmelf/workspace/mf-sites/mfs-02/db/schemas/site-info.json",
+		"/home/gnimmelf/workspace/mf-sites/mfs-01/app.js",
+		"/home/gnimmelf/workspace/manifester/bin/templates/package.json",
+		"/home/gnimmelf/workspace/manifester/bin/create-site.js",
+		"/home/gnimmelf/workspace/manifester/bin/templates/app.js",
+		"/home/gnimmelf/workspace/manifester/src.client/riot/main.js",
+		"/home/gnimmelf/workspace/manifester/gulp_tasks/utils/rollup.buble.js",
+		"/home/gnimmelf/workspace/manifester/gulp_tasks/client.js",
+		"/home/gnimmelf/workspace/manifester/src.client/riot/app/tag.html",
+		"/home/gnimmelf/workspace/manifester/gulpfile.js",
+		"/home/gnimmelf/workspace/macgyverish.no/app.js",
+		"/home/gnimmelf/workspace/manifester/bin/templates/_variables.js",
+		"/home/gnimmelf/workspace/manifester/examples/simple.js",
+		"/home/gnimmelf/workspace/snippets/app.js",
+		"/home/gnimmelf/workspace/manifester/src.server/routes/authenticate/authorize.js",
+		"/home/gnimmelf/workspace/manifester/custom-app.js",
+		"/home/gnimmelf/workspace/manifester/src.client/riot/app/style.css",
+		"/home/gnimmelf/workspace/manifester/dist.client/riot/app/tag.js",
+		"/home/gnimmelf/workspace/manifester/gulp_tasks/utils/index.js",
+		"/home/gnimmelf/workspace/manifester/dist.client/riot/main.js",
+		"/home/gnimmelf/workspace/manifester/dist.client/main.bundle.js",
+		"/home/gnimmelf/workspace/manifester/sensitive/db/users/gnimmelf@gmail.com.json",
+		"/home/gnimmelf/workspace/manifester/src.server/views/login-mailcode.hbs",
+		"/home/gnimmelf/workspace/manifester/system/schemas/user.json",
+		"/home/gnimmelf/workspace/manifester/system/schemas/site-info.json",
+		"/home/gnimmelf/workspace/manifester/system/schemas/users.json",
+		"/home/gnimmelf/workspace/manifester/sensitive/credentials/superusers.js",
+		"/home/gnimmelf/workspace/manifester/.bowerrc",
+		"/home/gnimmelf/workspace/manifester/sensitive/credentials/mailgun.js"
+	],
+	"find":
+	{
+		"height": 23.0
+	},
+	"find_in_files":
+	{
+		"height": 90.0,
+		"where_history":
+		[
+			"/home/gnimmelf/workspace/glimrende/booking/client",
+			"/home/gnimmelf/workspace/glimrende/booking",
+			"/home/gnimmelf/workspace/manifester/src.server",
+			"/home/gnimmelf/workspace/manifester",
+			"/home/gnimmelf/workspace/manifester/src.server",
+			"/home/gnimmelf/workspace/backups/manifester.cp(5)/src.server",
+			"/home/gnimmelf/workspace/manifester",
+			"/home/gnimmelf/workspace/manifester/src.server",
+			"/home/gnimmelf/workspace",
+			"/home/gnimmelf/workspace/manifester",
+			"/home/gnimmelf/workspace/defiant.js/src",
+			"/home/gnimmelf/workspace/manifester",
+			"/home/gnimmelf/workspace/manifester/src.server",
+			"/home/gnimmelf/workspace/manifester",
+			"/home/gnimmelf/workspace/manifester/system/schemas",
+			"/home/gnimmelf/workspace/manifester",
+			"/home/gnimmelf/workspace/manifester/gulp_tasks",
+			"/home/gnimmelf/workspace/manifester",
+			"/home/gnimmelf/workspace/manifester/src.server",
+			"/home/gnimmelf/workspace/manifester",
+			"/home/gnimmelf/workspace/manifester/node_modules",
+			"/home/gnimmelf/workspace/manifester/gulp_tasks",
+			"/home/gnimmelf/workspace/manifester/node_modules"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"fetchBookings",
+			"calendar",
+			"createState",
+			"React",
+			"akk",
+			"flatpickr",
+			"Flatpickr",
+			"flatpickr",
+			"reducers",
+			"reducer$",
+			"counterReducer",
+			"prop-types",
+			"RAWDATA",
+			"services",
+			"userService",
+			"object-path",
+			"appSettings",
+			"dbs",
+			"makedotpath",
+			"makeDotPropKey",
+			"dotPropPath",
+			"console",
+			"makeDotPropKey",
+			"dotJoin",
+			"updateTreePath",
+			"tree",
+			"root",
+			"makeDotPropKey",
+			"updateTreePath",
+			"treePushedPaths",
+			"addCommit",
+			"create",
+			"setTreePath",
+			"addCommit",
+			"dotPropRelPath",
+			"dotJoin",
+			"lock",
+			"removeTreePath",
+			"path.",
+			"this.fetch",
+			"this.dirtree",
+			"pathSep",
+			"this.pathSep",
+			"DB.delete - d",
+			"dotJoin",
+			"deleteByRelPath",
+			"reassign",
+			"pathSep",
+			"path.sep",
+			"assignJSONfile",
+			"dotProp",
+			"getByPath",
+			"setByPath",
+			")]: {",
+			"[Symbol.for(",
+			"types",
+			"Symbol.for",
+			"): {",
+			"Symbol.for",
+			"Symbol",
+			"exports",
+			"^(.+)\"type\": \"(.+)\",$\\n",
+			"^(.+)\"type\": \"(.+)\",$",
+			"^[*.]",
+			"\"type\": \"(+.)\"",
+			"500",
+			"errorType",
+			"errorName",
+			"HTTPStatusCode",
+			"TODO!",
+			"getBowerComponentsResources",
+			"MESSAGE_FOR_USER",
+			"readJsonFile",
+			"userError",
+			"upquirePath",
+			"tokenHeaderName",
+			"tokenCookieName",
+			"tokenHeaderName",
+			"create",
+			"getByPath",
+			"apiKey",
+			"parseMailgun",
+			"createAdminUser",
+			"installPackages",
+			"createUser",
+			"mkdirp",
+			"omit",
+			"require('omit')",
+			"omit",
+			"babel-polyfill",
+			"dot-prop",
+			"emailAddress",
+			"path.",
+			"createFileStructure",
+			"set",
+			"jsonpath",
+			"XSLTProcessor",
+			"toXML",
+			"span",
+			"module",
+			"window",
+			"is_ie",
+			"obj_path",
+			"obp",
+			"json",
+			"this.delete",
+			"this.set",
+			"this.get",
+			"container",
+			"dirname",
+			"path",
+			"bodyParser.",
+			"path.join",
+			"path",
+			"src(",
+			"port",
+			"read",
+			"sensitive_json",
+			"'",
+			"logger",
+			"morgan",
+			"var ",
+			"var",
+			"upquirePath",
+			"var ",
+			"mountpath",
+			"js_main_name",
+			"srcClient"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"fetch",
+			"booking",
+			"acc",
+			"calendar",
+			"Calendar",
+			"calendar",
+			"DATA",
+			"dbs",
+			"service",
+			"makeDotPath",
+			"dotPath",
+			"treePathPushCounts",
+			"updateTreePath",
+			"dotPropPath",
+			"deleteTreePath",
+			": {",
+			"",
+			"[Symbol.for",
+			")]: {",
+			"[Symbol.for",
+			"Symbol.for",
+			"",
+			"type",
+			"name",
+			"code",
+			"STATUS_MESSAGE",
+			"customError",
+			"tokenKeyName",
+			"email",
+			"",
+			"q_path",
+			"jp",
+			"",
+			"join",
+			"\"",
+			"const ",
+			"app_mountpath",
+			"js_main",
+			"pathMaps",
+			"pathMappings",
+			"dirMappings.",
+			"draft-04",
+			"{ catch(err) { console.error(err); return false;}",
+			"catch(err)",
+			"dirSrcServer",
+			"dirPublic",
+			"dirDistServer",
+			"dirSrcClient",
+			"dirDistClient",
+			"urlSrcClient",
+			"urlDistClient",
+			"siteInfo",
+			"hash_secret",
+			"users",
+			"\"",
+			"loginCode",
+			"user",
+			"mgt",
+			"mailgun",
+			"",
+			"const",
+			"dest",
+			"dest_dir",
+			"const",
+			"globals",
+			"rglobals",
+			"resources",
+			"const",
+			"rollup_global",
+			"",
+			"upquirePath",
+			"content",
+			"article",
+			"recoveryCode",
+			"mwJSendFilterResult",
+			"mwJSendData",
+			"mwSendData",
+			"mwSetReqSurveyCollection",
+			"mwSendPureSurveyData",
+			"db",
+			"",
+			"\"name\": ",
+			"utils.flushObservable",
+			"requestStartPageToken",
+			"'",
+			".deep.equal",
+			"step(",
+			"log",
+			"reqChanges",
+			"function(done)",
+			"function()",
+			"function(done)",
+			"function()",
+			"set_b",
+			"set_a",
+			"stop",
+			"primeStartPageToken",
+			"changes",
+			"flush",
+			"s2$",
+			"s1$",
+			"m$",
+			"m1",
+			"jwtAuth",
+			"jwtClient",
+			"",
+			"args",
+			"(x) =>",
+			"const ",
+			"const",
+			"this",
+			"client:webpack:bundle",
+			"",
+			"exec",
+			"\\n"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 2,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/home/gnimmelf/workspace/surveys/app.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1885,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1061,
+								1061
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Babel/JavaScript (Babel).sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/home/gnimmelf/workspace/surveys/views/survey.knowledges.hbs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1920,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								419,
+								419
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/home/gnimmelf/workspace/surveys/routes/survey.knowledges.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1444,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1444,
+								1444
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Babel/JavaScript (Babel).sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 135.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/home/gnimmelf/workspace/surveys/surveys/survey.knowledges.form.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2621,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								76,
+								76
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Babel/JavaScript (Babel).sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "surveys.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"~/workspace/manifester.sublime-workspace"
+			]
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 375.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
