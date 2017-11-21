@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider, createState } from "./state/RxState";
-import App from './components/App.jsx';
 import reducer$ from "./reducers";
+import App from './components/App.jsx';
 
 ReactDOM.render(
   <Provider state$={createState(reducer$)}>

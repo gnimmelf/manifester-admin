@@ -18,6 +18,15 @@ const ENV = process.env.NODE_ENV || 'development';
 
 const cssExportMap = {};
 
+const globals = {
+  "rxjs": "Rx",
+  "react": "React",
+  "react-dom": "ReactDOM",
+  "prop-types": "PropTypes",
+  "grommet/components": "Grommet",
+  "grommet/icons/base": "Grommet.Icons.Base"
+};
+
 const plugins = [
   json(),
   resolve({
@@ -31,11 +40,7 @@ const plugins = [
     ],
     exclude: [
       'node_modules/process-es6/**'
-    ],
-    namedExports: {
-      'node_modules/react/react.js': ['Children', 'Component', 'PropTypes', 'createElement'],
-      'node_modules/react-dom/index.js': ['render']
-    }
+    ]
   }),
   postcss({
     extensions: [ '.css' ],
@@ -59,7 +64,6 @@ const plugins = [
     exclude: 'node_modules/**' // only transpile our source code
   }),
   replace({
-    ENV: JSON.stringify(ENV),
     'process.env.NODE_ENV': JSON.stringify(ENV)
   }),
   (ENV === 'production' && uglify()),
@@ -67,13 +71,11 @@ const plugins = [
 
 const defaultOptions = {
   plugins: plugins,
-  external: ['jquery'],
-  globals: {
-    jquery: '$'
-  },
+  external: Object.keys(globals),
+  globals: globals,
 };
 
-export default ['index'].map(entryBaseName => Object.assign({}, defaultOptions, {
+export default ['login', 'admin'].map(entryBaseName => Object.assign({}, defaultOptions, {
   input: `src/${entryBaseName}.js`,
   output: {
     file: `dist/${entryBaseName}.js`,

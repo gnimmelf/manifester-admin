@@ -25,7 +25,7 @@ export function createState(reducer$, initialState$ = Rx.Observable.of({})) {
 
 export function makeSelector(...scopes)
 /*
-The `selector` is meant to reduces the full app `state` into a customized state object for the component.
+The `selector` is meant to reduce the full app `state` into a customized state object for the component.
 Here we just bulk-select the state-props by component-name scopes, or return the entire app-`state` object if no
 `scopes` are provided...
 */
