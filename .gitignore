@@ -32,3 +32,6 @@ npm-debug.log
 
 # Dist directories for builds
 dist
+
+# Swap files
+**/*.swp

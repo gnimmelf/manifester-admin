@@ -33,5 +33,7 @@
     "rollup-plugin-replace": "^2.0.0",
     "rollup-plugin-uglify": "^2.0.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "react-jsonschema-form": "^1.0.0"
+  }
 }
