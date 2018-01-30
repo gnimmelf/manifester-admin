@@ -2,11 +2,14 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider, createState } from "./state/RxState";
 import reducer$ from "./reducers";
-import App from './components/App.jsx';
+import Login from './components/Login.jsx';
+
 
 ReactDOM.render(
   <Provider state$={createState(reducer$)}>
-    <App />
+    <div className="container">
+      <Login />
+    </div>
   </Provider>,
   document.getElementById("app"),
 );

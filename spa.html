@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <title>{title}</title>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/rxjs/5.5.2/Rx.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/react/15.3.1/react-with-addons.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/react/15.3.1/react-dom.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/prop-types/15.6.0/prop-types.min.js"></script>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" />
+    <!-- App style -->
+  </head>
+  <body>
+    <div data-ui-role="content">
+      <app id="app" />
+    </div>
+    <!-- App settings -->
+    <script type="text/javascript">
+      window.Manifester = {appSettings};
+    </script>
+    <!-- App bundle -->
+    <script type="text/javascript" src="/public/admin/{pageBundle}.js"></script>
+  </body>
+</html>

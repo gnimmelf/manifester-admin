@@ -1,4 +1,8 @@
+import fs from 'fs';
+import path from 'path';
 // rollup.config.js
+import builtins from 'rollup-plugin-node-builtins';
+import globals from 'rollup-plugin-node-globals';
 import babel from 'rollup-plugin-babel';
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
@@ -13,26 +17,33 @@ import cssnext from 'postcss-cssnext';
 import postcssModules from 'postcss-modules';
 import cssnano from 'cssnano';
 
+const fileCopy = function (options) {
+  return {
+    ongenerate(){
+      const targDir = path.dirname(options.targ);
+      if (!fs.existsSync(targDir)){
+        fs.mkdirSync(targDir);
+      }
+      fs.writeFileSync(options.targ, fs.readFileSync(options.src));
+    }
+  };
+};
 
 const ENV = process.env.NODE_ENV || 'development';
 
 const cssExportMap = {};
 
-const globals = {
+const externals = {
   "rxjs": "Rx",
   "react": "React",
   "react-dom": "ReactDOM",
-  "prop-types": "PropTypes",
-  "grommet/components": "Grommet",
-  "grommet/icons/base": "Grommet.Icons.Base"
+  "prop-types": "PropTypes"
 };
 
 const plugins = [
-  json(),
-  resolve({
-    jsnext: true,
-    main: true,
-    browser: true,
+  fileCopy({
+      src:  './spa.html',
+      targ: './dist/spa.html'
   }),
   commonjs({
     include: [
@@ -41,6 +52,14 @@ const plugins = [
     exclude: [
       'node_modules/process-es6/**'
     ]
+  }),
+  builtins(),
+  globals(),
+  json(),
+  resolve({
+    jsnext: true,
+    main: true,
+    browser: true,
   }),
   postcss({
     extensions: [ '.css' ],
@@ -71,8 +90,7 @@ const plugins = [
 
 const defaultOptions = {
   plugins: plugins,
-  external: Object.keys(globals),
-  globals: globals,
+  external: Object.keys(externals),
 };
 
 export default ['login', 'admin'].map(entryBaseName => Object.assign({}, defaultOptions, {
@@ -81,6 +99,8 @@ export default ['login', 'admin'].map(entryBaseName => Object.assign({}, default
     file: `dist/${entryBaseName}.js`,
     format: 'iife',
     name: `${entryBaseName}`,
+    sourcemap: 'inline',
+    globals: externals,
   },
-  sourcemap: 'inline',
+
 }));
