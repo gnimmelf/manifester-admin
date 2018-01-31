@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import stringHash from 'string-hash';
 // rollup.config.js
 import builtins from 'rollup-plugin-node-builtins';
 import globals from 'rollup-plugin-node-globals';
@@ -16,6 +15,7 @@ import simplevars from 'postcss-simple-vars';
 import nested from 'postcss-nested';
 import cssnext from 'postcss-cssnext';
 import cssnano from 'cssnano';
+import lost from 'lost';
 
 const fileCopy = function (options) {
   return {
@@ -71,6 +71,7 @@ const plugins = [
       nested(),
       cssnext({ warnForDuplicates: false, }),
       cssnano(),
+      lost(),
     ]
   }),
   babel({
