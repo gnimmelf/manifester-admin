@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import stringHash from 'string-hash';
 // rollup.config.js
 import builtins from 'rollup-plugin-node-builtins';
 import globals from 'rollup-plugin-node-globals';
@@ -14,7 +15,6 @@ import postcss from 'rollup-plugin-postcss';
 import simplevars from 'postcss-simple-vars';
 import nested from 'postcss-nested';
 import cssnext from 'postcss-cssnext';
-import postcssModules from 'postcss-modules';
 import cssnano from 'cssnano';
 
 const fileCopy = function (options) {
@@ -63,21 +63,15 @@ const plugins = [
   }),
   postcss({
     extensions: [ '.css' ],
+    modules: {
+      generateScopedName: '[path]___[name]__[local]___[hash:base64:5]'
+    },
     plugins: [
       simplevars(),
       nested(),
       cssnext({ warnForDuplicates: false, }),
-      postcssModules({
-        getJSON (id, exportTokens) {
-          cssExportMap[id] = exportTokens;
-        }
-      }),
       cssnano(),
-    ],
-    getExportNamed: false, //Default false, when set to true it will also named export alongside default export your class names
-    getExport (id) {
-      return cssExportMap[id];
-    }
+    ]
   }),
   babel({
     exclude: 'node_modules/**' // only transpile our source code

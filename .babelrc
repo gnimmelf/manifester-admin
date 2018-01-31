@@ -12,7 +12,10 @@
     "transform-object-rest-spread",
     "transform-class-properties",
     "transform-function-bind",
-    "external-helpers"
+    "external-helpers",
+    ["react-css-modules", {
+      "exclude": "node_modules"
+    }]
   ]
 }
 

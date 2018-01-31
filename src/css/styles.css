@@ -1,8 +1,10 @@
 :root {
   --red: #d33;
 }
-a {
-  &:hover {
-    color: color(var(--red) a(54%));
-  }
+.red {
+  color: color(var(--red) a(54%));
+}
+
+.red-ish {
+  color: color(var(--red) a(54%));
 }
