@@ -1,5 +1,6 @@
 import Form from "react-jsonschema-form";
 import PropTypes from "prop-types";
+import { Button, ButtonGroup } from 'reactstrap';
 import { connect } from "../state/RxState";
 import loginActions from "../actions/loginActions";
 
@@ -11,6 +12,8 @@ export const schema = {
     email: {
       type: "string",
       title: "E-mail address",
+      format: "email",
+      //"pattern": "^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$"
     },
   }
 };
@@ -22,12 +25,13 @@ export const LoginForm = ({login, submit, reset}) => {
   return (
     <Form schema={schema}
         formData={{email: login.email}}
+        showErrorList={false}
         onSubmit={submit}
         onError={log("errors")}>
-      <div classname="btn-group">
-        <button className="btn btn-secondary" onClick={reset} id="reset">Reset</button>
-        <button className="btn btn-primary" type="submit">Submit</button>
-      </div>
+      <ButtonGroup>
+        <Button onClick={reset} id="reset">Reset</Button>
+        <Button color="primary" type="submit">Submit</Button>
+      </ButtonGroup>
     </Form>
   )
 }

@@ -37,7 +37,8 @@ const externals = {
   "rxjs": "Rx",
   "react": "React",
   "react-dom": "ReactDOM",
-  "prop-types": "PropTypes"
+  "prop-types": "PropTypes",
+  "reactstrap": "Reactstrap",
 };
 
 const plugins = [
