@@ -1,13 +1,14 @@
-import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider, createState } from "./state/RxState";
+import { RxStateProvider, createState } from "./state/RxState";
 import reducer$ from "./reducers";
-import Admin from './components/Admin.jsx';
+import Admin from './components/Login.jsx';
+import style from './css/styles.css';
 
-export default ReactDOM.render(
-  <Provider state$={createState(reducer$)}>
-
-    <Admin />
-  </Provider>,
+ReactDOM.render(
+  <RxStateProvider state$={createState(reducer$)}>
+    <div className="login" styleName="style.center-box">
+      <Admin />
+    </div>
+  </RxStateProvider>,
   document.getElementById("app"),
 );

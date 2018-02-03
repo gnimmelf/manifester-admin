@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Rx from "rxjs";
+import { log } from '../lib/utils';
 
 // Knowledge:
 // https://github.com/MichalZalecki/connect-rxjs-to-react/blob/master/src/state/RxState.js
@@ -17,25 +18,43 @@ export function createActions(actionNames) {
 export function createState(reducer$, initialState$ = Rx.Observable.of({})) {
   return initialState$
     .merge(reducer$)
-    .scan((state, [scope, reducer]) =>
-      ({ ...state, [scope]: reducer(state[scope]) }))
+    .scan((state, [scope, reducer]) => {
+      // Allow `reducer` to return a promise
+      const maybePromise = reducer(state[scope])
+      return maybePromise instanceof Promise ?
+        maybePromise.then(promised => ({ ...state, [scope]: promised})) :
+        ({ ...state, [scope]: maybePromise});
+    })
+    .switchMap(state => state instanceof Promise ? Rx.Observable.from(state) : Rx.Observable.of(state))
     .publishReplay(1)
     .refCount();
 }
 
-export function makeSelector(...scopes)
+export function scopeState(...scopes)
 /*
-The `selector` is meant to reduce the full app `state` into a customized state object for the component.
-Here we just bulk-select the state-props by component-name scopes, or return the entire app-`state` object if no
-`scopes` are provided...
+Here we just bulk-select the state-props by component-name scopes,
+or return the entire app-`state` object if no `scopes` are provided...
 */
 {
-  return scopes.length ?
+  console.log("Scopes", scopes)
+  const selector = !scopes.length ?
     state => state :
     state => scopes.reduce((acc, key) => ({ ...acc, [key]: state[key] }), {});
+
+  return selector;
 }
 
-export function connect(selector = makeSelector(), actionSubjects) {
+export function connect(selector, actionSubjects)
+// The `selector` is meant to reduce the full app `state` into a customized state object for the component.
+{
+  if (typeof selector != 'function') {
+    // Assume either string or array...
+    selector =  typeof selector == 'string' ?
+      scopeState(selector) :
+      scopeState(...selector)
+  }
+
+  // Wrap each `actionSubject.next()` in anonymous function so it can be invoked by the action(-stream)-key
   const actions = Object.keys(actionSubjects)
     .reduce((acc, key) => ({ ...acc, [key]: value => actionSubjects[key].next(value) }), {});
 
@@ -50,6 +69,7 @@ export function connect(selector = makeSelector(), actionSubjects) {
       };
 
       componentWillMount() {
+        // Use `selector` to filter app-state (`this.context.state$`), and set `this.state` for this component
         this.subscription = this.context.state$.map(selector).subscribe(::this.setState);
       }
 
@@ -58,15 +78,20 @@ export function connect(selector = makeSelector(), actionSubjects) {
       }
 
       render() {
+        const props = {
+          ...this.state,
+          ...this.props,
+          ...actions
+        }
         return (
-          <WrappedComponent {...this.state} {...this.props} {...actions} />
+          <WrappedComponent {...props} />
         );
       }
     };
   };
 }
 
-export class Provider extends Component
+export class RxStateProvider extends Component
 /*
 This is the overarching component that keeps the app state.
 It ensures that the `state$` is provided as a context on all children.

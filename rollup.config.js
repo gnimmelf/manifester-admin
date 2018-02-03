@@ -46,22 +46,24 @@ const plugins = [
       src:  './spa.html',
       targ: './dist/spa.html'
   }),
+  resolve({
+    jsnext: true,
+    main: true,
+    browser: true,
+    preferBuiltins: false,
+  }),
   commonjs({
     include: [
-      'node_modules/**'
+      'node_modules/**',
+      '../react-jsonschema-form/**',
     ],
     exclude: [
-      'node_modules/process-es6/**'
+      'node_modules/process-es6/**',
     ]
   }),
   builtins(),
   globals(),
   json(),
-  resolve({
-    jsnext: true,
-    main: true,
-    browser: true,
-  }),
   postcss({
     extensions: [ '.css' ],
     modules: {
@@ -76,7 +78,11 @@ const plugins = [
     ]
   }),
   babel({
-    exclude: 'node_modules/**' // only transpile our source code
+    exclude: [
+      // only transpile our source code
+      'node_modules/**',
+      '../react-jsonschema-form/**'
+    ]
   }),
   replace({
     'process.env.NODE_ENV': JSON.stringify(ENV)

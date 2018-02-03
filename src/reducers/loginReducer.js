@@ -1,32 +1,35 @@
 import Rx from "rxjs";
+import { addSchemaError, log } from '../lib/utils';
 import loginActions from "../actions/loginActions";
 
+const authPath = window.AppSettings.authPath;
+
 const initialState = {
-  email: "",
+  formData: {
+    email: "aa@aa",
+  },
+  errorSchema: {},
 };
 
 const LoginReducer$ = Rx.Observable.of(() => initialState)
   .merge(
-    loginActions.submit.map(payload => state => submitHandler(payload, state)),
-    loginActions.reset.map(_payload => _state => initialState),
+    loginActions.submit$.map(payload => state => submitHandler(payload, state)),
+    loginActions.reset$.map(_payload => _state => initialState),
   );
 
 export default LoginReducer$;
 
-
 function submitHandler(payload, state) {
-  /*
-    How to do XHR, catch errors and return them?
-    - https://github.com/mozilla-services/react-jsonschema-form/issues/155
-    Perhaps this, since `payload` is the entire Form...
-    - https://github.com/epoberezkin/ajv-errors
-  */
 
-  console.log("loginActions.submit:payload", payload)
+  console.log("loginActions.submit", payload, state);
+
   const newState = {
     ...state,
-    email: payload.formData.email
+    formData: payload.formData,
+    errorSchema: addSchemaError(payload.errorSchema, 'email', 'Work, goddamit!'),
   }
+
   console.log("loginActions.submit:newState", newState);
-  return Promise.resolve(newState);
+
+  return Promise.resolve(newState)
 }
