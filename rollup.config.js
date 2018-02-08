@@ -9,6 +9,7 @@ import commonjs from 'rollup-plugin-commonjs';
 import replace from 'rollup-plugin-replace';
 import uglify from 'rollup-plugin-uglify';
 import json from 'rollup-plugin-json';
+import analyze from 'rollup-analyzer-plugin'
 // PostCss
 import postcss from 'rollup-plugin-postcss';
 import simplevars from 'postcss-simple-vars';
@@ -39,13 +40,12 @@ const externals = {
   "react-dom": "ReactDOM",
   "prop-types": "PropTypes",
   "reactstrap": "Reactstrap",
+  "react-router-dom": "ReactRouterDOM",
+  "react-jsonschema-form": "JSONSchemaForm",
 };
 
 const plugins = [
-  fileCopy({
-      src:  './spa.html',
-      targ: './dist/spa.html'
-  }),
+  fileCopy({src:  './spa.html', targ: './dist/spa.html'}),
   resolve({
     jsnext: true,
     main: true,
@@ -77,6 +77,7 @@ const plugins = [
       lost(),
     ]
   }),
+  analyze({limit: 5}),
   babel({
     exclude: [
       // only transpile our source code

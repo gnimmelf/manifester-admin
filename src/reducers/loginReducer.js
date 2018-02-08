@@ -1,4 +1,5 @@
 import Rx from "rxjs";
+import axios from "axios";
 import { addSchemaError, log } from '../lib/utils';
 import loginActions from "../actions/loginActions";
 
@@ -21,15 +22,22 @@ export default LoginReducer$;
 
 function submitHandler(payload, state) {
 
-  console.log("loginActions.submit", payload, state);
-
-  const newState = {
-    ...state,
-    formData: payload.formData,
-    errorSchema: addSchemaError(payload.errorSchema, 'email', 'Work, goddamit!'),
-  }
-
-  console.log("loginActions.submit:newState", newState);
-
-  return Promise.resolve(newState)
+  return axios.post(`${authPath}/request`, {
+    email: payload.formData.email,
+  })
+  .then(res => res.data)
+  .then(res => {
+    if (res.status == "success" && window.location.search) {
+      const url = new URL(window.location)
+      const origin = url.searchParams.get('origin');
+      origin ? window.location = origin : '/';
+    }
+    else {
+      return {
+        ...state,
+        formData: payload.formData,
+        errorSchema: res.status == "success" ? {} : addSchemaError(payload.errorSchema, 'email', res.data.message),
+      };
+    }
+  })
 }

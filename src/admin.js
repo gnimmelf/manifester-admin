@@ -7,7 +7,7 @@ import style from './css/styles.css';
 ReactDOM.render(
   <RxStateProvider state$={createState(reducer$)}>
     <div className="login" styleName="style.center-box">
-      <Admin />
+      <Login />
     </div>
   </RxStateProvider>,
   document.getElementById("app"),

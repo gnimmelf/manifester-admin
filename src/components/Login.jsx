@@ -20,7 +20,6 @@ export const schema = {
 const log = (evt) => console.log.bind(console, evt);
 
 export const LoginForm = (props) => {
-  console.log("LoginForm:props", props);
   return (
     <Form schema={schema}
         formData={props.formData}

@@ -3,7 +3,7 @@ import dotProp from 'dot-prop';
 export const addSchemaError = (schema, key, ...errors) => {
   const errorsKey = key+'.__errors';
 
-  const value = dotProp.get(schema, errorsKey, []).concat(errors);
+  const value = Array.from(new Set(dotProp.get(schema, errorsKey, []).concat(errors)));
 
   const newSchema = { ...schema };
 

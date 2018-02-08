@@ -4,8 +4,10 @@ import Rx from "rxjs";
 import { log } from '../lib/utils';
 
 // Knowledge:
+// http://rxfiddle.net/
 // https://github.com/MichalZalecki/connect-rxjs-to-react/blob/master/src/state/RxState.js
 // http://natpryce.com/articles/000814.html
+// https://www.gitbook.com/book/btroncone/learn-rxjs/details
 
 export function createAction() {
   return new Rx.Subject();
@@ -16,18 +18,27 @@ export function createActions(actionNames) {
 }
 
 export function createState(reducer$, initialState$ = Rx.Observable.of({})) {
-  return initialState$
+  const publisher$ = initialState$
     .merge(reducer$)
     .scan((state, [scope, reducer]) => {
-      // Allow `reducer` to return a promise
-      const maybePromise = reducer(state[scope])
-      return maybePromise instanceof Promise ?
-        maybePromise.then(promised => ({ ...state, [scope]: promised})) :
-        ({ ...state, [scope]: maybePromise});
+      // Allow `reducer` to return promise or observable
+      let reduced = reducer(state[scope]);
+
+      if (reduced instanceof Rx.Observable) {
+        reduced = reduced.toPromise();
+      }
+
+      return reduced instanceof Promise ?
+        reduced.then(promised => ({ ...state, [scope]: promised})) :
+        ({ ...state, [scope]: reduced});
     })
     .switchMap(state => state instanceof Promise ? Rx.Observable.from(state) : Rx.Observable.of(state))
     .publishReplay(1)
-    .refCount();
+    // https://stackoverflow.com/a/42199606/1008905
+    //.refCount()
+    publisher$.connect();
+
+    return publisher$;
 }
 
 export function scopeState(...scopes)
