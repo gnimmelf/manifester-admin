@@ -8,6 +8,7 @@ import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import replace from 'rollup-plugin-replace';
 import uglify from 'rollup-plugin-uglify';
+import { minify as esMinifier } from 'uglify-es';
 import json from 'rollup-plugin-json';
 import async from 'rollup-plugin-async';
 import analyze from 'rollup-analyzer-plugin'
@@ -36,7 +37,7 @@ const ENV = process.env.NODE_ENV || 'development';
 const cssExportMap = {};
 
 const externals = {
-  "rxjs": "Rx",
+  // "rxjs": "Rx",
   "react": "React",
   "react-dom": "ReactDOM",
   "prop-types": "PropTypes",
@@ -56,7 +57,6 @@ const plugins = [
   commonjs({
     include: [
       'node_modules/**',
-      '../react-jsonschema-form/**',
     ],
     exclude: [
       'node_modules/process-es6/**',
@@ -78,8 +78,7 @@ const plugins = [
       lost(),
     ]
   }),
-  analyze({limit: 5}),
-  async(),
+  (ENV.startsWith('analyse') ? analyze({limit: 5}) : ()=>{}),
   babel({
     exclude: [
       // only transpile our source code
@@ -90,7 +89,7 @@ const plugins = [
   replace({
     'process.env.NODE_ENV': JSON.stringify(ENV)
   }),
-  (ENV === 'production' && uglify()),
+  (ENV.startsWith('prod') ? uglify({}, esMinifier) : ()=>{}),
 ];
 
 const defaultOptions = {

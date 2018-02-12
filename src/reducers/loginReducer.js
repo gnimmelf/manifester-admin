@@ -1,4 +1,4 @@
-import Rx from "rxjs";
+import { Observable } from "rxjs";
 import axios from "axios";
 import { addSchemaError, log } from '../lib/utils';
 import loginActions from "../actions/loginActions";
@@ -10,7 +10,7 @@ const initialState = {
   errorSchema: {},
 }
 
-const LoginReducer$ = Rx.Observable.of(() => initialState)
+const LoginReducer$ = Observable.of(() => initialState)
   .merge(
     loginActions.submit$.map(payload => state => submitHandler(payload, state)),
     loginActions.reset$.map(_payload => _state => initialState),

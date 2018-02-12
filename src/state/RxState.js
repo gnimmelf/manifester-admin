@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import Rx from "rxjs";
+import { Observable, Subject } from "rxjs";
 import { log } from '../lib/utils';
 
 // Knowledge:
@@ -9,21 +9,20 @@ import { log } from '../lib/utils';
 // http://natpryce.com/articles/000814.html
 // https://www.gitbook.com/book/btroncone/learn-rxjs/details
 
-export const isObservable = obs => obs instanceof Rx.Observable;
-
 export function createAction() {
-  return new Rx.Subject();
+  return new Subject();
 }
 
 export function createActions(actionNames) {
   return actionNames.reduce((acc, name) => ({ ...acc, [name]: createAction() }), {});
 }
 
-export function createState(reducer$) {
-  const publisher$ = Rx.Observable
+export function createState(reducer$, initialState$=Observable.of({})) {
+  const publisher$ = initialState$
+    .map(state => Promise.resolve(state))
     .merge(reducer$)
     .scan((promisedState, [scope, reducer]) => {
-    
+
       return promisedState.then(state => {
         const reduced = reducer(state[scope]);
 
@@ -32,12 +31,11 @@ export function createState(reducer$) {
         }
         else {
           return Promise.resolve({ ...state, [scope]: reduced });
-        }        
-      });     
+        }
+      });
 
-    }, Promise.resolve({}))
-    .flatMap(promisedState => Rx.Observable.from(promisedState))
-    //.startWith({})
+    })
+    .flatMap(promisedState => Observable.from(promisedState))
     .publishReplay(1)
     .refCount();
 

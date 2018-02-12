@@ -23,6 +23,7 @@
     "babel-preset-react": "^6.24.1",
     "cssnano": "^3.10.0",
     "lost": "^8.2.0",
+    "npm": "^5.6.0",
     "postcss-cssnext": "^3.1.0",
     "postcss-nested": "^3.0.0",
     "postcss-simple-vars": "^4.1.0",
@@ -36,12 +37,14 @@
     "rollup-plugin-node-resolve": "^3.0.2",
     "rollup-plugin-postcss": "^1.2.8",
     "rollup-plugin-replace": "^2.0.0",
-    "rollup-plugin-uglify": "^2.0.1"
+    "rollup-plugin-uglify": "^2.0.1",
+    "uglify-es": "^3.3.10"
   },
   "dependencies": {
     "axios": "^0.17.1",
     "babel-plugin-react-css-modules": "^3.3.3",
     "dot-prop": "^4.2.0",
-    "react-jsonschema-form": "git+https://github.com/gnimmelf/react-jsonschema-form.git"
+    "react-jsonschema-form": "git+https://github.com/gnimmelf/react-jsonschema-form.git",
+    "rxjs": "^5.5.6"
   }
 }

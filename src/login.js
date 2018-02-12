@@ -6,11 +6,9 @@ import style from './css/styles.css';
 
 ReactDOM.render(
   <RxStateProvider state$={createState(reducer$)}>
-    <Router basename="/login">
-      <div className="login" styleName="style.center-box">
-        <Route exact path="/" component={Login}/>
-      </div>
-    </Router>
+    <div className="login" styleName="style.center-box">
+      <Login/>
+    </div>
   </RxStateProvider>,
   document.getElementById("app"),
 );
