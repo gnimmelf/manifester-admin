@@ -9,6 +9,7 @@ import commonjs from 'rollup-plugin-commonjs';
 import replace from 'rollup-plugin-replace';
 import uglify from 'rollup-plugin-uglify';
 import json from 'rollup-plugin-json';
+import async from 'rollup-plugin-async';
 import analyze from 'rollup-analyzer-plugin'
 // PostCss
 import postcss from 'rollup-plugin-postcss';
@@ -78,6 +79,7 @@ const plugins = [
     ]
   }),
   analyze({limit: 5}),
+  async(),
   babel({
     exclude: [
       // only transpile our source code

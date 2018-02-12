@@ -9,6 +9,8 @@ import { log } from '../lib/utils';
 // http://natpryce.com/articles/000814.html
 // https://www.gitbook.com/book/btroncone/learn-rxjs/details
 
+export const isObservable = obs => obs instanceof Rx.Observable;
+
 export function createAction() {
   return new Rx.Subject();
 }
@@ -17,26 +19,27 @@ export function createActions(actionNames) {
   return actionNames.reduce((acc, name) => ({ ...acc, [name]: createAction() }), {});
 }
 
-export function createState(reducer$, initialState$ = Rx.Observable.of({})) {
-  const publisher$ = initialState$
+export function createState(reducer$) {
+  const publisher$ = Rx.Observable
     .merge(reducer$)
-    .scan((state, [scope, reducer]) => {
-      // Allow `reducer` to return promise or observable
-      let reduced = reducer(state[scope]);
+    .scan((promisedState, [scope, reducer]) => {
+    
+      return promisedState.then(state => {
+        const reduced = reducer(state[scope]);
 
-      if (reduced instanceof Rx.Observable) {
-        reduced = reduced.toPromise();
-      }
+        if (reduced instanceof Promise) {
+          return reduced.then(resolved => ({ ...state, [scope]: resolved }));
+        }
+        else {
+          return Promise.resolve({ ...state, [scope]: reduced });
+        }        
+      });     
 
-      return reduced instanceof Promise ?
-        reduced.then(promised => ({ ...state, [scope]: promised})) :
-        ({ ...state, [scope]: reduced});
-    })
-    .switchMap(state => state instanceof Promise ? Rx.Observable.from(state) : Rx.Observable.of(state))
+    }, Promise.resolve({}))
+    .flatMap(promisedState => Rx.Observable.from(promisedState))
+    //.startWith({})
     .publishReplay(1)
-    // https://stackoverflow.com/a/42199606/1008905
-    //.refCount()
-    publisher$.connect();
+    .refCount();
 
     return publisher$;
 }
@@ -94,6 +97,9 @@ export function connect(selector, actionSubjects)
           ...this.props,
           ...actions
         }
+
+        console.log("render PROPS", props)
+
         return (
           <WrappedComponent {...props} />
         );

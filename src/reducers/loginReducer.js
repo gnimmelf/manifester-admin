@@ -6,11 +6,9 @@ import loginActions from "../actions/loginActions";
 const authPath = window.AppSettings.authPath;
 
 const initialState = {
-  formData: {
-    email: "aa@aa",
-  },
+  schemaName: 'requestLoginCode',
   errorSchema: {},
-};
+}
 
 const LoginReducer$ = Rx.Observable.of(() => initialState)
   .merge(
@@ -21,23 +19,35 @@ const LoginReducer$ = Rx.Observable.of(() => initialState)
 export default LoginReducer$;
 
 function submitHandler(payload, state) {
+  return handlers[state.schemaName](payload, state);
+}
 
-  return axios.post(`${authPath}/request`, {
-    email: payload.formData.email,
-  })
-  .then(res => res.data)
-  .then(res => {
-    if (res.status == "success" && window.location.search) {
-      const url = new URL(window.location)
-      const origin = url.searchParams.get('origin');
-      origin ? window.location = origin : '/';
-    }
-    else {
-      return {
-        ...state,
-        formData: payload.formData,
-        errorSchema: res.status == "success" ? {} : addSchemaError(payload.errorSchema, 'email', res.data.message),
-      };
-    }
-  })
+const handlers = {
+  requestLoginCode: (payload, state) => {
+    return axios.post(`${authPath}request`, {
+      email: payload.formData.email,
+    })
+    .then(res => res.data)
+    .then(res => {
+
+      if (res.status == 'success') {
+        return {
+          ...state,
+          formData: payload.formData,
+          schemaName: 'exchangeLoginCode',
+          errorSchema: {},
+        }
+      }
+      else {
+        return {
+          ...state,
+          formData: payload.formData,
+          errorSchema: addSchemaError(payload.errorSchema, 'email', res.data.message),
+        }
+      }
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  },
 }
