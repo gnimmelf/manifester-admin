@@ -50,4 +50,27 @@ const handlers = {
       console.log(err)
     })
   },
+  exchangeLoginCode: (payload, state) => {
+    return axios.post(`${authPath}exchange`, {
+      email: payload.formData.email,
+      code: payload.formData.code,
+    })
+    .then(res => res.data)
+    .then(res => {
+
+      if (res.status == 'success') {
+        return window.location = new URL(window.location).searchParams.get('origin') || '/';
+      }
+      else {
+        return {
+          ...state,
+          formData: payload.formData,
+          errorSchema: addSchemaError(payload.errorSchema, 'code', res.data.message),
+        }
+      }
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  },
 }

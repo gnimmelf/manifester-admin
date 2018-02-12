@@ -1,5 +1,4 @@
 import React from 'react';
-import Counter from './Counter.jsx';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -10,7 +9,6 @@ export default class App extends React.Component {
     return (
       <div>
         <h1>Admin comming...</h1>
-        <Counter />
       </div>
     );
   }
