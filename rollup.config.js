@@ -10,7 +10,6 @@ import replace from 'rollup-plugin-replace';
 import uglify from 'rollup-plugin-uglify';
 import { minify as esMinifier } from 'uglify-es';
 import json from 'rollup-plugin-json';
-import async from 'rollup-plugin-async';
 import analyze from 'rollup-analyzer-plugin'
 // PostCss
 import postcss from 'rollup-plugin-postcss';
@@ -19,6 +18,13 @@ import nested from 'postcss-nested';
 import cssnext from 'postcss-cssnext';
 import cssnano from 'cssnano';
 import lost from 'lost';
+
+/* NOTE!
+Be sure to up ulimit on the system for --watch!
+1) echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+If 1) doesn't work:
+2) https://underyx.me/2015/05/18/raising-the-maximum-number-of-file-descriptors
+*/
 
 const fileCopy = function (options) {
   return {
@@ -34,10 +40,7 @@ const fileCopy = function (options) {
 
 const ENV = process.env.NODE_ENV || 'development';
 
-const cssExportMap = {};
-
 const externals = {
-  // "rxjs": "Rx",
   "react": "React",
   "react-dom": "ReactDOM",
   "prop-types": "PropTypes",
@@ -52,7 +55,7 @@ const plugins = [
     jsnext: true,
     main: true,
     browser: true,
-    preferBuiltins: false,
+    preferBuiltins: true,
   }),
   commonjs({
     include: [
