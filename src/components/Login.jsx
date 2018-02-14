@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { Button, ButtonGroup } from 'reactstrap';
-import { connect, scopeState } from "../state/RxState";
+import { connect } from "../state/RxState";
 import Form from '../lib/Form';
 import loginActions from "../actions/loginActions";
 
@@ -54,12 +54,11 @@ export const LoginForm = function(props) {
 LoginForm.propTypes = {
   email: PropTypes.string,
   code: PropTypes.number,
+  schemaName: PropTypes.string.required,
   login$: PropTypes.func.isRequired,
   reset$: PropTypes.func.isRequired,
 };
 
 const Loading = (<div>Loading...</div>);
 
-export default connect(({ login }) => ({ ...login }), loginActions)(LoginForm);
-
-
+export default connect(({ login }) => login, loginActions)(LoginForm);

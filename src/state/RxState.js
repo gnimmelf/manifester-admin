@@ -84,12 +84,12 @@ export function connect(selector=(state)=>state, actionSubjects)
 
       render() {
 
-        console.log("RENDER.state", this.state)
         console.log("RENDER.props", this.props)
+        console.log("RENDER.state", this.state)
 
         const props = {
-          ...this.state,
           ...this.props,
+          ...this.state,
           ...actions
         }
 

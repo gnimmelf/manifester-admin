@@ -1,7 +1,7 @@
 import { Observable } from "rxjs";
 import axios from "axios";
 import { addSchemaError } from '../lib/Form';
-import loginActions from "../actions/loginActions";
+import adminActions from "../actions/adminActions";
 
 const initialState = {
   authPath: window.AppSettings.authPath,
@@ -10,13 +10,13 @@ const initialState = {
   errorSchema: {},
 };
 
-const LoginReducer$ = Observable.of(() => initialState)
+const AdminReducer$ = Observable.of(() => initialState)
   .merge(
-    loginActions.submit$.map(payload => state => submitHandler(payload, state)),
-    loginActions.reset$.map(_payload => _state => initialState),
+    adminActions.submit$.map(payload => state => submitHandler(payload, state)),
+    adminActions.reset$.map(_payload => _state => initialState),
   );
 
-export default LoginReducer$;
+export default AdminReducer$;
 
 function submitHandler(payload, state) {
   console.log("submitHandler", payload, state)
@@ -25,7 +25,7 @@ function submitHandler(payload, state) {
 
 const handlers = {
   requestLoginCode: (payload, state) => {
-    return axios.post(`${state.authPath}request`, {
+    return axios.post(`${payload.authPath}request`, {
       email: payload.formData.email,
     })
     .then(res => res.data)
@@ -53,28 +53,5 @@ const handlers = {
     .catch(err => {
       console.log(err)
     })
-  },
-  exchangeLoginCode: (payload, state) => {
-    return axios.post(`${state.authPath}exchange`, {
-      email: payload.formData.email,
-      code: payload.formData.code,
-    })
-    .then(res => res.data)
-    .then(res => {
-
-      if (res.status == 'success') {
-        return window.location = new URL(window.location).searchParams.get('origin') || '/';
-      }
-      else {
-        return {
-          ...state,
-          formData: payload.formData,
-          errorSchema: addSchemaError(payload.errorSchema, 'code', res.data.message),
-        }
-      }
-    })
-    .catch(err => {
-      console.log(err)
-    })
-  },
+  }
 }

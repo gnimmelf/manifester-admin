@@ -38,7 +38,7 @@ const fileCopy = function (options) {
   };
 };
 
-const ENV = process.env.NODE_ENV || 'development';
+const ENV = process.env.NODE_ENV || process.env.ENV || 'development';
 
 const externals = {
   "react": "React",
@@ -46,7 +46,7 @@ const externals = {
   "prop-types": "PropTypes",
   "reactstrap": "Reactstrap",
   "react-router-dom": "ReactRouterDOM",
-  "react-jsonschema-form": "JSONSchemaForm",
+  //"react-jsonschema-form": "JSONSchemaForm",
 };
 
 const plugins = [

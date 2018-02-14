@@ -11,20 +11,8 @@ import reducer$ from "./reducers";
 import style from './css/styles.css';
 import Admin from './components/Admin.jsx';
 
-const initialState$ = Observable.of([['schemas', '/api/schemas']])
-  .flatMap(x => x)
-  .map(([key, url]) => Observable.from(axios.get(url).then(res => ({ [key]:res.data.data[key] }))))
-  .flatMap(x => x)
-  .scan((state, res) => ({
-    ...state,
-    ...res,
-  }), {
-    authPath: window.AppSettings.authPath
-  })
-  .do(log("init state"))
-
 ReactDOM.render(
-  <RxStateProvider state$={createState(reducer$, initialState$)}>
+  <RxStateProvider state$={createState(reducer$)}>
     <Router basename="/admin">
       <div className="admin" styleName="">
         <Route exact path="/" component={Admin}/>
