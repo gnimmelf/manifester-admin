@@ -18,54 +18,43 @@ export function createActions(actionNames) {
 }
 
 export function createState(reducer$, initialState$=Observable.of({})) {
-  const publisher$ = Observable.empty()
+  const publisher$ = initialState$
+    .map(state => state instanceof Promise ? state : Promise.resolve(state))
     .merge(reducer$)
+    .do(log("> SCAN"))
     .scan((promisedState, [scope, reducer]) => {
+
+      console.log("SCAN", promisedState, scope, reducer)
 
       return promisedState.then(state => {
 
+        console.log("STATE:", state)
+
         const reduced = reducer(state[scope]);
 
+        console.log("REDUCED", state, scope, reduced)
+
         if (reduced instanceof Promise) {
-          return reduced.then(resolved => ({ ...state, [scope]: resolved }));
+          return reduced.then(value => ({ ...state, [scope]: value }));
         }
         else {
           return Promise.resolve({ ...state, [scope]: reduced });
         }
       });
 
-    }, initialState$.toPromise())
+    })
+    .do(log("STATE >"))
     .flatMap(promisedState => Observable.from(promisedState))
+    .do(log("STATE >>"))
     .publishReplay(1)
     .refCount();
 
     return publisher$;
 }
 
-export function scopeState(...scopes)
-/*
-Here we just bulk-select the state-props by component-name scopes,
-or return the entire app-`state` object if no `scopes` are provided...
-*/
-{
-  console.log("Scopes", scopes)
-  const selector = !scopes.length ?
-    state => state :
-    state => scopes.reduce((acc, key) => ({ ...acc, [key]: state[key] }), {});
-
-  return selector;
-}
-
-export function connect(selector, actionSubjects)
+export function connect(selector=(state)=>state, actionSubjects)
 // The `selector` is meant to reduce the full app `state` into a customized state object for the component.
 {
-  if (typeof selector != 'function') {
-    // Assume either string or array...
-    selector =  typeof selector == 'string' ?
-      scopeState(selector) :
-      scopeState(...selector)
-  }
-
   // Wrap each `actionSubject.next()` in anonymous function so it can be invoked by the action(-stream)-key
   const actions = Object.keys(actionSubjects)
     .reduce((acc, key) => ({ ...acc, [key]: value => actionSubjects[key].next(value) }), {});
@@ -82,7 +71,11 @@ export function connect(selector, actionSubjects)
 
       componentWillMount() {
         // Use `selector` to filter app-state (`this.context.state$`), and set `this.state` for this component
-        this.subscription = this.context.state$.map(selector).subscribe(::this.setState);
+        const self = this;
+        this.subscription = this.context.state$.map(selector).subscribe((scopedState) => {
+          console.log("SCOPEDSTATE", scopedState);
+          self.setState(scopedState);
+        })
       }
 
       componentWillUnmount() {
@@ -90,11 +83,17 @@ export function connect(selector, actionSubjects)
       }
 
       render() {
+
+        console.log("RENDER.state", this.state)
+        console.log("RENDER.props", this.props)
+
         const props = {
           ...this.state,
           ...this.props,
           ...actions
         }
+
+        console.log("WRAPPEDCOMPONENT.props", props)
 
         return (
           <WrappedComponent {...props} />

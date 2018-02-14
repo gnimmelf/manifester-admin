@@ -33,11 +33,12 @@ schemas.exchangeLoginCode = {
 };
 
 export const LoginForm = function(props) {
-  // TODO! Check that required props are available before rendering...
-  return !props.settings ? Loading : (
+  console.log("LOGINFORM.props", props)
+  return !props.schemaName ? Loading : (
     <Form
-        additionalProps={props.settings}
-        schema={schemas[props.settings.schemaName]}
+        schemaName={props.schemaName}
+        authPath={props.authPath}
+        schema={schemas[props.schemaName]}
         formData={props.formData}
         showErrorList={false}
         errorSchema={props.errorSchema}
@@ -53,18 +54,12 @@ export const LoginForm = function(props) {
 LoginForm.propTypes = {
   email: PropTypes.string,
   code: PropTypes.number,
-  login: PropTypes.func.isRequired,
-  reset: PropTypes.func.isRequired,
-  settings: PropTypes.object.isRequired,
+  login$: PropTypes.func.isRequired,
+  reset$: PropTypes.func.isRequired,
 };
 
 const Loading = (<div>Loading...</div>);
 
-export default connect(({login, authPath}) => ({
-  ...login,
-  settings: {
-    authPath: authPath,
-    schemaName: 'requestLoginCode',
-  }
-}), loginActions)(LoginForm);
+export default connect(({ login }) => ({ ...login }), loginActions)(LoginForm);
+
 
