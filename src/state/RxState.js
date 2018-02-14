@@ -18,12 +18,12 @@ export function createActions(actionNames) {
 }
 
 export function createState(reducer$, initialState$=Observable.of({})) {
-  const publisher$ = initialState$
-    .map(state => Promise.resolve(state))
+  const publisher$ = Observable.empty()
     .merge(reducer$)
     .scan((promisedState, [scope, reducer]) => {
 
       return promisedState.then(state => {
+
         const reduced = reducer(state[scope]);
 
         if (reduced instanceof Promise) {
@@ -34,7 +34,7 @@ export function createState(reducer$, initialState$=Observable.of({})) {
         }
       });
 
-    })
+    }, initialState$.toPromise())
     .flatMap(promisedState => Observable.from(promisedState))
     .publishReplay(1)
     .refCount();
@@ -95,8 +95,6 @@ export function connect(selector, actionSubjects)
           ...this.props,
           ...actions
         }
-
-        console.log("render PROPS", props)
 
         return (
           <WrappedComponent {...props} />

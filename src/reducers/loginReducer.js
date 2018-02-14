@@ -3,14 +3,9 @@ import axios from "axios";
 import { addSchemaError, log } from '../lib/utils';
 import loginActions from "../actions/loginActions";
 
-const authPath = window.AppSettings.authPath;
+const initialState = {};
 
-const initialState = {
-  schemaName: 'requestLoginCode',
-  errorSchema: {},
-}
-
-const LoginReducer$ = Observable.of(() => initialState)
+const LoginReducer$ = Observable.of(() => {initialState})
   .merge(
     loginActions.submit$.map(payload => state => submitHandler(payload, state)),
     loginActions.reset$.map(_payload => _state => initialState),
@@ -19,12 +14,13 @@ const LoginReducer$ = Observable.of(() => initialState)
 export default LoginReducer$;
 
 function submitHandler(payload, state) {
-  return handlers[state.schemaName](payload, state);
+  console.log("!", payload, state)
+  return handlers[payload.passthrough.schemaName](payload, state);
 }
 
 const handlers = {
   requestLoginCode: (payload, state) => {
-    return axios.post(`${authPath}request`, {
+    return axios.post(`${state.settings.authPath}request`, {
       email: payload.formData.email,
     })
     .then(res => res.data)
@@ -51,7 +47,7 @@ const handlers = {
     })
   },
   exchangeLoginCode: (payload, state) => {
-    return axios.post(`${authPath}exchange`, {
+    return axios.post(`${state.settings.authPath}exchange`, {
       email: payload.formData.email,
       code: payload.formData.code,
     })
