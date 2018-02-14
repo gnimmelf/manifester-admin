@@ -1,7 +1,7 @@
-import Form from "react-jsonschema-form";
 import PropTypes from "prop-types";
 import { Button, ButtonGroup } from 'reactstrap';
 import { connect, scopeState } from "../state/RxState";
+import Form from '../lib/Form';
 import loginActions from "../actions/loginActions";
 
 export const schemas = {};
@@ -36,7 +36,7 @@ export const LoginForm = function(props) {
   // TODO! Check that required props are available before rendering...
   return !props.settings ? Loading : (
     <Form
-        additionalProps={props.settings.authPath}
+        additionalProps={props.settings}
         schema={schemas[props.settings.schemaName]}
         formData={props.formData}
         showErrorList={false}

@@ -15,12 +15,12 @@ export default LoginReducer$;
 
 function submitHandler(payload, state) {
   console.log("!", payload, state)
-  return handlers[payload.passthrough.schemaName](payload, state);
+  return handlers[payload.schemaName](payload, state);
 }
 
 const handlers = {
   requestLoginCode: (payload, state) => {
-    return axios.post(`${state.settings.authPath}request`, {
+    return axios.post(`${payload.authPath}request`, {
       email: payload.formData.email,
     })
     .then(res => res.data)
@@ -47,7 +47,7 @@ const handlers = {
     })
   },
   exchangeLoginCode: (payload, state) => {
-    return axios.post(`${state.settings.authPath}exchange`, {
+    return axios.post(`${payload.authPath}exchange`, {
       email: payload.formData.email,
       code: payload.formData.code,
     })

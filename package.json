@@ -44,7 +44,7 @@
     "axios": "^0.17.1",
     "babel-plugin-react-css-modules": "^3.3.3",
     "dot-prop": "^4.2.0",
-    "react-jsonschema-form": "git+https://github.com/gnimmelf/react-jsonschema-form.git",
+    "react-jsonschema-form": "^1.0.1",
     "rxjs": "^5.5.6"
   }
 }
