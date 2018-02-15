@@ -1,5 +1,4 @@
-import React, { Component } from "react";
-import JSONForm from "react-jsonschema-form";
+import reactJsonschemaForm from "react-jsonschema-form";
 import {
   getDefaultFormState,
   retrieveSchema,
@@ -7,8 +6,11 @@ import {
 import dotProp from 'dot-prop';
 import omit from 'object.omit';
 
-export default class Form extends JSONForm {
+export default class Form extends reactJsonschemaForm {
   constructor(props){
+
+    console.log("class Form extends reactJsonschemaForm")
+
     super(props);
   }
 

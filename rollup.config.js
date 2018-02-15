@@ -18,6 +18,7 @@ import nested from 'postcss-nested';
 import cssnext from 'postcss-cssnext';
 import cssnano from 'cssnano';
 import lost from 'lost';
+import to from 'to-case';
 
 /* NOTE!
 Be sure to up ulimit on the system for --watch!
@@ -39,15 +40,7 @@ const fileCopy = function (options) {
 };
 
 const ENV = process.env.NODE_ENV || process.env.ENV || 'development';
-
-const externals = {
-  "react": "React",
-  "react-dom": "ReactDOM",
-  "prop-types": "PropTypes",
-  "reactstrap": "Reactstrap",
-  "react-router-dom": "ReactRouterDOM",
-  //"react-jsonschema-form": "JSONSchemaForm",
-};
+const BUNDLE = process.env.BUNDLE;
 
 const plugins = [
   fileCopy({src:  './spa.html', targ: './dist/spa.html'}),
@@ -95,19 +88,53 @@ const plugins = [
   (ENV.startsWith('prod') ? uglify({}, esMinifier) : ()=>{}),
 ];
 
-const defaultOptions = {
-  plugins: plugins,
-  external: Object.keys(externals),
+const externals = {
+  "react": "React",
+  "react-dom": "ReactDOM",
+  "prop-types": "PropTypes",
+  "reactstrap": "Reactstrap",
+  "react-router-dom": "ReactRouterDOM",
+  "jsonschema-form": "jsonschemaForm",
 };
 
-export default ['login', 'admin'].map(entryBaseName => Object.assign({}, defaultOptions, {
-  input: `src/${entryBaseName}.js`,
-  output: {
-    file: `dist/${entryBaseName}.js`,
-    format: 'iife',
-    name: `${entryBaseName}`,
-    sourcemap: 'inline',
-    globals: externals,
-  },
+const defaultOptions = {
 
-}));
+};
+
+const bundles = [
+  'login',
+  'admin',
+  ['jsonschema-form', {
+    output: {
+      exports: 'named',
+      sourcemap: ENV.startsWith('prod') ? false : 'inline',
+    }
+  }],
+];
+
+export default bundles
+  .map((bundle) => bundle instanceof Array ? bundle : [bundle])
+  .map(([sourcePath, options={}]) => ({
+    sourcePath: sourcePath,
+    options: options,
+  }))
+  .filter(bundle => !BUNDLE || BUNDLE == bundle.sourcePath)
+  .map(bundle => {
+
+    const output = Object.assign({
+      file: `dist/${to.slug(bundle.sourcePath)}.js`,
+      format: 'iife',
+      name: to.camel(bundle.sourcePath),
+      sourcemap: 'inline',
+      globals: externals,
+    }, bundle.options.output || {});
+
+    console.log(`BUNDLE: ${bundle.sourcePath} =>`, output)
+
+    return {
+      input: `src/${bundle.sourcePath}.js`,
+      plugins: plugins,
+      external: Object.keys(externals),
+      output: output,
+    };
+  });

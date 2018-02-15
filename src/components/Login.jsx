@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { Button, ButtonGroup } from 'reactstrap';
 import { connect } from "../state/RxState";
-import Form from '../lib/Form';
+import Form from 'jsonschema-form';
 import loginActions from "../actions/loginActions";
 
 export const schemas = {};
