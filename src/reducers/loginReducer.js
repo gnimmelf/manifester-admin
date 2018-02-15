@@ -2,9 +2,9 @@ import { Observable } from "rxjs";
 import axios from "axios";
 import { addSchemaError } from 'jsonschema-form';
 import loginActions from "../actions/loginActions";
+import settings from "../lib/settings"
 
 const initialState = {
-  authPath: window.AppSettings.authPath,
   schemaName: 'requestLoginCode',
   formData: {},
   errorSchema: {},
@@ -25,7 +25,7 @@ function submitHandler(payload, state) {
 
 const handlers = {
   requestLoginCode: (payload, state) => {
-    return axios.post(`${state.authPath}request`, {
+    return axios.post(`${settings.authPath}request`, {
       email: payload.formData.email,
     })
     .then(res => res.data)
@@ -55,7 +55,7 @@ const handlers = {
     })
   },
   exchangeLoginCode: (payload, state) => {
-    return axios.post(`${state.authPath}exchange`, {
+    return axios.post(`${settings.authPath}exchange`, {
       email: payload.formData.email,
       code: payload.formData.code,
     })

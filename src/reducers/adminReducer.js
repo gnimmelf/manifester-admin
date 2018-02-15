@@ -2,9 +2,9 @@ import { Observable } from "rxjs";
 import axios from "axios";
 import { addSchemaError } from 'jsonschema-form';
 import adminActions from "../actions/adminActions";
+import settings from "../lib/settings"
 
 const initialState = {
-  authPath: window.AppSettings.authPath,
   schemaName: 'requestLoginCode',
   formData: {},
   errorSchema: {},
@@ -12,6 +12,7 @@ const initialState = {
 
 const AdminReducer$ = Observable.of(() => initialState)
   .merge(
+
     adminActions.submit$.map(payload => state => submitHandler(payload, state)),
     adminActions.reset$.map(_payload => _state => initialState),
   );
@@ -25,7 +26,7 @@ function submitHandler(payload, state) {
 
 const handlers = {
   requestLoginCode: (payload, state) => {
-    return axios.post(`${payload.authPath}request`, {
+    return axios.post(`${settings.apiPath}request`, {
       email: payload.formData.email,
     })
     .then(res => res.data)
