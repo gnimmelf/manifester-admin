@@ -107,7 +107,6 @@ const bundles = [
   ['jsonschema-form', {
     output: {
       exports: 'named',
-      sourcemap: ENV.startsWith('prod') ? false : 'inline',
     }
   }],
 ];
@@ -125,7 +124,7 @@ export default bundles
       file: `dist/${to.slug(bundle.sourcePath)}.js`,
       format: 'iife',
       name: to.camel(bundle.sourcePath),
-      sourcemap: 'inline',
+      sourcemap: true,
       globals: externals,
     }, bundle.options.output || {});
 
