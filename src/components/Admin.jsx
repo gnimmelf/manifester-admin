@@ -1,15 +1,14 @@
-import React from 'react';
+import PropTypes from "prop-types";
+import { connect } from "../state/RxState";
+import adminActions from "../actions/adminActions";
 
-export default class App extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    return (
-      <div>
-        <h1>Admin comming...</h1>
-      </div>
-    );
-  }
+export const Admin = function(props) {
+  console.log("ADMIN.props", props)
+  return !props.schemas ? Loading : (
+    <h1>Admin comming..</h1>
+  )
 }
+
+const Loading = (<div>Loading...</div>);
+
+export default connect(({ admin }) => admin, adminActions)(Admin);
