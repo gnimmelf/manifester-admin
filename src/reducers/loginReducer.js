@@ -1,8 +1,11 @@
+import _debug from "debug";
 import { Observable } from "rxjs";
 import axios from "axios";
 import { addSchemaError } from 'jsonschema-form';
 import loginActions from "../actions/loginActions";
 import settings from "../lib/settings"
+
+const debug = _debug("reducers:loginReducer")
 
 const initialState = {
   schemaName: 'requestLoginCode',
@@ -19,7 +22,7 @@ const LoginReducer$ = Observable.of(() => initialState)
 export default LoginReducer$;
 
 function submitHandler(payload, state) {
-  console.log("submitHandler", payload, state)
+  debug("submitHandler", payload, state)
   return handlers[state.schemaName](payload, state);
 }
 
@@ -47,7 +50,7 @@ const handlers = {
         }
       }
 
-      console.log(res.status.toUpperCase(), state)
+      debug(res.status.toUpperCase(), state)
       return state;
     })
     .catch(err => {

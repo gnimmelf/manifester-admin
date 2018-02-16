@@ -1,8 +1,11 @@
-import PropTypes from "prop-types";
-import { Button, ButtonGroup } from 'reactstrap';
+import _debug from "debug";
 import { connect } from "../state/RxState";
+import PropTypes from "prop-types";
 import Form from 'jsonschema-form';
+import { Button, ButtonGroup } from 'reactstrap';
 import loginActions from "../actions/loginActions";
+
+const debug = _debug("components:login")
 
 export const schemas = {};
 
@@ -33,7 +36,7 @@ schemas.exchangeLoginCode = {
 };
 
 export const LoginForm = function(props) {
-  console.log("LOGINFORM.props", props)
+  debug("LOGINFORM.props", props)
   return !props.schemaName ? Loading : (
     <Form
         schemaName={props.schemaName}

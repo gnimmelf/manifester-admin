@@ -1,3 +1,4 @@
+import _debug from "debug";
 import reactJsonschemaForm from "react-jsonschema-form";
 import {
   getDefaultFormState,
@@ -5,6 +6,8 @@ import {
   toIdSchema } from "react-jsonschema-form/lib/utils"
 import dotProp from 'dot-prop';
 import omit from 'object.omit';
+
+const debug = _debug("lib:Form")
 
 export default class Form extends reactJsonschemaForm {
   constructor(props){
@@ -105,7 +108,7 @@ Taken directly from:
     .filter(([key, value]) => key !== "__errors")
     .map(([key, value]) => toErrorList(value, key)));
 
-  console.log("errorList", errorList)
+  debug("errorList", errorList)
 
   return recursedList;
 }
