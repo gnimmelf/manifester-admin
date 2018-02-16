@@ -1,7 +1,9 @@
+import _debug from "debug";
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Observable, Subject } from "rxjs";
-import { log } from '../lib/utils';
+
+const debug = _debug("RxState");
 
 // Knowledge:
 // http://rxfiddle.net/
@@ -21,31 +23,38 @@ export function createState(reducer$, initialState$=Observable.of({})) {
   const publisher$ = initialState$
     .map(state => state instanceof Promise ? state : Promise.resolve(state))
     .merge(reducer$)
-    .do(log("> SCAN"))
+    .debug(debug, "> SCAN")
     .scan((promisedState, [scope, reducer]) => {
 
-      console.log("SCAN", promisedState, scope, reducer)
+      debug("SCAN", promisedState, scope, reducer)
 
       return promisedState.then(state => {
 
-        console.log("STATE:", state)
+        debug("STATE:", state)
 
-        const reduced = reducer(state[scope]);
+        let promise,
+            reduced = reducer(state[scope]);
 
-        console.log("REDUCED", state, scope, reduced)
+        if (reduced instanceof Observable) {
+          reduced = reduced.toPromise()
+        }
+
+        debug("REDUCED", state, scope, reduced)
 
         if (reduced instanceof Promise) {
-          return reduced.then(value => ({ ...state, [scope]: value }));
+          promise = reduced.then(value => ({ ...state, [scope]: value }));
         }
         else {
-          return Promise.resolve({ ...state, [scope]: reduced });
+          promise = Promise.resolve({ ...state, [scope]: reduced });
         }
+
+        return promise
       });
 
     })
-    .do(log("STATE >"))
+    .debug(debug, "STATE >")
     .flatMap(promisedState => Observable.from(promisedState))
-    .do(log("STATE >>"))
+    .debug(debug, "STATE >>")
     .publishReplay(1)
     .refCount();
 
@@ -73,7 +82,7 @@ export function connect(selector=(state)=>state, actionSubjects)
         // Use `selector` to filter app-state (`this.context.state$`), and set `this.state` for this component
         const self = this;
         this.subscription = this.context.state$.map(selector).subscribe((scopedState) => {
-          console.log("SCOPEDSTATE", scopedState);
+          debug("SCOPEDSTATE", scopedState);
           self.setState(scopedState);
         })
       }
@@ -84,16 +93,16 @@ export function connect(selector=(state)=>state, actionSubjects)
 
       render() {
 
-        console.log("RENDER.props", this.props)
-        console.log("RENDER.state", this.state)
+        debug("RENDER.props", this.props)
+        debug("RENDER.state", this.state)
 
         const props = {
-          ...this.props,
+          ...this.props, // `props` before `state`, then `actions`!
           ...this.state,
           ...actions
         }
 
-        console.log("WRAPPEDCOMPONENT.props", props)
+        debug("WRAPPEDCOMPONENT.props", props)
 
         return (
           <WrappedComponent {...props} />
@@ -125,3 +134,17 @@ It ensures that the `state$` is provided as a context on all children.
     return this.props.children;
   }
 }
+
+Observable.prototype.debug = function (debugInstance, ...rest) {
+    return this.do(
+        function (next) {
+            debugInstance(...rest, next);
+        },
+        function (err) {
+            debugInstance('ERROR >>> ',...rest , err);
+        },
+        function () {
+            debugInstance('Completed.', ...rest);
+        }
+    );
+};
