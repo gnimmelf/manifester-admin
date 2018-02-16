@@ -1,22 +1,28 @@
+import _debug from "debug";
 import { Observable } from "rxjs";
-import axios from "axios";
-import { addSchemaError } from 'jsonschema-form';
 import adminActions from "../actions/adminActions";
 import settings from "../lib/settings"
+import axios from "axios";
+
+const debug = _debug("reducers:adminReducer")
 
 const initialState = {
   schemas: [],
+  selectedSchema: null
 };
-
-axios.get(`${settings.apiPath}schemas`)
-  .then(res => res.data.data.schemas)
-  .then(schemas => adminActions.schemas$.next({schemas})) // <-- Try `Observable.pipe`...!
 
 const AdminReducer$ = Observable.of(() => initialState)
   .merge(
-    adminActions.schemas$.map(payload => state => ({...state, ...payload})),
-    adminActions.submit$.map(payload => state => submitHandler(payload, state)),
-    adminActions.reset$.map(_payload => _state => initialState),
+    adminActions.loadSchemas$
+      .startWith("onload")
+      .flatMap(() => {
+        return axios.get(`${settings.apiPath}schemas`).then(res => res.data.data.schemas)
+      })
+      .debug(debug, "loadSchemas")
+      .map(payload => state => ({...state, schemas: payload})),
+    adminActions.selectSchema$.map(payload => state => submitHandler(payload, state)),
   );
 
 export default AdminReducer$;
+
+

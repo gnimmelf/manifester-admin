@@ -15,7 +15,9 @@ const initialState = {
 
 const LoginReducer$ = Observable.of(() => initialState)
   .merge(
-    loginActions.submit$.map(payload => state => submitHandler(payload, state)),
+    loginActions.submit$
+      .debug(debug)
+      .map(payload => state => submitHandler(payload, state)),
     loginActions.reset$.map(_payload => _state => initialState),
   );
 

@@ -1,9 +1,12 @@
+import _debug from "debug";
 import PropTypes from "prop-types";
 import { connect } from "../state/RxState";
 import adminActions from "../actions/adminActions";
 
+const debug = _debug("components:admin")
+
 export const Admin = function(props) {
-  console.log("ADMIN.props", props)
+  debug("ADMIN.props", props)
   return !props.schemas ? Loading : (
     <h1>Admin comming..</h1>
   )

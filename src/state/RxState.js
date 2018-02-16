@@ -30,7 +30,7 @@ export function createState(reducer$, initialState$=Observable.of({})) {
 
       return promisedState.then(state => {
 
-        debug("STATE:", state)
+        debug("STATE", state)
 
         let promise,
             reduced = reducer(state[scope]);

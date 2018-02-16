@@ -1,3 +1,3 @@
 import { createActions } from "../state/RxState";
 
-export default createActions(["submit$", "reset$", "schemas$"]);
+export default createActions(["selectSchema$", "loadSchemas$"]);

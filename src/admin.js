@@ -7,12 +7,16 @@ import {
 import { Observable } from "rxjs";
 import axios from "axios";
 import { RxStateProvider, createState } from "./state/RxState";
-import reducer$ from "./reducers";
+import adminReducers$ from "./reducers/adminReducer";
 import style from './css/styles.css';
 import Admin from './components/Admin.jsx';
 
+const rootReducer$ = Observable.merge(
+  adminReducers$.map(reducer => ["admin", reducer])
+);
+
 ReactDOM.render(
-  <RxStateProvider state$={createState(reducer$)}>
+  <RxStateProvider state$={createState(rootReducer$)}>
     <Router basename="/admin">
       <div className="admin" styleName="">
         <Route exact path="/" component={Admin}/>
