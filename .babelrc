@@ -6,6 +6,7 @@
     ["react"]
   ],
   "plugins": [
+    "jsx-control-statements",
     "syntax-object-rest-spread",
     "transform-object-rest-spread",
     "transform-class-properties",

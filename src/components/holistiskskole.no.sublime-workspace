@@ -1,0 +1,1307 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"cach",
+				"pageCache"
+			],
+			[
+				"page",
+				"pagefile"
+			],
+			[
+				"match",
+				"matchString"
+			],
+			[
+				"pa",
+				"partial"
+			],
+			[
+				"re",
+				"redirect"
+			],
+			[
+				"ini",
+				"initialState"
+			],
+			[
+				"get",
+				"getAuthenticate"
+			],
+			[
+				"auth",
+				"getAuthenticate"
+			],
+			[
+				"initiali",
+				"initialized"
+			],
+			[
+				"m",
+				"modalElm"
+			],
+			[
+				"input",
+				"inputElm"
+			],
+			[
+				"de",
+				"defaultAction"
+			],
+			[
+				"login",
+				"loginElm"
+			],
+			[
+				"cart",
+				"cartItem"
+			],
+			[
+				"d",
+				"description"
+			],
+			[
+				"p",
+				"pProps"
+			],
+			[
+				"cons",
+				"const"
+			],
+			[
+				"con",
+				"app-container"
+			],
+			[
+				"all",
+				"allRoutes"
+			],
+			[
+				"loca",
+				"locationElm"
+			],
+			[
+				"location",
+				"locationElm"
+			],
+			[
+				"l",
+				"label"
+			],
+			[
+				"scrollTo",
+				"scrollToBottom"
+			],
+			[
+				"dom",
+				"domnode"
+			],
+			[
+				"forma",
+				"format"
+			],
+			[
+				"stre",
+				"store"
+			],
+			[
+				"__",
+				"__currentItem"
+			],
+			[
+				"on",
+				"onDispose"
+			],
+			[
+				"tile",
+				"title"
+			],
+			[
+				"pre",
+				"prevElm"
+			],
+			[
+				"modal",
+				"modalElm"
+			],
+			[
+				"mod",
+				"modalElm"
+			],
+			[
+				"che",
+				"checkoutElm"
+			],
+			[
+				"debug",
+				"debugString"
+			],
+			[
+				"chann",
+				"channelName"
+			],
+			[
+				"topi",
+				"topicName"
+			],
+			[
+				"top",
+				"topicName"
+			],
+			[
+				"time",
+				"timeSlotId"
+			],
+			[
+				"ti",
+				"timeSlotItem"
+			],
+			[
+				"sub",
+				"subscription"
+			],
+			[
+				"subs",
+				"subscription"
+			],
+			[
+				"cartI",
+				"cartItem"
+			],
+			[
+				"cartItem",
+				"cartItemElm"
+			],
+			[
+				"ch",
+				"checkOutCallback"
+			],
+			[
+				"initial",
+				"initialize"
+			],
+			[
+				"service",
+				"serviceId"
+			],
+			[
+				"locale",
+				"locales"
+			],
+			[
+				"curren",
+				"currentLocale"
+			],
+			[
+				"tehter",
+				"tether"
+			],
+			[
+				"available",
+				"availableSlots"
+			],
+			[
+				"actions",
+				"actions"
+			],
+			[
+				"tr",
+				"translateY"
+			],
+			[
+				"setT",
+				"setTranslateY"
+			],
+			[
+				"di",
+				"div\tTag"
+			],
+			[
+				"rib",
+				"ribbonElm"
+			],
+			[
+				"car",
+				"cartElm"
+			],
+			[
+				"compo",
+				"componentWrapper"
+			],
+			[
+				"com",
+				"componentKey"
+			],
+			[
+				"route",
+				"routePath"
+			],
+			[
+				"co",
+				"component"
+			],
+			[
+				"sele",
+				"selectedCard"
+			],
+			[
+				"se",
+				"selectedCard"
+			],
+			[
+				"bt",
+				"btn-outline-primary"
+			],
+			[
+				"butt",
+				"buttonElms"
+			],
+			[
+				"over",
+				"overflow-x"
+			],
+			[
+				"card",
+				"cardnode"
+			],
+			[
+				"op",
+				"optionsHtml"
+			],
+			[
+				"option",
+				"optionElms"
+			],
+			[
+				"dat",
+				"dateObj"
+			],
+			[
+				"select",
+				"selectWidget"
+			],
+			[
+				"seletc",
+				"selectElm"
+			],
+			[
+				"rout",
+				"routeName"
+			],
+			[
+				"site",
+				"siteName"
+			],
+			[
+				"try",
+				"tryStat"
+			],
+			[
+				"main",
+				"mainAppDirs"
+			],
+			[
+				"file",
+				"filePath"
+			],
+			[
+				"rend",
+				"renderOptions"
+			],
+			[
+				"Render",
+				"renderOptions"
+			],
+			[
+				"schema",
+				"schemaName"
+			],
+			[
+				"cha",
+				"cache"
+			],
+			[
+				"schem",
+				"schemaDb"
+			],
+			[
+				"shema",
+				"schemaName"
+			],
+			[
+				"schemas",
+				"schemas"
+			],
+			[
+				"user",
+				"userGroups"
+			],
+			[
+				"use",
+				"userId"
+			],
+			[
+				"pr",
+				"promise"
+			],
+			[
+				"comm",
+				"commit"
+			],
+			[
+				"j",
+				"json"
+			],
+			[
+				"watch",
+				"watchArgs"
+			],
+			[
+				"throw",
+				"throw"
+			],
+			[
+				"deco",
+				"decoded"
+			],
+			[
+				"rel",
+				"relPath"
+			],
+			[
+				"mail",
+				"mailgunAuth"
+			],
+			[
+				"no",
+				"nodemailerTransport"
+			],
+			[
+				"grou",
+				"groups_json_path"
+			],
+			[
+				"users",
+				"users_dir"
+			],
+			[
+				"module",
+				"module_paths"
+			],
+			[
+				"req",
+				"require"
+			],
+			[
+				"has",
+				"hashSecret"
+			],
+			[
+				"sensitive",
+				"sensitive_json"
+			],
+			[
+				"proto",
+				"prototype"
+			],
+			[
+				"cu",
+				"customApp"
+			],
+			[
+				"fir",
+				"firstName"
+			],
+			[
+				"pack",
+				"package_json"
+			],
+			[
+				"email",
+				"emailAddress"
+			],
+			[
+				"path",
+				"path"
+			],
+			[
+				"up",
+				"upquire"
+			],
+			[
+				"bower",
+				"bower_components"
+			],
+			[
+				"aut",
+				"authorize"
+			],
+			[
+				"lgon",
+				"loginCode"
+			],
+			[
+				"recover",
+				"recoveryCode"
+			],
+			[
+				"survey",
+				"surveyId"
+			],
+			[
+				"remove",
+				"removeStorageFiles"
+			],
+			[
+				"stor",
+				"storage"
+			],
+			[
+				"ret",
+				"retries"
+			],
+			[
+				"b",
+				"be"
+			],
+			[
+				"stored",
+				"stored_files"
+			],
+			[
+				"prime",
+				"changesPrimeStartPageToken"
+			],
+			[
+				"bin",
+				"bindables"
+			],
+			[
+				"res",
+				"res"
+			],
+			[
+				"start",
+				"startPageToken"
+			],
+			[
+				"comple",
+				"Completed"
+			],
+			[
+				"Qu",
+				"queryType"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/home/gnimmelf/workspace/holistiskskole.no/package.json",
+			"settings":
+			{
+				"buffer_size": 1232,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/gnimmelf/workspace/holistiskskole.no/content/site-settings.json",
+			"settings":
+			{
+				"buffer_size": 1709,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/gnimmelf/workspace/holistiskskole.no/src.server/app.js",
+			"settings":
+			{
+				"buffer_size": 6872,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/gnimmelf/workspace/holistiskskole.no/content/pages/om-oss.md",
+			"settings":
+			{
+				"buffer_size": 6781,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/gnimmelf/workspace/holistiskskole.no/src.server/views/partials/contact-details.pug",
+			"settings":
+			{
+				"buffer_size": 318,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 214.0,
+		"last_filter": "Insta",
+		"selected_items":
+		[
+			[
+				"Insta",
+				"Package Control: Install Package"
+			],
+			[
+				"",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 479.0
+	},
+	"console":
+	{
+		"height": 126.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '6f4c264a24d933ce70df5dedcf1dcaee' + 'ebe013ee18cced0ef93d5f746d80ef60'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)",
+			"import urllib.request,os,hashlib; h = 'df21e130d211cfc94d9b0905775a7c0f' + '1e3d39e33b79698005270310898eea76'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/home/gnimmelf/workspace",
+		"/home/gnimmelf/workspace/holistiskskole.no",
+		"/home/gnimmelf/workspace/holistiskskole.no/content",
+		"/home/gnimmelf/workspace/holistiskskole.no/content/pages",
+		"/home/gnimmelf/workspace/holistiskskole.no/src.server",
+		"/home/gnimmelf/workspace/holistiskskole.no/src.server/lib",
+		"/home/gnimmelf/workspace/holistiskskole.no/src.server/views",
+		"/home/gnimmelf/workspace/holistiskskole.no/src.server/views/layouts",
+		"/home/gnimmelf/workspace/holistiskskole.no/src.server/views/partials",
+		"/home/gnimmelf/workspace/snippets"
+	],
+	"file_history":
+	[
+		"/home/gnimmelf/workspace/holistiskskole.no/content/pages/holistisk-skole.md",
+		"/home/gnimmelf/workspace/holistiskskole.no/src.server/views/system.pug",
+		"/home/gnimmelf/workspace/holistiskskole.no/src.server/lib/utils.js",
+		"/home/gnimmelf/workspace/holistiskskole.no/src.server/views/contact.pug",
+		"/home/gnimmelf/workspace/holistiskskole.no/src.server/sendmail.js",
+		"/home/gnimmelf/workspace/snippets/mdit.js",
+		"/home/gnimmelf/workspace/holistiskskole.no/src.server/views/layouts/main.pug",
+		"/home/gnimmelf/workspace/holistiskskole.no/content/pages/kontakt.md",
+		"/home/gnimmelf/workspace/holistiskskole.no/content/pages/om-oss.md",
+		"/home/gnimmelf/workspace/holistiskskole.no/public/assets/sass/main.scss",
+		"/home/gnimmelf/workspace/holistiskskole.no/src.server/views/partials/contact-details.pug",
+		"/home/gnimmelf/workspace/manifester/src.server/lib/services/authService.js",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/index.html",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/dist/my-ui-components.js",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/custom-bundles/my-ui-components/index.js",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/custom-bundles/my-ui-components/Button.jsx",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/dist/my-jsonschema-form.js",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/custom-bundles/react-jsonschema-form/index.js",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/src/lib/settings.js",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/src/actions/appActions.js",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/src/actions/loginActions.js",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/src/actions/accountActions.js",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/src/components/App.jsx",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/src/components/Register.jsx",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/src/components/Account.jsx",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/src/components/Login.jsx",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/src/reducers/appReducer.js",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/src/reducers/accountReducer.js",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/src/reducers/loginReducer.js",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/src/lib/utils.js",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/src/state/RxState.js",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/src/reducers/index.js",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/src/index.js",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/src/lib/ReactStrap.js",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/src/jsonschema-form.js",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/src/components/Booking.jsx",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/src/components/Loading.jsx",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/dev-server-config.json",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/src/lib/Form.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/pages/passwordReset.js",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/.gitignore",
+		"/home/gnimmelf/workspace/glimrende/react-booking-spa/spa.html",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/components/cart.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/app.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/routes/web.php",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/components/reservations.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/components/index.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/pages/index.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/components/checkout.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/pages/login.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/widgets/modal.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/pages/register.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/views/auth/user.blade.php",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/widgets/index.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/widgets/snippets/buttonLink.html",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/widgets/snippets/cardForm.html",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/widgets/snippets/input.html",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/widgets/snippets/inputHorizontal.html",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/widgets/input.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/views/layouts/main.blade.php",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/app/Http/Controllers/EnduserAuth/ResetPasswordController.php",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/app/Http/Controllers/EnduserAuth/RegisterController.php",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/bootstrapper.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/widgets/actionCard.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/pages/registration.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/sass/bootstrap/_brute_css_overrides.scss",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/components/service-availability-by-date.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/components/service-availability.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/components/locations.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/pages/booking.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/pages/checkout.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/widgets/snippets/passwordReset.html",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/widgets/snippets/login.html",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/lib/utils.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/sass/_bootstrap.scss",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/sass/themes/_mixins.scss",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/bootstrap/cache/config.php",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/config/app.php",
+		"/home/gnimmelf/Downloads/php-7.2.1/php-7.2.1/INSTALL",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/vendor/crocodicstudio/crudbooster/docs/en/installation.md",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/widgets/snippets/modalCard.html",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/app/Http/Controllers/Auth/LoginController.php",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/lib/subscriptionStore.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/app/Booking.php",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/package.json",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/sections/booking.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/views/auth/passwords/email.blade.php",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/views/auth/login.blade.php",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/sass/themes/_aftenposten_variables.scss",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/webpack.mix.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/sass/aftenposten.scss",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/views/auth/passwords/reset.blade.php",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/.env",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/sass/bootstrap/_variables_overrides.scss",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/sass/app.scss",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/sass/themes/_valiables.scss",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/sass/axelsons.scss",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/sass/bootstrap/_css_overrides.scss",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/sass/_css_overrides.scss",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/widgets/snippets/modal2.html",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/widgets/modal2.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/widgets/snippets/actionCard.html",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/widgets/snippets/cart.html",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/lib/msgbus.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/node_modules/tingle.js/src/tingle.css",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/sass/themes/_axelsons.scss",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/node_modules/bootstrap/scss/_custom-forms.scss",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/sass/bootstrap/theme/_axelsons.scss",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/widgets/radio.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/widgets/snippets/radio.html",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/widgets/snippets/radioButton.html",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/widgets/snippets/modal.html",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/sass/bootstrap/theme/_body-pattern-mixins.scss",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/widgets/snippets/checkoutItem.html",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/widgets/snippets/select.html",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/components/services.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/widgets/snippets/cartItem.html",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/widgets/componentHeader.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/widgets/snippets/modal.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/lib/accounting.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/lib/postal.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/app/Http/Controllers/LocationController.php",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/app/Http/Controllers/ServiceController.php",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/app/Http/Controllers/RoomController.php",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/widgets/actionCards.js",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/node_modules/bootstrap/scss/mixins/_grid.scss",
+		"/home/gnimmelf/workspace/glimrende/laravel-booking/node_modules/bootstrap/scss/_variables.scss"
+	],
+	"find":
+	{
+		"height": 39.0
+	},
+	"find_in_files":
+	{
+		"height": 99.0,
+		"where_history":
+		[
+			"/home/gnimmelf/workspace/holistiskskole.no/public/assets/sass",
+			"/home/gnimmelf/workspace/glimrende/react-booking-spa/src",
+			"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js",
+			"/home/gnimmelf/workspace/glimrende/react-booking-spa/src",
+			"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js",
+			"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/sass",
+			"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets",
+			"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js",
+			"/home/gnimmelf/workspace/glimrende/laravel-booking",
+			"/home/gnimmelf/workspace/glimrende/laravel-booking/app",
+			"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js/components",
+			"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js",
+			"/home/gnimmelf/workspace/glimrende/laravel-booking/node_modules/bootstrap/scss",
+			"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js",
+			"/home/gnimmelf/workspace/glimrende/laravel-booking/node_modules/bootstrap/scss",
+			"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets/js",
+			"/home/gnimmelf/workspace/glimrende/laravel-booking/node_modules/bootstrap/scss",
+			"/home/gnimmelf/workspace/glimrende/laravel-booking",
+			"/home/gnimmelf/workspace/glimrende/laravel-booking/node_modules/bootstrap/scss",
+			"/home/gnimmelf/workspace/glimrende/laravel-booking/resources/assets",
+			"/home/gnimmelf/workspace/glimrende/laravel-booking",
+			"/home/gnimmelf/workspace/glimrende/laravel-booking/app",
+			"/home/gnimmelf/workspace/manifester/src.server",
+			"/home/gnimmelf/workspace/manifester",
+			"/home/gnimmelf/workspace/manifester/src.server",
+			"/home/gnimmelf/workspace/backups/manifester.cp(5)/src.server",
+			"/home/gnimmelf/workspace/manifester",
+			"/home/gnimmelf/workspace/manifester/src.server",
+			"/home/gnimmelf/workspace",
+			"/home/gnimmelf/workspace/manifester",
+			"/home/gnimmelf/workspace/defiant.js/src",
+			"/home/gnimmelf/workspace/manifester",
+			"/home/gnimmelf/workspace/manifester/src.server",
+			"/home/gnimmelf/workspace/manifester",
+			"/home/gnimmelf/workspace/manifester/system/schemas",
+			"/home/gnimmelf/workspace/manifester",
+			"/home/gnimmelf/workspace/manifester/gulp_tasks",
+			"/home/gnimmelf/workspace/manifester",
+			"/home/gnimmelf/workspace/manifester/src.server",
+			"/home/gnimmelf/workspace/manifester",
+			"/home/gnimmelf/workspace/manifester/node_modules",
+			"/home/gnimmelf/workspace/manifester/gulp_tasks",
+			"/home/gnimmelf/workspace/manifester/node_modules"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"url",
+			"debug",
+			"spoiler",
+			"debugParse",
+			"msg",
+			"message",
+			"alert",
+			"my-ui-components",
+			"myUi",
+			"myJsonschemaForm",
+			"reactstrap",
+			"react-jsonschema-form",
+			"'jsonschema-form'",
+			"ui-elements",
+			"Booking",
+			"submitHandler",
+			"User",
+			"user",
+			"Login",
+			"login",
+			"apiPath",
+			"booking",
+			"axios",
+			"makeAxiosResponseHandler",
+			"SCOPEDSTATE",
+			"items.checkout",
+			"domnode",
+			"enabledComponents",
+			"parentElm",
+			"state",
+			"domnode",
+			"actions",
+			"state",
+			"queryString",
+			"consol",
+			"conso",
+			"modalElm",
+			"currentProps",
+			"currentContentElm",
+			"{evtNS}",
+			"${evtNS}",
+			"$logo-path",
+			"floating-logo",
+			"CRUDBoosterServiceProvider",
+			"crocodicstudio\\crudbooster\\CRUDBoosterServiceProvider",
+			"Debian GNU/Linux installation notes",
+			"clear",
+			"checkoutHandler",
+			"console",
+			"attent",
+			"snabbt",
+			"Action",
+			"LoginController",
+			"snabbt",
+			"cartChannel",
+			"reverse",
+			"allRoutes",
+			"routes",
+			"body",
+			"booking-cart",
+			"widgets",
+			"accounting",
+			"moment",
+			"item.quantity.",
+			"cartChannel",
+			"items.checkout",
+			"check",
+			"item.add",
+			"$brand",
+			"modal2",
+			"flatten",
+			"flatten-deep",
+			"console",
+			"popStack",
+			"modalElm",
+			"__currentItem",
+			"__stack",
+			"observe",
+			"incremented",
+			"item.added",
+			"updateCartElement",
+			"orderSumTotalElm",
+			"updateCartElement",
+			"height",
+			"complete",
+			"hide",
+			"$custom-control-checked-indicator-bg",
+			"$custom-control-indicator-bg",
+			"custom-control",
+			"custom corntrol",
+			"btn-primary-bg",
+			"primary",
+			"navbar-inverse-colo",
+			"navbar",
+			"copyEvents",
+			"closeButton",
+			"stackModal",
+			"<td",
+			"td>",
+			"checkout.js",
+			"passth",
+			"makeBooking",
+			"cartItemData",
+			"selectedDate",
+			"passthrough",
+			"cartItemData",
+			"cart::item.quantity.decremented",
+			"passthrough",
+			"rxmq",
+			"channel",
+			"makeBoo",
+			"cartChannel",
+			"state.actions.",
+			"TODO!",
+			"updateCard",
+			"availableSlots",
+			"decrementAvailability",
+			"dateItem.availableSlots",
+			"state.actions",
+			"bookedTimeSlotId",
+			"Reservation",
+			"reseervation",
+			"booking",
+			"serviceId",
+			"cartItemsById",
+			" input-group-addon",
+			"div",
+			"console."
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": true,
+		"regex": false,
+		"replace_history":
+		[
+			"include",
+			"debugMv",
+			"Register",
+			"submit",
+			"account",
+			"user",
+			"app",
+			"backdropElm",
+			"modalProps",
+			"currentProps",
+			"{settings.evtNS}",
+			".${evtNS}",
+			"Handler",
+			"serverRoutes",
+			"routes",
+			"newModal",
+			"modal",
+			"currentModal",
+			"stack",
+			"updateCartHeaderElm",
+			"done",
+			"backButton",
+			"pushStack",
+			"<span",
+			"span>",
+			"reserveBooking",
+			"cartItem",
+			"Rxmq",
+			"selectedTimeSlotId",
+			"Booking",
+			"locationId",
+			"",
+			"span",
+			"checkout",
+			"subCompEml",
+			"updateTimeSlotCard",
+			"timeSlotId",
+			"parseTimeSlotItems",
+			"timeSlotItem",
+			"updateDateCard",
+			"actionCardsTpl",
+			"domnode",
+			"options",
+			"setDateCardEml",
+			"xx-card",
+			"translateY",
+			"togglerBoxElm",
+			"",
+			"routeComponents",
+			"locationsElm",
+			"componentKey",
+			"components",
+			"availableComponents",
+			"loadableComponents",
+			"routeComponents",
+			"node_modules",
+			"@import \"../node_modules/bootstrap/scss/",
+			"dateSlots",
+			"subCompElm",
+			"loadServiceAvailability",
+			"loadDatesByService",
+			"state",
+			"loadsDatesByService",
+			"loadsWeekByService",
+			"dates",
+			"loadsRoomlistbyService",
+			"pathPart",
+			"serviceId",
+			"Resolve",
+			"dbs",
+			"service",
+			"makeDotPath",
+			"dotPath",
+			"treePathPushCounts",
+			"updateTreePath",
+			"dotPropPath",
+			"deleteTreePath",
+			": {",
+			"",
+			"[Symbol.for",
+			")]: {",
+			"[Symbol.for",
+			"Symbol.for",
+			"",
+			"type",
+			"name",
+			"code",
+			"STATUS_MESSAGE",
+			"customError",
+			"tokenKeyName",
+			"email",
+			"",
+			"q_path",
+			"jp",
+			"",
+			"join",
+			"\"",
+			"const ",
+			"app_mountpath",
+			"js_main",
+			"pathMaps",
+			"pathMappings",
+			"dirMappings.",
+			"draft-04",
+			"{ catch(err) { console.error(err); return false;}",
+			"catch(err)",
+			"dirSrcServer",
+			"dirPublic",
+			"dirDistServer",
+			"dirSrcClient",
+			"dirDistClient",
+			"urlSrcClient",
+			"urlDistClient",
+			"siteInfo",
+			"hash_secret",
+			"users",
+			"\"",
+			"loginCode",
+			"user",
+			"mgt",
+			"mailgun",
+			"",
+			"const",
+			"dest",
+			"dest_dir",
+			"const",
+			"globals",
+			"rglobals"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 3,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/home/gnimmelf/workspace/holistiskskole.no/package.json",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1232,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								309,
+								309
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/home/gnimmelf/workspace/holistiskskole.no/content/site-settings.json",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1709,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1179,
+								1179
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/home/gnimmelf/workspace/holistiskskole.no/src.server/app.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6872,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5187,
+								5187
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Babel/JavaScript (Babel).sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2807.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/home/gnimmelf/workspace/holistiskskole.no/content/pages/om-oss.md",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 6781,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Markdown/Markdown.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/home/gnimmelf/workspace/holistiskskole.no/src.server/views/partials/contact-details.pug",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 318,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								45,
+								45
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Pug/Syntaxes/Pug.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 36.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "/home/gnimmelf/workspace/_sublime.projects/workspace.sublime-project",
+	"replace":
+	{
+		"height": 69.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"~/workspace/_sublime.projects/booking.glimrende.sublime-workspace"
+			]
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 301.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

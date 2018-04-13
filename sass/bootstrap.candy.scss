@@ -1,0 +1,70 @@
+// Knowledge
+// * https://hackerthemes.com/kit/
+@import "node_modules/bootstrap/scss/mixins";
+@import "node_modules/bootstrap/scss/functions";
+
+// Custom: Variables
+$primary: #b1eaed;
+$secondary: #ffafe6;
+$success: #6ae085;
+//$info:
+//$warning:
+$danger: #f5707d;
+//$light:
+//$dark:
+$card-cap-bg: #ffafe6;
+
+@import "node_modules/bootstrap/scss/variables";
+
+
+// Customization: Elements
+@each $color, $value in $theme-colors {
+  .btn-#{$color} {
+    $border: solid 1px darken($value, 20);
+    @include button-variant($value, $value);
+  }
+
+  .alert-#{$color} {
+    @include alert-variant(theme-color-level($color, -10),
+                           theme-color-level($color, -9),
+                           theme-color-level($color, 6));
+  }
+}
+
+// Bootstrap
+@import "node_modules/bootstrap/scss/bootstrap";
+
+// Custom: Styling (NO POSITIONING!)
+@import "custom-mixins";
+
+body {
+  @include seigaiha(#fff5fc);
+}
+
+.navbar {
+  @include gradient-x(lighten($primary, 20), lighten($secondary, 0), 0%, 50%);
+}
+
+.toast-container > div {
+  @include border-radius($alert-border-radius);
+}
+
+.scroll-port {
+  @include scrollbars($primary);
+  margin-top: 1rem;
+  border-top: 1px solid lighten($primary, 5);
+  padding-top: 1rem;
+}
+
+.slick-slider {
+  .slick-arrow {
+    &:before { color: $secondary!important; }
+  }
+  .slick-dots {
+    button:before { color: $secondary!important; }
+  }
+  .slick-slide {
+    background-color: lighten($card-cap-bg, 10);
+  }
+}
+

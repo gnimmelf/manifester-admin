@@ -1,0 +1,11 @@
+.dismiss-button {
+  position: absolute;
+  top: 8px;
+  right: 5px;
+  cursor: pointer;
+}
+
+.alert-content {
+  margin-right: 40px;
+  overflow-x: auto;
+}

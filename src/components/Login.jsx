@@ -1,16 +1,17 @@
 import _debug from "debug";
 import { connect } from "../state/RxState";
 import PropTypes from "prop-types";
-import Form from 'jsonschema-form';
-import { Button, ButtonGroup } from 'reactstrap';
-import loginActions from "../actions/loginActions";
+import Form from 'my-jsonschema-form';
+import { Nav, Link, Button, ButtonGroup } from 'my-ui-components';
 
-const debug = _debug("components:login")
+import app from '../css/app.css';
 
-export const schemas = {};
+import { loginActions } from "../actions";
 
-schemas.requestLoginCode = {
-  title: "Request Login Code",
+const debug = _debug("component:login")
+
+export const schema = {
+  title: "Logg inn",
   type: "object",
   required: ["email"],
   properties: {
@@ -19,49 +20,51 @@ schemas.requestLoginCode = {
       title: "E-mail address",
       format: "email",
     },
-  }
-};
-
-schemas.exchangeLoginCode = {
-  title: "Exchange Login Code",
-  type: "object",
-  required: ["code"],
-  properties: {
-    email: schemas.requestLoginCode.properties.email,
-    code: {
-      type: "number",
-      title: "Login Code",
+    password: {
+      type: "string",
+      title: "Password",
     },
   }
 };
 
+export const uiSchema =  {
+  password: {
+    "ui:widget": "password",
+  }
+};
+
+
 export const LoginForm = function(props) {
   debug("LOGINFORM.props", props)
-  return !props.schemaName ? Loading : (
-    <Form
-        schemaName={props.schemaName}
-        authPath={props.authPath}
-        schema={schemas[props.schemaName]}
-        formData={props.formData}
-        showErrorList={false}
-        errorSchema={props.errorSchema}
-        onSubmit={props.submit$}>
-      <ButtonGroup>
-        <Button onClick={props.reset$} id="reset">Reset</Button>
-        <Button color="primary" type="submit">Submit</Button>
-      </ButtonGroup>
-    </Form>
+
+  return (
+    <div styleName="app.dialog-container">
+      <Form
+          schema={schema}
+          uiSchema={uiSchema}
+          formData={props.formData}
+          errorSchema={props.errorSchema}
+          onSubmit={props.submit$}>
+        <ButtonGroup>
+          <Button onClick={props.reset$} id="reset">Reset</Button>
+          <Button color="primary" type="submit">Submit</Button>
+        </ButtonGroup>
+
+        <hr/>
+
+        <ButtonGroup styleName="app.link-row">
+          <Link href="/register">Opprett konto</Link>
+         </ButtonGroup>
+
+      </Form>
+
+    </div>
   )
 }
 
 LoginForm.propTypes = {
-  email: PropTypes.string,
-  code: PropTypes.number,
-  schemaName: PropTypes.string.required,
-  login$: PropTypes.func.isRequired,
+  submit$: PropTypes.func.isRequired,
   reset$: PropTypes.func.isRequired,
 };
-
-const Loading = (<div>Loading...</div>);
 
 export default connect(({ login }) => login, loginActions)(LoginForm);

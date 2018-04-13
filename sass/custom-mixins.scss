@@ -1,0 +1,32 @@
+
+@mixin scrollbars($foreground-color, $background-color: mix($foreground-color, white,  50%), $size: 10px, $radius: 5px) {
+  // http://webkit-scroll-gen.sourceforge.net/
+  &::-webkit-scrollbar {
+      width:  $size;
+      height: $size;
+  }
+
+  &::-webkit-scrollbar-thumb {
+      background: $foreground-color;
+      border-radius: $radius;
+  }
+
+  &::-webkit-scrollbar-track {
+      background: $background-color;
+      border-radius: $radius;
+  }
+  &::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}
+
+@mixin seigaiha($color-fg: #FAFAFA, $color-bg: $white, $width: 100px, $height: 50px) {
+  background-color: $color-fg;
+  background-image:
+    radial-gradient(circle at 100% 150%, $color-fg 24%, $color-bg 25%, $color-bg 28%, $color-fg 29%, $color-fg 36%, $color-bg 36%, $color-bg 40%, transparent 40%, transparent),
+    radial-gradient(circle at 0    150%, $color-fg 24%, $color-bg 25%, $color-bg 28%, $color-fg 29%, $color-fg 36%, $color-bg 36%, $color-bg 40%, transparent 40%, transparent),
+    radial-gradient(circle at 50%  100%, $color-bg 10%, $color-fg 11%, $color-fg 23%, $color-bg 24%, $color-bg 30%, $color-fg 31%, $color-fg 43%, $color-bg 44%, $color-bg 50%, $color-fg 51%, $color-fg 63%, $color-bg 64%, $color-bg 71%, transparent 71%, transparent),
+    radial-gradient(circle at 100% 50%, $color-bg 5%, $color-fg 6%, $color-fg 15%, $color-bg 16%, $color-bg 20%, $color-fg 21%, $color-fg 30%, $color-bg 31%, $color-bg 35%, $color-fg 36%, $color-fg 45%, $color-bg 46%, $color-bg 49%, transparent 50%, transparent),
+    radial-gradient(circle at 0    50%, $color-bg 5%, $color-fg 6%, $color-fg 15%, $color-bg 16%, $color-bg 20%, $color-fg 21%, $color-fg 30%, $color-bg 31%, $color-bg 35%, $color-fg 36%, $color-fg 45%, $color-bg 46%, $color-bg 49%, transparent 50%, transparent);
+  background-size: $width $height;
+}

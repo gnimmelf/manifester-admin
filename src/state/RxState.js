@@ -3,7 +3,8 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Observable, Subject } from "rxjs";
 
-const debug = _debug("RxState");
+const debug = _debug("rxstate");
+const debugComp = _debug("rxstate.component");
 
 // Knowledge:
 // http://rxfiddle.net/
@@ -21,52 +22,23 @@ export function createActions(actionNames) {
 
 export function createState(reducer$, initialState$=Observable.of({})) {
   const publisher$ = initialState$
-    .map(state => state instanceof Promise ? state : Promise.resolve(state))
     .merge(reducer$)
     .debug(debug, "> SCAN")
-    .scan((promisedState, [scope, reducer]) => {
-
-      debug("SCAN", promisedState, scope, reducer)
-
-      return promisedState.then(state => {
-
-        debug("STATE", state)
-
-        let promise,
-            reduced = reducer(state[scope]);
-
-        if (reduced instanceof Observable) {
-          reduced = reduced.toPromise()
-        }
-
-        debug("REDUCED", state, scope, reduced)
-
-        if (reduced instanceof Promise) {
-          promise = reduced.then(value => ({ ...state, [scope]: value }));
-        }
-        else {
-          promise = Promise.resolve({ ...state, [scope]: reduced });
-        }
-
-        return promise
-      });
-
-    })
-    .debug(debug, "STATE >")
-    .flatMap(promisedState => Observable.from(promisedState))
-    .debug(debug, "STATE >>")
+    .scan((state, [scope, reducer]) =>
+      ({ ...state, [scope]: reducer(state[scope]) }))
+    .debug(debug, ">> STATE")
     .publishReplay(1)
     .refCount();
 
     return publisher$;
 }
 
-export function connect(selector=(state)=>state, actionSubjects)
+export function connect(selector=(state)=>state, actionSubjects, hooks={})
 // The `selector` is meant to reduce the full app `state` into a customized state object for the component.
 {
   // Wrap each `actionSubject.next()` in anonymous function so it can be invoked by the action(-stream)-key
   const actions = Object.keys(actionSubjects)
-    .reduce((acc, key) => ({ ...acc, [key]: value => actionSubjects[key].next(value) }), {});
+    .reduce((acc, key) => ({ ...acc, [key]: (value) => actionSubjects[key].next(value) }), {});
 
   return function wrapWithConnect(WrappedComponent)
   /*
@@ -78,35 +50,37 @@ export function connect(selector=(state)=>state, actionSubjects)
         state$: PropTypes.object.isRequired,
       };
 
+      hook(eventName) {
+        if (hooks[eventName]) {
+          debugComp(`HOOK.${eventName} invoked!`, selector);
+          hooks[eventName]({...this.props, ...this.state, ...actions});
+        }
+      }
+
       componentWillMount() {
         // Use `selector` to filter app-state (`this.context.state$`), and set `this.state` for this component
         const self = this;
-        this.subscription = this.context.state$.map(selector).subscribe((scopedState) => {
-          debug("SCOPEDSTATE", scopedState);
-          self.setState(scopedState);
+        this.subscription = this.context.state$.map(selector).subscribe((componentState) => {
+          debugComp("COMPONENTSTATE", componentState);
+          self.setState(componentState);
         })
+        this.hook('componentWillMount');
       }
 
       componentWillUnmount() {
         this.subscription.unsubscribe();
+        this.hook('componentWillUnmount');
       }
 
       render() {
 
-        debug("RENDER.props", this.props)
-        debug("RENDER.state", this.state)
+        debugComp("RENDER.props", this.props)
+        debugComp("RENDER.state", this.state)
+        debugComp("RENDER.actions", actions)
 
-        const props = {
-          ...this.props, // `props` before `state`, then `actions`!
-          ...this.state,
-          ...actions
-        }
-
-        debug("WRAPPEDCOMPONENT.props", props)
-
-        return (
-          <WrappedComponent {...props} />
-        );
+        // Apply everything as `props`:  `props` before `state`, then `actions`!
+        const props = {...this.props, ...this.state, ...actions};
+        return (<WrappedComponent {...props} />);
       }
     };
   };
@@ -135,6 +109,8 @@ It ensures that the `state$` is provided as a context on all children.
   }
 }
 
+
+// TODO! This shouldn't be here!
 Observable.prototype.debug = function (debugInstance, ...rest) {
     return this.do(
         function (next) {

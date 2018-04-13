@@ -9,11 +9,10 @@ import omit from 'object.omit';
 
 const debug = _debug("lib:Form")
 
-export default class Form extends reactJsonschemaForm {
+console.log("class Form extends reactJsonschemaForm")
+
+class Form extends reactJsonschemaForm {
   constructor(props){
-
-    console.log("class Form extends reactJsonschemaForm")
-
     super(props);
   }
 
@@ -67,6 +66,7 @@ export default class Form extends reactJsonschemaForm {
     );
 
     return {
+      ...additionalProps,
       schema,
       uiSchema,
       idSchema,
@@ -74,23 +74,36 @@ export default class Form extends reactJsonschemaForm {
       edit,
       errors,
       errorSchema,
-      additionalProps,
     };
   }
 
 }
 
-export const addSchemaError = (schema, key, ...errors) => {
-  const errorsKey = key+'.__errors';
+// Export a wrapper function aound `Form` to overrride defaults.
+export default ({showErrorList=false, children, ...props}) => {
+  return React.createElement(Form, {showErrorList: showErrorList, ...props}, children);
+}
 
-  const value = Array.from(new Set(dotProp.get(schema, errorsKey, []).concat(errors)));
+export const addSchemaError = (errorSchema, keys, ...errors) => {
 
-  const newSchema = { ...schema };
+  let errorsKey,
+      prevErrors,
+      nextErrors;
 
-  dotProp.set(newSchema, errorsKey, value);
+  const newSchema = (keys instanceof Array ? keys : [keys]).reduce((schema, key) => {
+    errorsKey = key+'.__errors';
+
+    // Flatten
+    prevErrors = [].concat(...errors, ...dotProp.get(schema, errorsKey, []))
+
+    // Remove duplicates
+    nextErrors = Array.from(new Set(prevErrors));
+
+    dotProp.set(schema, errorsKey, nextErrors);
+    return schema;
+  }, {...errorSchema})
 
   return newSchema;
-
 }
 
 export const toErrorList = (errorSchema, fieldName = "root") =>

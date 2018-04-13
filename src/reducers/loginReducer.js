@@ -1,85 +1,55 @@
 import _debug from "debug";
-import { Observable } from "rxjs";
-import axios from "axios";
-import { addSchemaError } from 'jsonschema-form';
-import loginActions from "../actions/loginActions";
-import settings from "../lib/settings"
+import { Observable, Subject } from "rxjs";
+import { addSchemaError } from 'my-jsonschema-form';
+import { toast } from "my-ui-components";
+import history from "my-history-singleton";
+import {
+  axios,
+  makeAxiosResponseHandler,
+  autoReduce,
+  parseUrlSearchString,
+ } from "../lib/utils";
 
-const debug = _debug("reducers:loginReducer")
+import settings, { reverseRoute } from "../lib/settings";
+
+import {
+  loginActions,
+  authenticate,
+  redirect
+} from "../actions";
+
+const debug = _debug("reducers:loginreducer")
 
 const initialState = {
-  schemaName: 'requestLoginCode',
-  formData: {},
+  formData: {
+    email: 'flemming@glimrende.no',
+    password: 'Glimrende',
+  },
   errorSchema: {},
 };
 
-const LoginReducer$ = Observable.of(() => initialState)
+export const doLogin$ = new Subject()
+  .flatMap(({formData}) => axios.post(reverseRoute('do.login'), formData))
+  .map(makeAxiosResponseHandler({
+      200: (res) => {
+        authenticate();
+        redirect(parseUrlSearchString(history.location.search)['redirect'] || '/', 'Logged in!');
+        return initialState;
+      },
+      403: (res) => toast.warn(res.data.msg)
+    }))
+
+export default Observable.of(() => initialState)
   .merge(
+
+    autoReduce(doLogin$),
+
     loginActions.submit$
-      .debug(debug)
-      .map(payload => state => submitHandler(payload, state)),
+      .do((payload) => doLogin$.next({formData: payload.formData}))
+      .debug(debug, "SUBMIT")
+      .map(payload => state => ({
+        formData: payload.formData,
+      })),
+
     loginActions.reset$.map(_payload => _state => initialState),
   );
-
-export default LoginReducer$;
-
-function submitHandler(payload, state) {
-  debug("submitHandler", payload, state)
-  return handlers[state.schemaName](payload, state);
-}
-
-const handlers = {
-  requestLoginCode: (payload, state) => {
-    return axios.post(`${settings.authPath}request`, {
-      email: payload.formData.email,
-    })
-    .then(res => res.data)
-    .then(res => {
-
-      if (res.status == 'success') {
-        state = {
-          ...state,
-          formData: payload.formData,
-          schemaName: 'exchangeLoginCode',
-          errorSchema: {},
-        }
-      }
-      else {
-        state = {
-          ...state,
-          formData: payload.formData,
-          errorSchema: addSchemaError(payload.errorSchema, 'email', res.data.message),
-        }
-      }
-
-      debug(res.status.toUpperCase(), state)
-      return state;
-    })
-    .catch(err => {
-      console.log(err)
-    })
-  },
-  exchangeLoginCode: (payload, state) => {
-    return axios.post(`${settings.authPath}exchange`, {
-      email: payload.formData.email,
-      code: payload.formData.code,
-    })
-    .then(res => res.data)
-    .then(res => {
-
-      if (res.status == 'success') {
-        return window.location = new URL(window.location).searchParams.get('origin') || '/';
-      }
-      else {
-        return {
-          ...state,
-          formData: payload.formData,
-          errorSchema: addSchemaError(payload.errorSchema, 'code', res.data.message),
-        }
-      }
-    })
-    .catch(err => {
-      console.log(err)
-    })
-  },
-}

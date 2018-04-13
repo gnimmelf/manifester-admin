@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import ini from 'ini';
 // rollup.config.js
 import builtins from 'rollup-plugin-node-builtins';
 import globals from 'rollup-plugin-node-globals';
@@ -21,11 +22,17 @@ import lost from 'lost';
 import to from 'to-case';
 
 /* NOTE!
-Be sure to up ulimit on the system for --watch!
-1) echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+Be sure to up `ulimit` on the system for --watch!
+1) $: "echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p"
 If 1) doesn't work:
 2) https://underyx.me/2015/05/18/raising-the-maximum-number-of-file-descriptors
 */
+
+// `.env`-setttings
+const envFilePath = path.join(__dirname, '.env');
+const DOT_ENV_SETTINGS = ini.parse(fs.existsSync(envFilePath) ? fs.readFileSync(envFilePath, 'utf8') : '');
+
+console.log('DOT_ENV_SETTINGS', envFilePath, DOT_ENV_SETTINGS)
 
 const fileCopy = function (options) {
   return {
@@ -43,7 +50,11 @@ const ENV = process.env.NODE_ENV || process.env.ENV || 'development';
 const BUNDLE = process.env.BUNDLE;
 
 const plugins = [
-  fileCopy({src:  './spa.html', targ: './dist/spa.html'}),
+  fileCopy({src:  './index.html', targ: './dist/index.html'}),
+  replace({
+    'process.env.ENV': JSON.stringify(ENV),
+    'process.env.DOT_ENV_SETTINGS': JSON.stringify(DOT_ENV_SETTINGS),
+  }),
   resolve({
     jsnext: true,
     main: true,
@@ -82,9 +93,6 @@ const plugins = [
       '../react-jsonschema-form/**'
     ]
   }),
-  replace({
-    'process.env.NODE_ENV': JSON.stringify(ENV)
-  }),
   (ENV.startsWith('prod') ? uglify({}, esMinifier) : ()=>{}),
 ];
 
@@ -92,9 +100,13 @@ const externals = {
   "react": "React",
   "react-dom": "ReactDOM",
   "prop-types": "PropTypes",
-  "reactstrap": "Reactstrap",
   "react-router-dom": "ReactRouterDOM",
-  "jsonschema-form": "jsonschemaForm",
+  "reactstrap": "Reactstrap", // TODO! This should just be bundled into `my-ui-components` (But that failed, so needs research!)
+  // My bundles
+  "my-jsonschema-form": "MyJsonschemaForm",
+  "my-ui-components": "MyUiComponents",
+  "my-history-singleton": "MyHistorySingleton",
+  "my-accounting": "MyAccounting",
 };
 
 const defaultOptions = {
@@ -102,9 +114,27 @@ const defaultOptions = {
 };
 
 const bundles = [
-  'login',
-  'admin',
-  ['jsonschema-form', {
+  ['app', { input: 'src/index.js' }],
+  ['my-jsonschema-form', {
+    input: 'custom-bundles/my-jsonschema-form/index.js',
+    output: {
+      exports: 'named',
+    }
+  }],
+  ['my-ui-components', {
+    input: 'custom-bundles/my-ui-components/index.js',
+    output: {
+      exports: 'named',
+    }
+  }],
+  ['my-history-singleton', {
+    input: 'custom-bundles/my-history-singleton.js',
+    output: {
+      exports: 'named',
+    }
+  }],
+  ['my-accounting', {
+    input: 'custom-bundles/my-accounting/index.js',
     output: {
       exports: 'named',
     }
@@ -112,26 +142,28 @@ const bundles = [
 ];
 
 export default bundles
-  .map((bundle) => bundle instanceof Array ? bundle : [bundle])
-  .map(([sourcePath, options={}]) => ({
-    sourcePath: sourcePath,
+  .map(([name, options={}]) => ({
+    name: name,
     options: options,
   }))
-  .filter(bundle => !BUNDLE || BUNDLE == bundle.sourcePath)
+  .filter(bundle => !BUNDLE || BUNDLE == bundle.name)
   .map(bundle => {
 
     const output = Object.assign({
-      file: `dist/${to.slug(bundle.sourcePath)}.js`,
-      format: 'iife',
-      name: to.camel(bundle.sourcePath),
-      sourcemap: true,
+      // Non-overridables
       globals: externals,
-    }, bundle.options.output || {});
+      format: 'iife',
+    }, bundle.options.output || {}, {
+      // Overridables
+      name: to.pascal(bundle.name),
+      file: `dist/js/${to.slug(bundle.name)}.js`,
+      sourcemap: true,
+    });
 
-    console.log(`BUNDLE: ${bundle.sourcePath} =>`, output)
+    console.log(`BUNDLE "${bundle.name}": ${bundle.options.input} => ${output.file}:\n`, output)
 
     return {
-      input: `src/${bundle.sourcePath}.js`,
+      input: bundle.options.input,
       plugins: plugins,
       external: Object.keys(externals),
       output: output,

@@ -31,7 +31,11 @@ bower_components
 npm-debug.log
 
 # Dist directories for builds
-dist
+#dist
+
+# Settings override file from environment
+/.env
+
 
 # Swap files
 **/*.swp
