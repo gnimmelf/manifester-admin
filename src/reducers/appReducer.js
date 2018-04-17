@@ -27,24 +27,12 @@ const initialState = {
   location: undefined,
 };
 
-export const preFetchRoutes$ = Observable.from(axios.get(normalizeUrl(settings.remote.host+'/api/routes.json')))
-  .map(makeAxiosResponseHandler({
-      200: (res) => res.data
-    }))
-  .map(data => {
-    settings.remote.routes = data;
-    return {
-      status: 'INITIALIZED',
-    }
-  })
-  .take(1);
-
 export const fetchCurrentUser$ = new Subject()
   .debug(debug, "FETCHCURRENTUSER")
   .flatMap(() => axios.get(reverseRoute('current-user')))
   .map(makeAxiosResponseHandler({
-      200: (res) => res.data.data,
-      403: (res) => false,
+      200: (data) => data,
+      401: (data) => false,
     }))
   .map(data => ({
     user: data,
@@ -54,7 +42,6 @@ export default Observable.of(() => initialState)
   .merge(
 
     autoReduce(
-      preFetchRoutes$,
       fetchCurrentUser$,
       appActions.authenticate$
         .debug(debug, "AUTHENTICATE")

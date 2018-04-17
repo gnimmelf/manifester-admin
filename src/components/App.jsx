@@ -26,9 +26,6 @@ const router = (props) => {
     case 'login':
       return Login;
 
-    case 'register':
-      return Register;
-
     default:
       return restrict(Account);
   }
@@ -40,34 +37,26 @@ export const App = (props) => {
 
     <With status={props.status} Page={router(props)}>
 
-      <If condition={status!='INITIALIZED'}>
-        <Loading />
-      </If>
+      <div styleName="appCss.app-container">
 
-      <If condition={status=='INITIALIZED'}>
+        <header styleName="appCss.header-container">
+          <NavTop {...props} />
+        </header>
 
-        <div styleName="appCss.app-container">
+        <div styleName="appCss.page-container">
 
-          <header styleName="appCss.header-container">
-            <NavTop {...props} />
-          </header>
-
-          <div styleName="appCss.page-container">
-
-            <div styleName="appCss.flash-container">
-              <FlashMessage  />
-            </div>
-
-            <Page />
-
+          <div styleName="appCss.flash-container">
+            <FlashMessage  />
           </div>
+
+          <Page />
 
         </div>
 
-      </If>
+      </div>
 
     </With>
   )
 }
 
-export default connect(({app}) => app, appActions)(App);
+export default connect(({app, account}) => app, appActions)(App);

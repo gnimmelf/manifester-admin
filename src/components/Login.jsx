@@ -10,22 +10,32 @@ import { loginActions } from "../actions";
 
 const debug = _debug("component:login")
 
-export const schema = {
-  title: "Logg inn",
-  type: "object",
-  required: ["email"],
-  properties: {
-    email: {
-      type: "string",
-      title: "E-mail address",
-      format: "email",
-    },
-    password: {
-      type: "string",
-      title: "Password",
-    },
+export const schemas = [
+  {
+    title: "Request a logincode by email",
+    type: "object",
+    required: ["email"],
+    properties: {
+      email: {
+        type: "string",
+        title: "E-mail address",
+        format: "email",
+      }
+    }
+  },
+  {
+    title: "Autheticate logincode",
+    type: "object",
+    required: ["code"],
+    properties: {
+      code: {
+        type: "number",
+        title: "Logincode",
+      },
+
+    }
   }
-};
+];
 
 export const uiSchema =  {
   password: {
@@ -36,6 +46,8 @@ export const uiSchema =  {
 
 export const LoginForm = function(props) {
   debug("LOGINFORM.props", props)
+
+  const schema = schemas[props.stepIdx];
 
   return (
     <div styleName="app.dialog-container">

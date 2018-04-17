@@ -17,8 +17,8 @@ const initialState = {
   errors: [],
 };
 
-// TODO! Pipe everything? -But need the `formData` as "context" all the way through...
-const getUpdateRequest$ = (payload) =>
+export const getUpdateRequest$ = (payload) =>
+  // TODO! Pipe everything? -But need the `formData` as "context" all the way through...
   Observable.from(axios.post(reverseRoute('do.edit'), payload.formData))
     .map(makeAxiosResponseHandler({
       200: (res) => {

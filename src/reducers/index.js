@@ -16,8 +16,8 @@ const rootReducer$ = Observable.merge(
   navTopReducer$.map(reducer => ["navTop", reducer]),
   flashMessageReducer$.map(reducer => ["flashMessage", reducer]),
   accountReducer$.map(reducer => ["account", reducer]),
-  bookingReducer$.map(reducer => ["booking", reducer]),
-  cartReducer$.map(reducer => ["cart", reducer]),
+  //bookingReducer$.map(reducer => ["booking", reducer]),
+  //cartReducer$.map(reducer => ["cart", reducer]),
 );
 
 export default rootReducer$;

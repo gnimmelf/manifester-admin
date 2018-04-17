@@ -24,14 +24,9 @@ export {
 
 // Expose wrapper functions for often-used actions.
 
-export const flash = {
-  // NOTE! Use `toast` instead...
-  push: (message, status) => (message && flashMessageActions.push$.next({content: message, status:status})),
-  pop: () => flashMessageActions.pop$.next('*'),
-  clear: (message, status) => {
-    flashMessageActions.clear$.next('*');
-    (message && flashMessageActions.push$.next({content: message, status:status}));
-  },
+export const flash = (message, status) => {
+  flashMessageActions.clear$.next('*');
+  (message && flashMessageActions.push$.next({content: message, status:status}));
 }
 
 const HISTORY_ACTIONS = ['PUSH', 'REPLACE']

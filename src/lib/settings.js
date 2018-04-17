@@ -6,7 +6,11 @@ import { getCookie } from './utils';
 const settings = deepAssign({
   remote: {
     host: "",
-    routes: undefined,
+    routes: {
+      "current-user": "/api/user/current",
+      "do.requestCodeByEmail": "/api/auth/request",
+      "do.exchangeLoginCode2Token": "/api/auth/exchange",
+    },
   },
   ui: {
     toast: {
@@ -17,10 +21,9 @@ const settings = deepAssign({
 }, process.env.DOT_ENV_SETTINGS);
 
 export const reverseRoute = (routeName, ...params) => {
-  console.assert(settings.remote.routes, `"settings.remote.routes" not loaded for "${routeName}"!`);
-  const route = settings.remote.routes[routeName]
-  console.assert(route, 'Route not found: '+routeName);
+  console.assert(settings.remote.routes, `"settings.remote.routes" not loaded!`);
 
+  const route = settings.remote.routes[routeName]
   let parsedPathname;
 
   if (params.length == 1 && !~['string', 'number'].indexOf(typeof params[0])) {
@@ -32,8 +35,12 @@ export const reverseRoute = (routeName, ...params) => {
     // `params` is an array of values, so use "as-is" and replace sequentially for each pair of curlybrackets `{<whatever>}` in route
     parsedPathname =  params.reduce((route, param) => route.replace(/[{].*?[}]/, param), route)
   }
-  console.assert(!parsedPathname.includes('{'), 'Not all params filled: '+parsedPathname);
-  return normalizeUrl(settings.remote.host + '/'+parsedPathname);
+
+  if (parsedPathname) {
+    console.assert(!parsedPathname.includes('{'), 'Not all params filled: '+parsedPathname);
+    return normalizeUrl(settings.remote.host + '/'+parsedPathname);
+  }
+  else throw new Error('Route not found: '+routeName)
 }
 
 export default settings;

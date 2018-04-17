@@ -15,41 +15,64 @@ import settings, { reverseRoute } from "../lib/settings";
 import {
   loginActions,
   authenticate,
-  redirect
+  redirect,
+  flash,
 } from "../actions";
 
 const debug = _debug("reducers:loginreducer")
 
 const initialState = {
+  stepIdx: 0,
   formData: {
-    email: 'flemming@glimrende.no',
-    password: 'Glimrende',
+    email: 'gnimmelf@gmail.com',
   },
   errorSchema: {},
 };
 
-export const doLogin$ = new Subject()
-  .flatMap(({formData}) => axios.post(reverseRoute('do.login'), formData))
+export const requestCodeByEmail$ = new Subject()
+  .flatMap(({formData}) => axios.post(reverseRoute('do.requestCodeByEmail'), formData))
   .map(makeAxiosResponseHandler({
-      200: (res) => {
+      200: (data) => {
+        flash(`We have sent you an email with a logincode. Please copy and paste it below to log in.`)
+        return { stepIdx: 1 };
+      },
+      422: (data) => toast.warn(data.msg)
+    }))
+
+export const exchangeLoginCode2Token$ = new Subject()
+  .flatMap(({formData}) => axios.post(reverseRoute('do.exchangeLoginCode2Token'), formData))
+  .map(makeAxiosResponseHandler({
+      200: (data) => {
         authenticate();
         redirect(parseUrlSearchString(history.location.search)['redirect'] || '/', 'Logged in!');
         return initialState;
       },
-      403: (res) => toast.warn(res.data.msg)
+      422: (data) => toast.warn(data.msg)
     }))
 
 export default Observable.of(() => initialState)
   .merge(
 
-    autoReduce(doLogin$),
+    autoReduce(
+      requestCodeByEmail$,
+      exchangeLoginCode2Token$,
+    ),
 
     loginActions.submit$
-      .do((payload) => doLogin$.next({formData: payload.formData}))
-      .debug(debug, "SUBMIT")
-      .map(payload => state => ({
-        formData: payload.formData,
-      })),
+      .map(payload => state => {
+        switch (state.stepIdx) {
+          case 0:
+            requestCodeByEmail$.next({formData: payload.formData});
+            break;
+          case 1:
+            exchangeLoginCode2Token$.next({formData: payload.formData})
+            break;
+        };
+        return {
+          ...state,
+          formData: payload.formData,
+        };
+      }),
 
     loginActions.reset$.map(_payload => _state => initialState),
   );

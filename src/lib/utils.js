@@ -2,7 +2,8 @@ import Axios from "axios";
 import objectOmit from "object.omit";
 import filterObj from "filter-obj";
 import { Observable, pipe } from "rxjs";
-import { flash } from "../actions";
+
+export { default as makeAxiosResponseHandler } from './makeAxiosResponseHandler';
 
 // Custom axios instance
 export const axios = Axios.create({
@@ -14,24 +15,6 @@ export const objOmit = (obj, ...keys) => objectOmit(obj, keys);
 export const objExtract = (obj, ...keys) => filterObj(obj, keys);
 
 export const getCssRootVar = (varName) => getComputedStyle(document.body).getPropertyValue(varName);
-
-export const makeAxiosResponseHandler = (statusHandlers={}, defaultHandler) => {
-
-  defaultHandler = defaultHandler || ((res) => flash.push(`${res.status} - ${res.statusText} @${res.request.responseURL}`, 'danger'));
-
-  const handlers = Object.keys(statusHandlers).reduce((handlers, key) => {
-    handlers[parseInt(key)] = statusHandlers[key];
-    return handlers;
-  }, {});
-
-  return (response) => {
-
-    const status = parseInt(response.status);
-    const handler = typeof handlers[status] == 'function' ? handlers[status] : defaultHandler;
-
-    return handler(response);
-  }
-}
 
 export const getCookie = (name) => {
   var value = "; " + document.cookie;
