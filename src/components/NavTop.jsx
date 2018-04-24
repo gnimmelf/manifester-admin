@@ -75,9 +75,7 @@ const NavTop = (props) => {
   debug("NAVTOP.props", props);
   return (
     <Navbar color="faded" light expand="md" styleName="navTopCss.nav-bar">
-      <NavbarBrand href="/">Timebooking</NavbarBrand>
-
-      <NavLink href="/cart"><Fa icon="shopping-cart" /></NavLink>
+      <NavbarBrand href="/">Manifester</NavbarBrand>
 
       <NavbarToggler onClick={() => props.navbarToggler$('TOGGLE')} />
       <Collapse isOpen={props.navbarIsOpen} navbar>

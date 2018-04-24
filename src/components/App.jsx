@@ -26,11 +26,11 @@ const router = (props) => {
   const restrict = (com) => (props.user ? com : Login);
 
   switch (props.location.parts[0]) {
-    case 'login':
-      return restrict(Schemas);
+    case 'account':
+      return restrict(Account);
 
     default:
-      return restrict(Account);
+      return restrict(Cms);
   }
 }
 

@@ -44,6 +44,7 @@ export const exchangeLoginCode2Token$ = new Subject()
   .map(makeAxiosResponseHandler({
       200: (data) => {
         authenticate();
+        flash();
         redirect(parseUrlSearchString(history.location.search)['redirect'] || '/', 'Logged in!');
         return initialState;
       },

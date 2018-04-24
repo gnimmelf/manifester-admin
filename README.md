@@ -15,7 +15,7 @@
   * http://www.material-ui.com
 * https://greensock.com/
 
-## Knowloedge/documentation
+## Knowledge/documentation
 
 * https://github.com/json-schema-form/json-schema-form/wiki/Documentation
 
