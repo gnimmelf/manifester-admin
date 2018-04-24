@@ -36235,9 +36235,11 @@ var settings = deepAssign({
   remote: {
     host: "",
     routes: {
+      "schemas": "/api/schemas", // START HERE! Figure out how to load the schemas!
       "current-user": "/api/user/current",
       "do.requestCodeByEmail": "/api/auth/request",
-      "do.exchangeLoginCode2Token": "/api/auth/exchange"
+      "do.exchangeLoginCode2Token": "/api/auth/exchange",
+      "logout": "/api/auth/logout"
     }
   },
   ui: {
@@ -36512,7 +36514,7 @@ var appReducer$ = Observable$1.of(function () {
     });
   };
 }), appActions.logout$.do(function () {
-  return axios$2.post(reverseRoute('do.logout'));
+  return axios$2.post(reverseRoute('logout'));
 }).do(function () {
   return redirect('/', 'Logged out!');
 }).map(function (_payload) {
@@ -38167,11 +38169,11 @@ var schema = {
   title: "Konto",
   type: "object",
   properties: {
-    firstname: {
+    firstName: {
       type: "string",
       title: "Fornavn"
     },
-    lastname: {
+    lastName: {
       type: "string",
       title: "Etternavn"
     },
@@ -38183,19 +38185,7 @@ var schema = {
     mobile: {
       type: "string",
       title: "Telefon/mobil"
-    },
-    password: {
-      type: "string",
-      title: "Nytt passord"
-
     }
-  }
-};
-
-var uiSchema$1 = {
-  password: {
-    "ui:widget": "password",
-    "ui:help": "Om du vil endre passordet ditt, tast inn et nytt her."
   }
 };
 
@@ -38208,7 +38198,6 @@ var AccountForm = function AccountForm(props) {
       Form__default,
       {
         schema: schema,
-        uiSchema: uiSchema$1,
         formData: props.formData,
         errorSchema: props.errorSchema,
         onSubmit: props.submit$ },
@@ -38279,7 +38268,7 @@ var schema$1 = {
 
 schema$1.required = Object.keys(schema$1.properties);
 
-var uiSchema$2 = {
+var uiSchema$1 = {
   mobile: {
     "ui:help": "Merk! Krever smart-telefon med Vipps-app installert for betaling."
   },
@@ -38300,7 +38289,7 @@ var RegisterForm = function RegisterForm(props) {
       Form__default,
       {
         schema: schema$1,
-        uiSchema: uiSchema$2,
+        uiSchema: uiSchema$1,
         formData: props.formData,
         errorSchema: props.errorSchema,
         onSubmit: props.submit$ },

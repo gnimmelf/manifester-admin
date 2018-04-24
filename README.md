@@ -9,10 +9,13 @@
 * RxJs
   - State
 
-## Material UI
+## Alternatives
 
-Switch from Bootstrap to Material UI?
+* Material UI - Switch from Bootstrap to Material UI?
+  * http://www.material-ui.com
+* https://greensock.com/
 
-* http://www.material-ui.com
+## Knowloedge/documentation
+
 * https://github.com/json-schema-form/json-schema-form/wiki/Documentation
 

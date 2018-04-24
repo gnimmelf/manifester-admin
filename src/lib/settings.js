@@ -7,9 +7,11 @@ const settings = deepAssign({
   remote: {
     host: "",
     routes: {
+      "schemas": "/api/schemas", // START HERE! Figure out how to load the schemas!
       "current-user": "/api/user/current",
       "do.requestCodeByEmail": "/api/auth/request",
       "do.exchangeLoginCode2Token": "/api/auth/exchange",
+      "logout": "/api/auth/logout",
     },
   },
   ui: {

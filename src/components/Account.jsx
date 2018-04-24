@@ -15,11 +15,11 @@ export const schema = {
   title: "Konto",
   type: "object",
   properties: {
-    firstname: {
+    firstName: {
       type: "string",
       title: "Fornavn",
     },
-    lastname: {
+    lastName: {
       type: "string",
       title: "Etternavn",
     },
@@ -32,20 +32,8 @@ export const schema = {
       type: "string",
       title: "Telefon/mobil",
     },
-    password: {
-      type: "string",
-      title: "Nytt passord",
-
-    },
   }
 };
-
-export const uiSchema =  {
-  password: {
-    "ui:widget": "password",
-    "ui:help": "Om du vil endre passordet ditt, tast inn et nytt her."
-  },
-}
 
 export const AccountForm = function(props) {
   debug("ACCOUNTFORM.props", props)
@@ -54,7 +42,6 @@ export const AccountForm = function(props) {
     <div styleName="appCss.form-container">
       <Form
           schema={schema}
-          uiSchema={uiSchema}
           formData={props.formData}
           errorSchema={props.errorSchema}
           onSubmit={props.submit$}>

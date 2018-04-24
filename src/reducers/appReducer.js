@@ -61,7 +61,7 @@ export default Observable.of(() => initialState)
       })),
 
     appActions.logout$
-      .do(() => axios.post(reverseRoute('do.logout')))
+      .do(() => axios.post(reverseRoute('logout')))
       .do(() => redirect('/', 'Logged out!'))
       .map(_payload =>  state => ({
         ...state,
