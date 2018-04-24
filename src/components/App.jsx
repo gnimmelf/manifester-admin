@@ -6,10 +6,13 @@ import { appActions } from "../actions";
 
 import Loading from './Loading.jsx';
 import Login from './Login.jsx';
-import Account from './Account.jsx';
-import Register from './Register.jsx';
 import NavTop from './NavTop.jsx';
 import FlashMessage from './FlashMessage.jsx';
+
+import Account from './Account.jsx';
+import Cms from './Cms.jsx';
+
+
 
 import utilCss from '../css/util.css';
 import appCss from '../css/app.css';
@@ -24,7 +27,7 @@ const router = (props) => {
 
   switch (props.location.parts[0]) {
     case 'login':
-      return Login;
+      return restrict(Schemas);
 
     default:
       return restrict(Account);

@@ -64,14 +64,6 @@ export const NavItems = (props) => {
             </With>
           </With>
 
-          <With url={'/register'}>
-            <With isActive={url==location}>
-              <NavItem active={isActive}>
-                <NavLink active={isActive} href={url}>Opprett konto</NavLink>
-              </NavItem>
-            </With>
-          </With>
-
         </Otherwise>
 
       </Choose>

@@ -62,12 +62,6 @@ export const LoginForm = function(props) {
           <Button color="primary" type="submit">Submit</Button>
         </ButtonGroup>
 
-        <hr/>
-
-        <ButtonGroup styleName="app.link-row">
-          <Link href="/register">Opprett konto</Link>
-         </ButtonGroup>
-
       </Form>
 
     </div>
