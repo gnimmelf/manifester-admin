@@ -28,7 +28,7 @@ export const schema = {
       title: "E-mail address",
       format: "email",
     },
-    mobile: {
+    cellPhoneNo: {
       type: "string",
       title: "Telefon/mobil",
     },
@@ -53,11 +53,6 @@ export const AccountForm = function(props) {
     </div>
   )
 }
-
-AccountForm.propTypes = {
-  submit$: PropTypes.func.isRequired,
-  reset$: PropTypes.func.isRequired,
-};
 
 export default connect(({ account, app }) => ({
   formData: app.user, // <-- This first, very important

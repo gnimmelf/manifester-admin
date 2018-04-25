@@ -1,25 +1,20 @@
 // http://jamesknelson.com/re-exporting-es6-modules/
 import history from "my-history-singleton";
 import appActions from "./appActions";
+import cmsActions from "./cmsActions";
 import accountActions from "./accountActions";
-import bookingActions from "./bookingActions";
 import flashMessageActions from "./flashMessageActions";
 import loginActions from "./loginActions";
 import navTopActions from "./navTopActions";
-import registerActions from "./registerActions";
-import cartActions from "./cartActions";
 
 // Re-export
-
 export {
   accountActions,
   appActions,
-  bookingActions,
   flashMessageActions,
   loginActions,
   navTopActions,
-  registerActions,
-  cartActions,
+  cmsActions,
 };
 
 // Expose wrapper functions for often-used actions.

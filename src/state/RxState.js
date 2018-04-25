@@ -11,6 +11,7 @@ const debugComp = _debug("rxstate.component");
 // https://github.com/MichalZalecki/connect-rxjs-to-react/blob/master/src/state/RxState.js
 // http://natpryce.com/articles/000814.html
 // https://www.gitbook.com/book/btroncone/learn-rxjs/details
+// https://medium.com/@baphemot/understanding-reactjs-component-life-cycle-823a640b3e8d
 
 export function createAction() {
   return new Subject();
@@ -50,11 +51,15 @@ export function connect(selector=(state)=>state, actionSubjects, hooks={})
         state$: PropTypes.object.isRequired,
       };
 
-      hook(eventName) {
+      hook(eventName, ...rest) {
         if (hooks[eventName]) {
           debugComp(`HOOK.${eventName} invoked!`, selector);
           hooks[eventName]({...this.props, ...this.state, ...actions});
         }
+      }
+
+      componentDidMount() {
+        this.hook('componentDidMount');
       }
 
       componentWillMount() {
@@ -64,7 +69,6 @@ export function connect(selector=(state)=>state, actionSubjects, hooks={})
           debugComp("COMPONENTSTATE", componentState);
           self.setState(componentState);
         })
-        this.hook('componentWillMount');
       }
 
       componentWillUnmount() {

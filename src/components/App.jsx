@@ -33,7 +33,7 @@ export const App = (props) => {
   debug("APP.props", props)
   return (
 
-    <With status={props.status} Page={router(props)}>
+    <With Page={router(props)}>
 
       <div styleName="appCss.app-container">
 

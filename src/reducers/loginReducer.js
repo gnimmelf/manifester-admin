@@ -28,14 +28,14 @@ const initialState = {
 };
 
 export const requestCodeByEmail$ = new Subject()
-  .flatMap(({formData}) => xhr('do.requestCodeByEmail')(formData))
+  .flatMap(({formData}) => xhr('do.auth:requestCodeByEmail')(formData))
   .map(xhrHandler({
       200: (data) => ({ stepIdx: 1 }),
       422: (data) => toast.warn(data.msg)
     }))
 
 export const exchangeLoginCode2Token$ = new Subject()
-  .flatMap(({formData}) => xhr('do.exchangeLoginCode2Token')(formData))
+  .flatMap(({formData}) => xhr('do.auth:exchangeLoginCode2Token')(formData))
   .map(xhrHandler({
       200: (data) => {
         authenticate();

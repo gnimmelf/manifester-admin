@@ -22,20 +22,19 @@ import history$ from '../lib/history$';
 const debug = _debug("reducers:appreducer")
 
 const initialState = {
-  status: 'START',
   user: undefined,
   location: undefined,
 };
 
 export const fetchCurrentUser$ = new Subject()
   .debug(debug, "FETCHCURRENTUSER")
-  .flatMap(() => xhr('current-user')())
+  .flatMap(() => xhr('user:current')())
   .map(xhrHandler({
       200: (data) => data,
       401: (data) => false,
     }))
-  .map(data => ({
-    user: data,
+  .map(({user}) => ({
+    user: user,
   }));
 
 export default Observable.of(() => initialState)
@@ -47,8 +46,7 @@ export default Observable.of(() => initialState)
         .debug(debug, "AUTHENTICATE")
         .do(() => fetchCurrentUser$.next()),
       takeOneWhen(() => settings.remote.routes)
-        .do(() => fetchCurrentUser$.next()),
-
+        .do(() => fetchCurrentUser$.next())
     ),
 
     history$
@@ -62,7 +60,7 @@ export default Observable.of(() => initialState)
       })),
 
     appActions.logout$
-      .do(() => xhr('logout')())
+      .do(() => xhr('user:logout')())
       .do(() => redirect('/', {
         history: 'REPLACE',
         onChange: ()=>toast.warn('Logged out')

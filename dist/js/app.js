@@ -17315,11 +17315,12 @@ var settings = deepAssign({
   remote: {
     host: "",
     routes: {
-      "schemas": "/api/schemas", // START HERE! Figure out how to load the schemas!
-      "current-user": "/api/user/current",
-      "logout": "/api/user/logout",
-      "do.requestCodeByEmail": "/api/auth/request",
-      "do.exchangeLoginCode2Token": "/api/auth/exchange"
+      "schemas:list": "/api/schemas/{filter}",
+      "schemas:schema": "/api/schemas/{schemaName}",
+      "user:current": "/api/user/current",
+      "user:logout": "/api/user/logout",
+      "do.auth:requestCodeByEmail": "/api/auth/request",
+      "do.auth:exchangeLoginCode2Token": "/api/auth/exchange"
     }
   },
   ui: {
@@ -35981,6 +35982,7 @@ var debugComp = browser$1("rxstate.component");
 // https://github.com/MichalZalecki/connect-rxjs-to-react/blob/master/src/state/RxState.js
 // http://natpryce.com/articles/000814.html
 // https://www.gitbook.com/book/btroncone/learn-rxjs/details
+// https://medium.com/@baphemot/understanding-reactjs-component-life-cycle-823a640b3e8d
 
 function createAction() {
   return new Subject$1();
@@ -36046,6 +36048,11 @@ function connect()
           }
         }
       }, {
+        key: "componentDidMount",
+        value: function componentDidMount() {
+          this.hook('componentDidMount');
+        }
+      }, {
         key: "componentWillMount",
         value: function componentWillMount() {
           // Use `selector` to filter app-state (`this.context.state$`), and set `this.state` for this component
@@ -36054,7 +36061,6 @@ function connect()
             debugComp("COMPONENTSTATE", componentState);
             self.setState(componentState);
           });
-          this.hook('componentWillMount');
         }
       }, {
         key: "componentWillUnmount",
@@ -36132,19 +36138,15 @@ Observable$1.prototype.debug = function (debugInstance) {
 
 var appActions = createActions(["authenticate$", "logout$"]);
 
-var accountActions = createActions(["submit$", "reset$"]);
+var cmsActions = createActions(["fetchSchemas$", "selectSchema$"]);
 
-createActions(["selectService$", "selectVariant$", "selectDate$", "selectTimeslot$", "fetchServiceAvailability$", "fetchServiceAvailabilityByDate$", "changeResourceCapacity$"]);
+var accountActions = createActions(["submit$", "reset$"]);
 
 var flashMessageActions = createActions(["push$", "pop$", "clear$"]);
 
 var loginActions = createActions(["submit$", "reset$"]);
 
 var navTopActions = createActions(["navbarToggler$", "accountDropdown$"]);
-
-createActions(["submit$", "reset$"]);
-
-createActions(["submit$", "clear$", "add$", "remove$"]);
 
 // http://jamesknelson.com/re-exporting-es6-modules/
 var flash = function flash(message, status) {
@@ -36308,6 +36310,36 @@ if (!"development".startsWith('prod')) {
   };
 }
 
+var debug$6 = browser$1("reducers:navtopreducer");
+
+var initialState = {
+  accountDropdownIsOpen: false,
+  navbarIsOpen: false
+};
+
+// TODO! Move to `lib/utils.js`?
+var getMenuState = function getMenuState(payload, state, stateKey) {
+  var isOpen = {
+    OPEN: true,
+    CLOSE: false,
+    TOGGLE: !state[stateKey]
+  }[payload || 'TOGGLE'];
+
+  return _extends({}, state, defineProperty({}, stateKey, isOpen));
+};
+
+var navTopReducer$ = Observable$1.of(function () {
+  return initialState;
+}).merge(navTopActions.accountDropdown$.map(function (payload) {
+  return function (state) {
+    return getMenuState(payload, state, 'accountDropdownIsOpen');
+  };
+}), navTopActions.navbarToggler$.map(function (payload) {
+  return function (state) {
+    return getMenuState(payload, state, 'navbarIsOpen');
+  };
+}));
+
 /*!
  * isobject <https://github.com/jonschlinkert/isobject>
  *
@@ -36424,7 +36456,7 @@ var parseUrlSearchString = function parseUrlSearchString(q) {
   }, {});
 };
 
-var debug$6 = browser$1("lib:history$");
+var debug$7 = browser$1("lib:history$");
 
 var currentPathname = void 0;
 var locationChangeFilter = function locationChangeFilter(location) {
@@ -36440,18 +36472,17 @@ var history$ = Observable$1.create(function (obs) {
   return _extends({}, location, {
     state: location.state || {}
   });
-}).debug(debug$6, "history$ >").filter(locationChangeFilter).debug(debug$6, "history$ >>");
+}).debug(debug$7, "history$ >").filter(locationChangeFilter).debug(debug$7, "history$ >>");
 
-var debug$7 = browser$1("reducers:appreducer");
+var debug$8 = browser$1("reducers:appreducer");
 
-var initialState = {
-  status: 'START',
+var initialState$1 = {
   user: undefined,
   location: undefined
 };
 
-var fetchCurrentUser$ = new Subject$1().debug(debug$7, "FETCHCURRENTUSER").flatMap(function () {
-  return xhr$3('current-user')();
+var fetchCurrentUser$ = new Subject$1().debug(debug$8, "FETCHCURRENTUSER").flatMap(function () {
+  return xhr$3('user:current')();
 }).map(xhrHandler({
   200: function _(data) {
     return data;
@@ -36459,21 +36490,22 @@ var fetchCurrentUser$ = new Subject$1().debug(debug$7, "FETCHCURRENTUSER").flatM
   401: function _(data) {
     return false;
   }
-})).map(function (data) {
+})).map(function (_ref) {
+  var user = _ref.user;
   return {
-    user: data
+    user: user
   };
 });
 
 var appReducer$ = Observable$1.of(function () {
-  return initialState;
-}).merge(autoReduce(fetchCurrentUser$, appActions.authenticate$.debug(debug$7, "AUTHENTICATE").do(function () {
+  return initialState$1;
+}).merge(autoReduce(fetchCurrentUser$, appActions.authenticate$.debug(debug$8, "AUTHENTICATE").do(function () {
   return fetchCurrentUser$.next();
 }), takeOneWhen(function () {
   return settings.remote.routes;
 }).do(function () {
   return fetchCurrentUser$.next();
-})), history$.debug(debug$7, "> location$").map(function (payload) {
+})), history$.debug(debug$8, "> location$").map(function (payload) {
   return function (state) {
     return _extends({}, state, {
       location: _extends({}, payload, {
@@ -36484,7 +36516,7 @@ var appReducer$ = Observable$1.of(function () {
     });
   };
 }), appActions.logout$.do(function () {
-  return xhr$3('logout')();
+  return xhr$3('user:logout')();
 }).do(function () {
   return redirect('/', {
     history: 'REPLACE',
@@ -36494,37 +36526,7 @@ var appReducer$ = Observable$1.of(function () {
   });
 }).map(function (_payload) {
   return function (state) {
-    return _extends({}, state, objOmit(initialState, 'status', 'location'));
-  };
-}));
-
-var debug$8 = browser$1("reducers:navtopreducer");
-
-var initialState$1 = {
-  accountDropdownIsOpen: false,
-  navbarIsOpen: false
-};
-
-// TODO! Move to `lib/utils.js`?
-var getMenuState = function getMenuState(payload, state, stateKey) {
-  var isOpen = {
-    OPEN: true,
-    CLOSE: false,
-    TOGGLE: !state[stateKey]
-  }[payload || 'TOGGLE'];
-
-  return _extends({}, state, defineProperty({}, stateKey, isOpen));
-};
-
-var navTopReducer$ = Observable$1.of(function () {
-  return initialState$1;
-}).merge(navTopActions.accountDropdown$.map(function (payload) {
-  return function (state) {
-    return getMenuState(payload, state, 'accountDropdownIsOpen');
-  };
-}), navTopActions.navbarToggler$.map(function (payload) {
-  return function (state) {
-    return getMenuState(payload, state, 'navbarIsOpen');
+    return _extends({}, state, objOmit(initialState$1, 'status', 'location'));
   };
 }));
 
@@ -36540,7 +36542,7 @@ var initialState$2 = {
 
 var requestCodeByEmail$ = new Subject$1().flatMap(function (_ref) {
   var formData = _ref.formData;
-  return xhr$3('do.requestCodeByEmail')(formData);
+  return xhr$3('do.auth:requestCodeByEmail')(formData);
 }).map(xhrHandler({
   200: function _(data) {
     return { stepIdx: 1 };
@@ -36552,7 +36554,7 @@ var requestCodeByEmail$ = new Subject$1().flatMap(function (_ref) {
 
 var exchangeLoginCode2Token$ = new Subject$1().flatMap(function (_ref2) {
   var formData = _ref2.formData;
-  return xhr$3('do.exchangeLoginCode2Token')(formData);
+  return xhr$3('do.auth:exchangeLoginCode2Token')(formData);
 }).map(xhrHandler({
   200: function _(data) {
     authenticate();
@@ -36667,16 +36669,51 @@ var accountReducer$ = Observable$1.of(function () {
   };
 }));
 
-var rootReducer$ = Observable$1.merge(appReducer$.map(function (reducer) {
+var debug$12 = browser$1("reducers:cmsreducer");
+
+var initialState$5 = {
+  schemaNames: undefined,
+  currentSchema: undefined
+};
+
+var cmsReducer$ = Observable$1.of(function () {
+  return initialState$5;
+}).merge(cmsActions.fetchSchemas$.debug(debug$12, "FETCHSCHEMAS").flatMap(function () {
+  return xhr$3('schemas:list', 'content.*')();
+}).map(xhrHandler({
+  200: function _(data) {
+    return data;
+  },
+  401: function _(data) {
+    return false;
+  }
+})).map(function (_ref) {
+  var schemas = _ref.schemas;
+  return function (state) {
+    return _extends({}, state, {
+      schemaNames: schemas
+    });
+  };
+}), cmsActions.selectSchema$.do(function () {
+  return xhr$3('schema.load')();
+}).map(function (payload) {
+  return function (state) {
+    return _extends({}, state);
+  };
+}));
+
+var rootReducer$ = Observable$1.merge(navTopReducer$.map(function (reducer) {
+  return ["navTop", reducer];
+}), appReducer$.map(function (reducer) {
   return ["app", reducer];
 }), loginReducer$.map(function (reducer) {
   return ["login", reducer];
-}), navTopReducer$.map(function (reducer) {
-  return ["navTop", reducer];
 }), flashMessageReducer$.map(function (reducer) {
   return ["flashMessage", reducer];
 }), accountReducer$.map(function (reducer) {
   return ["account", reducer];
+}), cmsReducer$.map(function (reducer) {
+  return ["cms", reducer];
 }));
 
 // TODO! Use a React Portal package...
@@ -36684,7 +36721,7 @@ var rootReducer$ = Observable$1.merge(appReducer$.map(function (reducer) {
 var css = "body{overflow-y:scroll;overflow-x:hidden}.src-css-___app__app-container___-J-TS{max-width:960px;margin-left:auto;margin-right:auto;min-height:100vh;min-width:375px;padding-bottom:16px;padding-bottom:1rem}.src-css-___app__app-container___-J-TS:before{content:\"\";display:table}.src-css-___app__app-container___-J-TS:after{content:\"\";display:table;clear:both}.src-css-___app__header-container___3d5ZZ{-webkit-box-shadow:0 20px 33px -12px rgba(0,0,0,.75);box-shadow:0 20px 33px -12px rgba(0,0,0,.75);margin-bottom:20px;border-bottom-right-radius:15px;border-bottom-left-radius:15px;overflow:hidden}.src-css-___app__flash-container___z6gsC{max-width:66.6%;margin-left:auto;margin-right:auto;padding-left:40px;padding-right:40px;min-width:375px;text-align:center}.src-css-___app__flash-container___z6gsC:before{content:\"\";display:table}.src-css-___app__flash-container___z6gsC:after{content:\"\";display:table;clear:both}.src-css-___app__page-container___27fuD{position:relative}.src-css-___app__link-row___2yU3p a{padding:10px}.src-css-___app__dialog-container___3fBF_{max-width:39.96%;margin-left:auto;margin-right:auto;padding-left:40px;padding-right:40px;min-width:375px;text-align:center}.src-css-___app__dialog-container___3fBF_:before{content:\"\";display:table}.src-css-___app__dialog-container___3fBF_:after{content:\"\";display:table;clear:both}.src-css-___app__dialog-container___3fBF_ .src-css-___app__pull-right___3cJj6{margin-left:auto}.src-css-___app__dialog-container___3fBF_ input{text-align:center}.src-css-___app__form-container___3h-ps{max-width:66.6%;margin-left:auto;margin-right:auto;padding-left:40px;padding-right:40px;min-width:375px}.src-css-___app__form-container___3h-ps:before{content:\"\";display:table}.src-css-___app__form-container___3h-ps:after{content:\"\";display:table;clear:both}form.rjsf fieldset legend#root__title{text-align:center}form.rjsf .btn-group{display:block;text-align:center}form.rjsf .help-block{font-size:80%;filter:url('data:image/svg+xml;charset=utf-8,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"filter\"><feComponentTransfer color-interpolation-filters=\"sRGB\"><feFuncA type=\"table\" tableValues=\"0 0.5\" /></feComponentTransfer></filter></svg>#filter');-webkit-filter:opacity(.5);filter:opacity(.5)}";
 __$$styleInject(css);
 
-var debug$12 = browser$1("component:login");
+var debug$13 = browser$1("component:login");
 
 var schemas = [{
   title: "Login",
@@ -36717,7 +36754,7 @@ var uiSchema = {
 };
 
 var LoginForm = function LoginForm(props) {
-  debug$12("LOGINFORM.props", props);
+  debug$13("LOGINFORM.props", props);
 
   var schema = schemas[props.stepIdx];
 
@@ -36759,10 +36796,10 @@ var css$1 = ".src-css-___nav-top__pull-right___2ZlDn{margin-left:auto}";
 __$$styleInject(css$1);
 
 // https://www.npmjs.com/package/babel-plugin-jsx-control-statements
-var debug$13 = browser$1("component:navtop");
+var debug$14 = browser$1("component:navtop");
 
 var NavItems = function NavItems(props) {
-  debug$13("NavItems.props", props);
+  debug$14("NavItems.props", props);
   return function (location, user) {
     return user ? [function (url, key) {
       return function (isActive, key) {
@@ -36798,7 +36835,7 @@ var NavItems = function NavItems(props) {
 };
 
 var NavTop = function NavTop(props) {
-  debug$13("NAVTOP.props", props);
+  debug$14("NAVTOP.props", props);
   return React.createElement(
     myUiComponents.Navbar,
     { color: "faded", light: true, expand: "md", className: "src-css-___nav-top__nav-bar___1_s6t" },
@@ -36830,13 +36867,13 @@ var NavTop$1 = connect(function (_ref) {
 var css$2 = ".src-css-___flash-message__dismiss-button___1f2ng{position:absolute;top:8px;right:5px;cursor:pointer}.src-css-___flash-message__alert-content___3mGLm{margin-right:40px;overflow-x:auto}";
 __$$styleInject(css$2);
 
-var debug$14 = browser$1("component:flashmessage");
+var debug$15 = browser$1("component:flashmessage");
 
 var FlashMessage = function FlashMessage(_ref) {
   var queue = _ref.queue,
       props = objectWithoutProperties(_ref, ["queue"]);
 
-  debug$14("FLASHMESSAGE.props", queue, props);
+  debug$15("FLASHMESSAGE.props", queue, props);
   return function (message) {
     return message ? function (content, status) {
       return React.createElement(
@@ -36862,7 +36899,7 @@ var FlashMessage$1 = connect(function (_ref2) {
   return flashMessage$$1;
 }, flashMessageActions)(FlashMessage);
 
-var debug$15 = browser$1("components:account");
+var debug$16 = browser$1("components:account");
 
 var schema = {
   title: "Konto",
@@ -36881,7 +36918,7 @@ var schema = {
       title: "E-mail address",
       format: "email"
     },
-    mobile: {
+    cellPhoneNo: {
       type: "string",
       title: "Telefon/mobil"
     }
@@ -36889,7 +36926,7 @@ var schema = {
 };
 
 var AccountForm = function AccountForm(props) {
-  debug$15("ACCOUNTFORM.props", props);
+  debug$16("ACCOUNTFORM.props", props);
   return React.createElement(
     "div",
     { className: "src-css-___app__form-container___3h-ps" },
@@ -36918,11 +36955,6 @@ var AccountForm = function AccountForm(props) {
   );
 };
 
-AccountForm.propTypes = {
-  submit$: PropTypes.func.isRequired,
-  reset$: PropTypes.func.isRequired
-};
-
 var Account = connect(function (_ref) {
   var account = _ref.account,
       app$$1 = _ref.app;
@@ -36930,18 +36962,52 @@ var Account = connect(function (_ref) {
     formData: app$$1.user }, account);
 }, accountActions)(AccountForm);
 
-var Cms = (function () {
+var debug$17 = browser$1("components:cms");
+
+var SelectSchemaWidget = function SelectSchemaWidget(props) {
+  return React.createElement(
+    "ul",
+    null,
+    props.schemaNames.map(function (schemaName, index) {
+      return React.createElement(
+        "li",
+        { key: schemaName },
+        schemaName
+      );
+    }, this)
+  );
+};
+
+var Cms = function Cms(props) {
+  debug$17("CMS.props", props);
   return React.createElement(
     "div",
     null,
-    "CMS"
+    React.createElement(
+      "h1",
+      null,
+      "CMS"
+    ),
+    props.schemaNames ? React.createElement(SelectSchemaWidget, props) : null
   );
-});
+};
+
+var Cms$1 = connect(function (_ref) {
+  var cms = _ref.cms,
+      app$$1 = _ref.app;
+  return _extends({
+    user: app$$1.user
+  }, cms);
+}, cmsActions, {
+  componentDidMount: function componentDidMount(props) {
+    !props.schemasNames && cmsActions.fetchSchemas$.next();
+  }
+})(Cms);
 
 var css$3 = ".src-css-___util__overflowScrollX___3-yYs{overflow-x:scroll}.src-css-___util__center-text___2-2n9{text-align:center}";
 __$$styleInject(css$3);
 
-var debug$16 = browser$1("component:app");
+var debug$18 = browser$1("component:app");
 
 var router = function router(props) {
   var restrict = function restrict(com) {
@@ -36953,13 +37019,13 @@ var router = function router(props) {
       return restrict(Account);
 
     default:
-      return restrict(Cms);
+      return restrict(Cms$1);
   }
 };
 
 var App = function App(props) {
-  debug$16("APP.props", props);
-  return function (status, Page) {
+  debug$18("APP.props", props);
+  return function (Page) {
     return React.createElement(
       "div",
       { className: "src-css-___app__app-container___-J-TS" },
@@ -36979,7 +37045,7 @@ var App = function App(props) {
         React.createElement(Page, null)
       )
     );
-  }.call(this, props.status, router(props));
+  }.call(this, router(props));
 };
 
 var App$1 = connect(function (_ref) {
@@ -36988,7 +37054,7 @@ var App$1 = connect(function (_ref) {
   return app$$1;
 }, appActions)(App);
 
-var debug$17 = browser$1("app");
+var debug$19 = browser$1("app");
 
 // Restyle toasts
 myUiComponents.style({
@@ -37002,7 +37068,7 @@ var toastProps = _extends({}, settings.ui.toast);
 toastProps.position = myUiComponents.toast.POSITION[toastProps.position || 'TOP_RIGHT'];
 toastProps.autoClose = parseInt(toastProps.autoClose) || false;
 
-debug$17("toastProps", toastProps);
+debug$19("toastProps", toastProps);
 
 ReactDOM.render(React.createElement(
   'div',
