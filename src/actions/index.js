@@ -30,15 +30,21 @@ export const flash = (message, status) => {
 }
 
 const HISTORY_ACTIONS = ['PUSH', 'REPLACE']
-export const redirect = (pathname, ...rest) => {
+export const redirect = (pathname, options={}) => {
 
-  // `rest` is optional `action` and/or `message` in any order
-  const {action, message} = rest.reduce((acc, cur) => ({
-    ...acc,
-    [~HISTORY_ACTIONS.indexOf(cur) ? 'action' : 'message']: cur,
-  }), {action: 'REPLACE', message: undefined});
 
-  history[action.toLowerCase()](pathname, {flashMessage: message})
+  options = {
+    onChange: undefined,
+    history: 'PUSH',
+    ...options
+  };
+
+  console.assert(!!~HISTORY_ACTIONS.indexOf(options.history), 'Unknown history action: '+history);
+
+  // Run `onChange`
+  ;(typeof options.onChange == 'function' && options.onChange());
+
+  history[options.history.toLowerCase()](pathname)
 }
 
 export const authenticate = () => {

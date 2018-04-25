@@ -39,7 +39,10 @@ export const exchangeLoginCode2Token$ = new Subject()
   .map(xhrHandler({
       200: (data) => {
         authenticate();
-        redirect(parseUrlSearchString(history.location.search)['redirect'] || '/', 'Logged in!');
+        redirect(parseUrlSearchString(history.location.search)['redirect'] || '/', {
+          method: 'REPLACE',
+          onChange: ()=>toast.info('Logged in')
+        });
         return initialState;
       },
       422: (data) => toast.warn(data.msg)

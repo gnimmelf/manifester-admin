@@ -43,7 +43,6 @@ export const uiSchema =  {
   }
 };
 
-
 export const LoginForm = function(props) {
   debug("LOGINFORM.props", props)
 
@@ -67,10 +66,5 @@ export const LoginForm = function(props) {
     </div>
   )
 }
-
-LoginForm.propTypes = {
-  submit$: PropTypes.func.isRequired,
-  reset$: PropTypes.func.isRequired,
-};
 
 export default connect(({ login }) => login, loginActions)(LoginForm);

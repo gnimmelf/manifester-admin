@@ -4,7 +4,8 @@ import {
   map,
   flatMap,
 } from 'rxjs/operators';
-import normalizeUrl from 'normalize-url'
+import normalizeUrl from 'normalize-url';
+import { toast } from "my-ui-components";
 import {
   objOmit,
   autoReduce,
@@ -56,17 +57,19 @@ export default Observable.of(() => initialState)
         ...state,
         location: {
           ...payload,
-          parts: payload.pathname.split('/').filter(x=>x)
+          parts: payload.pathname.split('/').filter(part => !!part)
         }
       })),
 
     appActions.logout$
       .do(() => xhr('logout')())
-      .do(() => redirect('/', 'Logged out!'))
+      .do(() => redirect('/', {
+        history: 'REPLACE',
+        onChange: ()=>toast.warn('Logged out')
+      }))
       .map(_payload =>  state => ({
         ...state,
         ...objOmit(initialState, 'status', 'location'),
-      })),
-
+      }))
   );
 

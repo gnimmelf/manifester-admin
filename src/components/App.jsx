@@ -12,13 +12,8 @@ import FlashMessage from './FlashMessage.jsx';
 import Account from './Account.jsx';
 import Cms from './Cms.jsx';
 
-
-
 import utilCss from '../css/util.css';
 import appCss from '../css/app.css';
-
-// TODO! Tmp for `Checkout`
-import { Button, ButtonGroup } from 'my-ui-components';
 
 const debug = _debug("component:app")
 

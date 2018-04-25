@@ -7,10 +7,6 @@ const debug = _debug("lib:history$");
 
 let currentPathname;
 export const locationChangeFilter = (location) => {
-  if (location.state.flashMessage) {
-    toast.info(location.state.flashMessage);
-  }
-
   if (currentPathname != location.pathname){
     currentPathname = location.pathname;
     return true

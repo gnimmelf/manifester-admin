@@ -36154,18 +36154,20 @@ var flash = function flash(message, status) {
 
 var HISTORY_ACTIONS = ['PUSH', 'REPLACE'];
 var redirect = function redirect(pathname) {
-  for (var _len = arguments.length, rest = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-    rest[_key - 1] = arguments[_key];
-  }
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-  // `rest` is optional `action` and/or `message` in any order
-  var _rest$reduce = rest.reduce(function (acc, cur) {
-    return _extends({}, acc, defineProperty({}, ~HISTORY_ACTIONS.indexOf(cur) ? 'action' : 'message', cur));
-  }, { action: 'REPLACE', message: undefined }),
-      action = _rest$reduce.action,
-      message = _rest$reduce.message;
 
-  history[action.toLowerCase()](pathname, { flashMessage: message });
+  options = _extends({
+    onChange: undefined,
+    history: 'PUSH'
+  }, options);
+
+  console.assert(!!~HISTORY_ACTIONS.indexOf(options.history), 'Unknown history action: ' + history);
+
+  // Run `onChange`
+  typeof options.onChange == 'function' && options.onChange();
+
+  history[options.history.toLowerCase()](pathname);
 };
 
 var authenticate = function authenticate() {
@@ -36426,10 +36428,6 @@ var debug$6 = browser$1("lib:history$");
 
 var currentPathname = void 0;
 var locationChangeFilter = function locationChangeFilter(location) {
-  if (location.state.flashMessage) {
-    myUiComponents.toast.info(location.state.flashMessage);
-  }
-
   if (currentPathname != location.pathname) {
     currentPathname = location.pathname;
     return true;
@@ -36479,8 +36477,8 @@ var appReducer$ = Observable$1.of(function () {
   return function (state) {
     return _extends({}, state, {
       location: _extends({}, payload, {
-        parts: payload.pathname.split('/').filter(function (x) {
-          return x;
+        parts: payload.pathname.split('/').filter(function (part) {
+          return !!part;
         })
       })
     });
@@ -36488,7 +36486,12 @@ var appReducer$ = Observable$1.of(function () {
 }), appActions.logout$.do(function () {
   return xhr$3('logout')();
 }).do(function () {
-  return redirect('/', 'Logged out!');
+  return redirect('/', {
+    history: 'REPLACE',
+    onChange: function onChange() {
+      return myUiComponents.toast.warn('Logged out');
+    }
+  });
 }).map(function (_payload) {
   return function (state) {
     return _extends({}, state, objOmit(initialState, 'status', 'location'));
@@ -36553,7 +36556,12 @@ var exchangeLoginCode2Token$ = new Subject$1().flatMap(function (_ref2) {
 }).map(xhrHandler({
   200: function _(data) {
     authenticate();
-    redirect(parseUrlSearchString(history.location.search)['redirect'] || '/', 'Logged in!');
+    redirect(parseUrlSearchString(history.location.search)['redirect'] || '/', {
+      method: 'REPLACE',
+      onChange: function onChange() {
+        return myUiComponents.toast.info('Logged in');
+      }
+    });
     return initialState$2;
   },
   422: function _(data) {
@@ -36740,11 +36748,6 @@ var LoginForm = function LoginForm(props) {
       )
     )
   );
-};
-
-LoginForm.propTypes = {
-  submit$: PropTypes.func.isRequired,
-  reset$: PropTypes.func.isRequired
 };
 
 var Login = connect(function (_ref) {
