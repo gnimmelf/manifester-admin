@@ -1,4 +1,4 @@
-(function (React$1,PropTypes,history,myUiComponents,Form,myAccounting,ReactDOM) {
+(function (React$1,PropTypes,history,myUiComponents,Form,ReactDOM) {
 'use strict';
 
 function __$$styleInject(css, ref) {
@@ -262,9 +262,7 @@ var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 
 
 
 
-function unwrapExports (x) {
-	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
-}
+
 
 function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
@@ -865,6 +863,132 @@ var browser_4 = browser$1.load;
 var browser_5 = browser$1.useColors;
 var browser_6 = browser$1.storage;
 var browser_7 = browser$1.colors;
+
+var isObj = function (x) {
+	var type = typeof x;
+	return x !== null && (type === 'object' || type === 'function');
+};
+
+function getPathSegments(path) {
+	const pathArr = path.split('.');
+	const parts = [];
+
+	for (let i = 0; i < pathArr.length; i++) {
+		let p = pathArr[i];
+
+		while (p[p.length - 1] === '\\' && pathArr[i + 1] !== undefined) {
+			p = p.slice(0, -1) + '.';
+			p += pathArr[++i];
+		}
+
+		parts.push(p);
+	}
+
+	return parts;
+}
+
+var dotProp = {
+	get(obj, path, value) {
+		if (!isObj(obj) || typeof path !== 'string') {
+			return value === undefined ? obj : value;
+		}
+
+		const pathArr = getPathSegments(path);
+
+		for (let i = 0; i < pathArr.length; i++) {
+			if (!Object.prototype.propertyIsEnumerable.call(obj, pathArr[i])) {
+				return value;
+			}
+
+			obj = obj[pathArr[i]];
+
+			if (obj === undefined || obj === null) {
+				// `obj` is either `undefined` or `null` so we want to stop the loop, and
+				// if this is not the last bit of the path, and
+				// if it did't return `undefined`
+				// it would return `null` if `obj` is `null`
+				// but we want `get({foo: null}, 'foo.bar')` to equal `undefined`, or the supplied value, not `null`
+				if (i !== pathArr.length - 1) {
+					return value;
+				}
+
+				break;
+			}
+		}
+
+		return obj;
+	},
+
+	set(obj, path, value) {
+		if (!isObj(obj) || typeof path !== 'string') {
+			return obj;
+		}
+
+		const root = obj;
+		const pathArr = getPathSegments(path);
+
+		for (let i = 0; i < pathArr.length; i++) {
+			const p = pathArr[i];
+
+			if (!isObj(obj[p])) {
+				obj[p] = {};
+			}
+
+			if (i === pathArr.length - 1) {
+				obj[p] = value;
+			}
+
+			obj = obj[p];
+		}
+
+		return root;
+	},
+
+	delete(obj, path) {
+		if (!isObj(obj) || typeof path !== 'string') {
+			return;
+		}
+
+		const pathArr = getPathSegments(path);
+
+		for (let i = 0; i < pathArr.length; i++) {
+			const p = pathArr[i];
+
+			if (i === pathArr.length - 1) {
+				delete obj[p];
+				return;
+			}
+
+			obj = obj[p];
+
+			if (!isObj(obj)) {
+				return;
+			}
+		}
+	},
+
+	has(obj, path) {
+		if (!isObj(obj) || typeof path !== 'string') {
+			return false;
+		}
+
+		const pathArr = getPathSegments(path);
+
+		for (let i = 0; i < pathArr.length; i++) {
+			if (isObj(obj)) {
+				if (!(pathArr[i] in obj)) {
+					return false;
+				}
+
+				obj = obj[pathArr[i]];
+			} else {
+				return false;
+			}
+		}
+
+		return true;
+	}
+};
 
 var bind = function bind(fn, thisArg) {
   return function wrap() {
@@ -16409,91 +16533,802 @@ axios_1.default = default_1;
 
 var axios$1 = axios_1;
 
-/*!
- * isobject <https://github.com/jonschlinkert/isobject>
- *
- * Copyright (c) 2014-2017, Jon Schlinkert.
- * Released under the MIT License.
- */
-
-var isobject = function isObject(val) {
-  return val != null && typeof val === 'object' && Array.isArray(val) === false;
+var strictUriEncode = function (str) {
+	return encodeURIComponent(str).replace(/[!'()*]/g, function (c) {
+		return '%' + c.charCodeAt(0).toString(16).toUpperCase();
+	});
 };
 
-function isObjectObject(o) {
-  return isobject(o) === true
-    && Object.prototype.toString.call(o) === '[object Object]';
+/*
+object-assign
+(c) Sindre Sorhus
+@license MIT
+*/
+
+var getOwnPropertySymbols = Object.getOwnPropertySymbols;
+var hasOwnProperty$2 = Object.prototype.hasOwnProperty;
+var propIsEnumerable = Object.prototype.propertyIsEnumerable;
+
+function toObject(val) {
+	if (val === null || val === undefined) {
+		throw new TypeError('Object.assign cannot be called with null or undefined');
+	}
+
+	return Object(val);
 }
 
-var isPlainObject = function isPlainObject(o) {
-  var ctor,prot;
+function shouldUseNative() {
+	try {
+		if (!Object.assign) {
+			return false;
+		}
 
-  if (isObjectObject(o) === false) return false;
+		// Detect buggy property enumeration order in older V8 versions.
 
-  // If has modified constructor
-  ctor = o.constructor;
-  if (typeof ctor !== 'function') return false;
+		// https://bugs.chromium.org/p/v8/issues/detail?id=4118
+		var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
+		test1[5] = 'de';
+		if (Object.getOwnPropertyNames(test1)[0] === '5') {
+			return false;
+		}
 
-  // If has modified prototype
-  prot = ctor.prototype;
-  if (isObjectObject(prot) === false) return false;
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test2 = {};
+		for (var i = 0; i < 10; i++) {
+			test2['_' + String.fromCharCode(i)] = i;
+		}
+		var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
+			return test2[n];
+		});
+		if (order2.join('') !== '0123456789') {
+			return false;
+		}
 
-  // If constructor does not have an Object-specific method
-  if (prot.hasOwnProperty('isPrototypeOf') === false) {
-    return false;
-  }
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test3 = {};
+		'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
+			test3[letter] = letter;
+		});
+		if (Object.keys(Object.assign({}, test3)).join('') !==
+				'abcdefghijklmnopqrst') {
+			return false;
+		}
 
-  // Most likely a plain Object
-  return true;
-};
+		return true;
+	} catch (err) {
+		// We don't expect any of the above to throw, but better to be safe.
+		return false;
+	}
+}
 
-var isExtendable = function isExtendable(val) {
-  return isPlainObject(val) || typeof val === 'function' || Array.isArray(val);
-};
+var objectAssign = shouldUseNative() ? Object.assign : function (target, source) {
+	var from;
+	var to = toObject(target);
+	var symbols;
 
-var object_omit = function omit(obj, props, fn) {
-  if (!isExtendable(obj)) return {};
+	for (var s = 1; s < arguments.length; s++) {
+		from = Object(arguments[s]);
 
-  if (typeof props === 'function') {
-    fn = props;
-    props = [];
-  }
+		for (var key in from) {
+			if (hasOwnProperty$2.call(from, key)) {
+				to[key] = from[key];
+			}
+		}
 
-  if (typeof props === 'string') {
-    props = [props];
-  }
-
-  var isFunction = typeof fn === 'function';
-  var keys = Object.keys(obj);
-  var res = {};
-
-  for (var i = 0; i < keys.length; i++) {
-    var key = keys[i];
-    var val = obj[key];
-
-    if (!props || (props.indexOf(key) === -1 && (!isFunction || fn(val, key, obj)))) {
-      res[key] = val;
-    }
-  }
-  return res;
-};
-
-var filterObj = function (obj, predicate) {
-	var ret = {};
-	var keys = Object.keys(obj);
-	var isArr = Array.isArray(predicate);
-
-	for (var i = 0; i < keys.length; i++) {
-		var key = keys[i];
-		var val = obj[key];
-
-		if (isArr ? predicate.indexOf(key) !== -1 : predicate(key, val, obj)) {
-			ret[key] = val;
+		if (getOwnPropertySymbols) {
+			symbols = getOwnPropertySymbols(from);
+			for (var i = 0; i < symbols.length; i++) {
+				if (propIsEnumerable.call(from, symbols[i])) {
+					to[symbols[i]] = from[symbols[i]];
+				}
+			}
 		}
 	}
 
-	return ret;
+	return to;
 };
+
+var token = '%[a-f0-9]{2}';
+var singleMatcher = new RegExp(token, 'gi');
+var multiMatcher = new RegExp('(' + token + ')+', 'gi');
+
+function decodeComponents(components, split) {
+	try {
+		// Try to decode the entire string first
+		return decodeURIComponent(components.join(''));
+	} catch (err) {
+		// Do nothing
+	}
+
+	if (components.length === 1) {
+		return components;
+	}
+
+	split = split || 1;
+
+	// Split the array in 2 parts
+	var left = components.slice(0, split);
+	var right = components.slice(split);
+
+	return Array.prototype.concat.call([], decodeComponents(left), decodeComponents(right));
+}
+
+function decode$1(input) {
+	try {
+		return decodeURIComponent(input);
+	} catch (err) {
+		var tokens = input.match(singleMatcher);
+
+		for (var i = 1; i < tokens.length; i++) {
+			input = decodeComponents(tokens, i).join('');
+
+			tokens = input.match(singleMatcher);
+		}
+
+		return input;
+	}
+}
+
+function customDecodeURIComponent(input) {
+	// Keep track of all the replacements and prefill the map with the `BOM`
+	var replaceMap = {
+		'%FE%FF': '\uFFFD\uFFFD',
+		'%FF%FE': '\uFFFD\uFFFD'
+	};
+
+	var match = multiMatcher.exec(input);
+	while (match) {
+		try {
+			// Decode as big chunks as possible
+			replaceMap[match[0]] = decodeURIComponent(match[0]);
+		} catch (err) {
+			var result = decode$1(match[0]);
+
+			if (result !== match[0]) {
+				replaceMap[match[0]] = result;
+			}
+		}
+
+		match = multiMatcher.exec(input);
+	}
+
+	// Add `%C2` at the end of the map to make sure it does not replace the combinator before everything else
+	replaceMap['%C2'] = '\uFFFD';
+
+	var entries = Object.keys(replaceMap);
+
+	for (var i = 0; i < entries.length; i++) {
+		// Replace all decoded components
+		var key = entries[i];
+		input = input.replace(new RegExp(key, 'g'), replaceMap[key]);
+	}
+
+	return input;
+}
+
+var decodeUriComponent = function (encodedURI) {
+	if (typeof encodedURI !== 'string') {
+		throw new TypeError('Expected `encodedURI` to be of type `string`, got `' + typeof encodedURI + '`');
+	}
+
+	try {
+		encodedURI = encodedURI.replace(/\+/g, ' ');
+
+		// Try the built in decoder first
+		return decodeURIComponent(encodedURI);
+	} catch (err) {
+		// Fallback to a more advanced decoder
+		return customDecodeURIComponent(encodedURI);
+	}
+};
+
+function encoderForArrayFormat(opts) {
+	switch (opts.arrayFormat) {
+		case 'index':
+			return function (key, value, index) {
+				return value === null ? [
+					encode$2(key, opts),
+					'[',
+					index,
+					']'
+				].join('') : [
+					encode$2(key, opts),
+					'[',
+					encode$2(index, opts),
+					']=',
+					encode$2(value, opts)
+				].join('');
+			};
+
+		case 'bracket':
+			return function (key, value) {
+				return value === null ? encode$2(key, opts) : [
+					encode$2(key, opts),
+					'[]=',
+					encode$2(value, opts)
+				].join('');
+			};
+
+		default:
+			return function (key, value) {
+				return value === null ? encode$2(key, opts) : [
+					encode$2(key, opts),
+					'=',
+					encode$2(value, opts)
+				].join('');
+			};
+	}
+}
+
+function parserForArrayFormat(opts) {
+	var result;
+
+	switch (opts.arrayFormat) {
+		case 'index':
+			return function (key, value, accumulator) {
+				result = /\[(\d*)\]$/.exec(key);
+
+				key = key.replace(/\[\d*\]$/, '');
+
+				if (!result) {
+					accumulator[key] = value;
+					return;
+				}
+
+				if (accumulator[key] === undefined) {
+					accumulator[key] = {};
+				}
+
+				accumulator[key][result[1]] = value;
+			};
+
+		case 'bracket':
+			return function (key, value, accumulator) {
+				result = /(\[\])$/.exec(key);
+				key = key.replace(/\[\]$/, '');
+
+				if (!result) {
+					accumulator[key] = value;
+					return;
+				} else if (accumulator[key] === undefined) {
+					accumulator[key] = [value];
+					return;
+				}
+
+				accumulator[key] = [].concat(accumulator[key], value);
+			};
+
+		default:
+			return function (key, value, accumulator) {
+				if (accumulator[key] === undefined) {
+					accumulator[key] = value;
+					return;
+				}
+
+				accumulator[key] = [].concat(accumulator[key], value);
+			};
+	}
+}
+
+function encode$2(value, opts) {
+	if (opts.encode) {
+		return opts.strict ? strictUriEncode(value) : encodeURIComponent(value);
+	}
+
+	return value;
+}
+
+function keysSorter(input) {
+	if (Array.isArray(input)) {
+		return input.sort();
+	} else if (typeof input === 'object') {
+		return keysSorter(Object.keys(input)).sort(function (a, b) {
+			return Number(a) - Number(b);
+		}).map(function (key) {
+			return input[key];
+		});
+	}
+
+	return input;
+}
+
+var extract = function (str) {
+	var queryStart = str.indexOf('?');
+	if (queryStart === -1) {
+		return '';
+	}
+	return str.slice(queryStart + 1);
+};
+
+var parse$3 = function (str, opts) {
+	opts = objectAssign({arrayFormat: 'none'}, opts);
+
+	var formatter = parserForArrayFormat(opts);
+
+	// Create an object with no prototype
+	// https://github.com/sindresorhus/query-string/issues/47
+	var ret = Object.create(null);
+
+	if (typeof str !== 'string') {
+		return ret;
+	}
+
+	str = str.trim().replace(/^[?#&]/, '');
+
+	if (!str) {
+		return ret;
+	}
+
+	str.split('&').forEach(function (param) {
+		var parts = param.replace(/\+/g, ' ').split('=');
+		// Firefox (pre 40) decodes `%3D` to `=`
+		// https://github.com/sindresorhus/query-string/pull/37
+		var key = parts.shift();
+		var val = parts.length > 0 ? parts.join('=') : undefined;
+
+		// missing `=` should be `null`:
+		// http://w3.org/TR/2012/WD-url-20120524/#collect-url-parameters
+		val = val === undefined ? null : decodeUriComponent(val);
+
+		formatter(decodeUriComponent(key), val, ret);
+	});
+
+	return Object.keys(ret).sort().reduce(function (result, key) {
+		var val = ret[key];
+		if (Boolean(val) && typeof val === 'object' && !Array.isArray(val)) {
+			// Sort object keys, not values
+			result[key] = keysSorter(val);
+		} else {
+			result[key] = val;
+		}
+
+		return result;
+	}, Object.create(null));
+};
+
+var stringify$1 = function (obj, opts) {
+	var defaults = {
+		encode: true,
+		strict: true,
+		arrayFormat: 'none'
+	};
+
+	opts = objectAssign(defaults, opts);
+
+	if (opts.sort === false) {
+		opts.sort = function () {};
+	}
+
+	var formatter = encoderForArrayFormat(opts);
+
+	return obj ? Object.keys(obj).sort(opts.sort).map(function (key) {
+		var val = obj[key];
+
+		if (val === undefined) {
+			return '';
+		}
+
+		if (val === null) {
+			return encode$2(key, opts);
+		}
+
+		if (Array.isArray(val)) {
+			var result = [];
+
+			val.slice().forEach(function (val2) {
+				if (val2 === undefined) {
+					return;
+				}
+
+				result.push(formatter(key, val2, result.length));
+			});
+
+			return result.join('&');
+		}
+
+		return encode$2(key, opts) + '=' + encode$2(val, opts);
+	}).filter(function (x) {
+		return x.length > 0;
+	}).join('&') : '';
+};
+
+var parseUrl = function (str, opts) {
+	return {
+		url: str.split('?')[0] || '',
+		query: this.parse(this.extract(str), opts)
+	};
+};
+
+var queryString = {
+	extract: extract,
+	parse: parse$3,
+	stringify: stringify$1,
+	parseUrl: parseUrl
+};
+
+var prependHttp = createCommonjsModule(function (module) {
+module.exports = (url, opts) => {
+	if (typeof url !== 'string') {
+		throw new TypeError(`Expected \`url\` to be of type \`string\`, got \`${typeof url}\``);
+	}
+
+	url = url.trim();
+	opts = Object.assign({https: false}, opts);
+
+	if (/^\.*\/|^(?!localhost)\w+:/.test(url)) {
+		return url;
+	}
+
+	return url.replace(/^(?!(?:\w+:)?\/\/)/, opts.https ? 'https://' : 'http://');
+};
+});
+
+var toString$2 = Object.prototype.toString;
+
+var isPlainObj = function (x) {
+	var prototype;
+	return toString$2.call(x) === '[object Object]' && (prototype = Object.getPrototypeOf(x), prototype === null || prototype === Object.getPrototypeOf({}));
+};
+
+var sortKeys = createCommonjsModule(function (module) {
+module.exports = (obj, opts) => {
+	if (!isPlainObj(obj)) {
+		throw new TypeError('Expected a plain object');
+	}
+
+	opts = opts || {};
+
+	// DEPRECATED
+	if (typeof opts === 'function') {
+		throw new TypeError('Specify the compare function as an option instead');
+	}
+
+	const deep = opts.deep;
+	const seenInput = [];
+	const seenOutput = [];
+
+	const sortKeys = x => {
+		const seenIndex = seenInput.indexOf(x);
+
+		if (seenIndex !== -1) {
+			return seenOutput[seenIndex];
+		}
+
+		const ret = {};
+		const keys = Object.keys(x).sort(opts.compare);
+
+		seenInput.push(x);
+		seenOutput.push(ret);
+
+		for (let i = 0; i < keys.length; i++) {
+			const key = keys[i];
+			const val = x[key];
+
+			if (deep && Array.isArray(val)) {
+				const retArr = [];
+
+				for (let j = 0; j < val.length; j++) {
+					retArr[j] = isPlainObj(val[j]) ? sortKeys(val[j]) : val[j];
+				}
+
+				ret[key] = retArr;
+				continue;
+			}
+
+			ret[key] = deep && isPlainObj(val) ? sortKeys(val) : val;
+		}
+
+		return ret;
+	};
+
+	return sortKeys(obj);
+};
+});
+
+var punycode$2 = ( punycode$1 && punycode ) || punycode$1;
+
+var normalizeUrl = createCommonjsModule(function (module) {
+const DEFAULT_PORTS = {
+	'http:': 80,
+	'https:': 443,
+	'ftp:': 21
+};
+
+// Protocols that always contain a `//`` bit
+const slashedProtocol = {
+	http: true,
+	https: true,
+	ftp: true,
+	gopher: true,
+	file: true,
+	'http:': true,
+	'https:': true,
+	'ftp:': true,
+	'gopher:': true,
+	'file:': true
+};
+
+function testParameter(name, filters) {
+	return filters.some(filter => filter instanceof RegExp ? filter.test(name) : filter === name);
+}
+
+module.exports = (str, opts) => {
+	opts = Object.assign({
+		normalizeProtocol: true,
+		normalizeHttps: false,
+		stripFragment: true,
+		stripWWW: true,
+		removeQueryParameters: [/^utm_\w+/i],
+		removeTrailingSlash: true,
+		removeDirectoryIndex: false,
+		sortQueryParameters: true
+	}, opts);
+
+	if (typeof str !== 'string') {
+		throw new TypeError('Expected a string');
+	}
+
+	const hasRelativeProtocol = str.startsWith('//');
+
+	// Prepend protocol
+	str = prependHttp(str.trim()).replace(/^\/\//, 'http://');
+
+	const urlObj = url$2.parse(str);
+
+	if (opts.normalizeHttps && urlObj.protocol === 'https:') {
+		urlObj.protocol = 'http:';
+	}
+
+	if (!urlObj.hostname && !urlObj.pathname) {
+		throw new Error('Invalid URL');
+	}
+
+	// Prevent these from being used by `url.format`
+	delete urlObj.host;
+	delete urlObj.query;
+
+	// Remove fragment
+	if (opts.stripFragment) {
+		delete urlObj.hash;
+	}
+
+	// Remove default port
+	const port = DEFAULT_PORTS[urlObj.protocol];
+	if (Number(urlObj.port) === port) {
+		delete urlObj.port;
+	}
+
+	// Remove duplicate slashes
+	if (urlObj.pathname) {
+		urlObj.pathname = urlObj.pathname.replace(/\/{2,}/g, '/');
+	}
+
+	// Decode URI octets
+	if (urlObj.pathname) {
+		urlObj.pathname = decodeURI(urlObj.pathname);
+	}
+
+	// Remove directory index
+	if (opts.removeDirectoryIndex === true) {
+		opts.removeDirectoryIndex = [/^index\.[a-z]+$/];
+	}
+
+	if (Array.isArray(opts.removeDirectoryIndex) && opts.removeDirectoryIndex.length > 0) {
+		let pathComponents = urlObj.pathname.split('/');
+		const lastComponent = pathComponents[pathComponents.length - 1];
+
+		if (testParameter(lastComponent, opts.removeDirectoryIndex)) {
+			pathComponents = pathComponents.slice(0, pathComponents.length - 1);
+			urlObj.pathname = pathComponents.slice(1).join('/') + '/';
+		}
+	}
+
+	// Resolve relative paths, but only for slashed protocols
+	if (slashedProtocol[urlObj.protocol]) {
+		const domain = urlObj.protocol + '//' + urlObj.hostname;
+		const relative = url$2.resolve(domain, urlObj.pathname);
+		urlObj.pathname = relative.replace(domain, '');
+	}
+
+	if (urlObj.hostname) {
+		// IDN to Unicode
+		urlObj.hostname = punycode$2.toUnicode(urlObj.hostname).toLowerCase();
+
+		// Remove trailing dot
+		urlObj.hostname = urlObj.hostname.replace(/\.$/, '');
+
+		// Remove `www.`
+		if (opts.stripWWW) {
+			urlObj.hostname = urlObj.hostname.replace(/^www\./, '');
+		}
+	}
+
+	// Remove URL with empty query string
+	if (urlObj.search === '?') {
+		delete urlObj.search;
+	}
+
+	const queryParameters = queryString.parse(urlObj.search);
+
+	// Remove query unwanted parameters
+	if (Array.isArray(opts.removeQueryParameters)) {
+		for (const key in queryParameters) {
+			if (testParameter(key, opts.removeQueryParameters)) {
+				delete queryParameters[key];
+			}
+		}
+	}
+
+	// Sort query parameters
+	if (opts.sortQueryParameters) {
+		urlObj.search = queryString.stringify(sortKeys(queryParameters));
+	}
+
+	// Decode query parameters
+	if (urlObj.search !== null) {
+		urlObj.search = decodeURIComponent(urlObj.search);
+	}
+
+	// Take advantage of many of the Node `url` normalizations
+	str = url$2.format(urlObj);
+
+	// Remove ending `/`
+	if (opts.removeTrailingSlash || urlObj.pathname === '/') {
+		str = str.replace(/\/$/, '');
+	}
+
+	// Restore relative protocol, if applicable
+	if (hasRelativeProtocol && !opts.normalizeProtocol) {
+		str = str.replace(/^http:\/\//, '//');
+	}
+
+	return str;
+};
+});
+
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+// resolves . and .. elements in a path array with directory names there
+// must be no slashes, empty elements, or device names (c:\) in the array
+// (so also no leading and trailing slashes - it does not distinguish
+// relative and absolute paths)
+
+
+// path.normalize(path)
+// posix version
+
+
+// posix version
+
+
+// posix version
+
+
+
+// path.relative(from, to)
+// posix version
+
+
+
+
+
+
+
+
+
+
+
+var substr = 'ab'.substr(-1) === 'b' ?
+    function (str, start, len) { return str.substr(start, len) } :
+    function (str, start, len) {
+        if (start < 0) start = str.length + start;
+        return str.substr(start, len);
+    };
+
+var hasOwnProperty$3 = Object.prototype.hasOwnProperty;
+var propIsEnumerable$1 = Object.prototype.propertyIsEnumerable;
+
+function toObject$1(val) {
+	if (val === null || val === undefined) {
+		throw new TypeError('Sources cannot be null or undefined');
+	}
+
+	return Object(val);
+}
+
+function assignKey(to, from, key) {
+	var val = from[key];
+
+	if (val === undefined || val === null) {
+		return;
+	}
+
+	if (hasOwnProperty$3.call(to, key)) {
+		if (to[key] === undefined || to[key] === null) {
+			throw new TypeError('Cannot convert undefined or null to object (' + key + ')');
+		}
+	}
+
+	if (!hasOwnProperty$3.call(to, key) || !isObj(val)) {
+		to[key] = val;
+	} else {
+		to[key] = assign$1(Object(to[key]), from[key]);
+	}
+}
+
+function assign$1(to, from) {
+	if (to === from) {
+		return to;
+	}
+
+	from = Object(from);
+
+	for (var key in from) {
+		if (hasOwnProperty$3.call(from, key)) {
+			assignKey(to, from, key);
+		}
+	}
+
+	if (Object.getOwnPropertySymbols) {
+		var symbols = Object.getOwnPropertySymbols(from);
+
+		for (var i = 0; i < symbols.length; i++) {
+			if (propIsEnumerable$1.call(from, symbols[i])) {
+				assignKey(to, from, symbols[i]);
+			}
+		}
+	}
+
+	return to;
+}
+
+var deepAssign = function deepAssign(target) {
+	target = toObject$1(target);
+
+	for (var s = 1; s < arguments.length; s++) {
+		assign$1(target, arguments[s]);
+	}
+
+	return target;
+};
+
+var settings = deepAssign({
+  remote: {
+    host: "",
+    routes: {
+      "schemas": "/api/schemas", // START HERE! Figure out how to load the schemas!
+      "current-user": "/api/user/current",
+      "logout": "/api/user/logout",
+      "do.requestCodeByEmail": "/api/auth/request",
+      "do.exchangeLoginCode2Token": "/api/auth/exchange"
+    }
+  },
+  ui: {
+    toast: {
+      autoClose: 5000,
+      position: 'TOP_CENTER'
+    }
+  }
+}, { "remote": {}, "license": { "copyright": "Glimrende SA" } });
 
 var __window = typeof window !== 'undefined' && window;
 var __self = typeof self !== 'undefined' && typeof WorkerGlobalScope !== 'undefined' &&
@@ -16532,10 +17367,10 @@ var isArray$4 = {
 	isArray: isArray_1
 };
 
-function isObject$4(x) {
+function isObject$2(x) {
     return x != null && typeof x === 'object';
 }
-var isObject_2 = isObject$4;
+var isObject_2 = isObject$2;
 //# sourceMappingURL=isObject.js.map
 
 var isObject_1 = {
@@ -20327,7 +21162,7 @@ var __extends$22 = (commonjsGlobal && commonjsGlobal.__extends) || function (d, 
 
 
 
-var toString$2 = Object.prototype.toString;
+var toString$3 = Object.prototype.toString;
 function isNodeStyleEventEmitter(sourceObj) {
     return !!sourceObj && typeof sourceObj.addListener === 'function' && typeof sourceObj.removeListener === 'function';
 }
@@ -20335,10 +21170,10 @@ function isJQueryStyleEventEmitter(sourceObj) {
     return !!sourceObj && typeof sourceObj.on === 'function' && typeof sourceObj.off === 'function';
 }
 function isNodeList(sourceObj) {
-    return !!sourceObj && toString$2.call(sourceObj) === '[object NodeList]';
+    return !!sourceObj && toString$3.call(sourceObj) === '[object NodeList]';
 }
 function isHTMLCollection(sourceObj) {
-    return !!sourceObj && toString$2.call(sourceObj) === '[object HTMLCollection]';
+    return !!sourceObj && toString$3.call(sourceObj) === '[object HTMLCollection]';
 }
 function isEventTarget(sourceObj) {
     return !!sourceObj && typeof sourceObj.addEventListener === 'function' && typeof sourceObj.removeEventListener === 'function';
@@ -23237,7 +24072,7 @@ var getAssign_1 = getAssign;
 var assign_1 = getAssign(root.root);
 //# sourceMappingURL=assign.js.map
 
-var assign$1 = {
+var assign$2 = {
 	assignImpl: assignImpl_1,
 	getAssign: getAssign_1,
 	assign: assign_1
@@ -23277,7 +24112,7 @@ var WebSocketSubject = (function (_super) {
             }
             else {
                 // WARNING: config object could override important members here.
-                assign$1.assign(this, urlConfigOrSource);
+                assign$2.assign(this, urlConfigOrSource);
             }
             if (!this.WebSocketCtor) {
                 throw new Error('no WebSocket constructor can be found');
@@ -26717,12 +27552,12 @@ var __extends$66 = (commonjsGlobal && commonjsGlobal.__extends) || function (d, 
  * @method filter
  * @owner Observable
  */
-function filter(predicate, thisArg) {
+function filter$1(predicate, thisArg) {
     return function filterOperatorFunction(source) {
         return source.lift(new FilterOperator(predicate, thisArg));
     };
 }
-var filter_2 = filter;
+var filter_2 = filter$1;
 var FilterOperator = (function () {
     function FilterOperator(predicate, thisArg) {
         this.predicate = predicate;
@@ -26769,10 +27604,10 @@ var filter_1 = {
 	filter: filter_2
 };
 
-function filter$1(predicate, thisArg) {
+function filter$2(predicate, thisArg) {
     return filter_1.filter(predicate, thisArg)(this);
 }
-var filter_3 = filter$1;
+var filter_3 = filter$2;
 //# sourceMappingURL=filter.js.map
 
 var filter_2$1 = {
@@ -35138,30 +35973,6 @@ var slicedToArray = function () {
   };
 }();
 
-
-
-
-
-
-
-
-
-
-
-var toArray$5 = function (arr) {
-  return Array.isArray(arr) ? arr : Array.from(arr);
-};
-
-var toConsumableArray = function (arr) {
-  if (Array.isArray(arr)) {
-    for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
-
-    return arr2;
-  } else {
-    return Array.from(arr);
-  }
-};
-
 var debug$4 = browser$1("rxstate");
 var debugComp = browser$1("rxstate.component");
 
@@ -35323,7 +36134,7 @@ var appActions = createActions(["authenticate$", "logout$"]);
 
 var accountActions = createActions(["submit$", "reset$"]);
 
-var bookingActions = createActions(["selectService$", "selectVariant$", "selectDate$", "selectTimeslot$", "fetchServiceAvailability$", "fetchServiceAvailabilityByDate$", "changeResourceCapacity$"]);
+createActions(["selectService$", "selectVariant$", "selectDate$", "selectTimeslot$", "fetchServiceAvailability$", "fetchServiceAvailabilityByDate$", "changeResourceCapacity$"]);
 
 var flashMessageActions = createActions(["push$", "pop$", "clear$"]);
 
@@ -35331,9 +36142,9 @@ var loginActions = createActions(["submit$", "reset$"]);
 
 var navTopActions = createActions(["navbarToggler$", "accountDropdown$"]);
 
-var registerActions = createActions(["submit$", "reset$"]);
+createActions(["submit$", "reset$"]);
 
-var cartActions = createActions(["submit$", "clear$", "add$", "remove$"]);
+createActions(["submit$", "clear$", "add$", "remove$"]);
 
 // http://jamesknelson.com/re-exporting-es6-modules/
 var flash = function flash(message, status) {
@@ -35361,9 +36172,36 @@ var authenticate = function authenticate() {
   appActions.authenticate$.next();
 };
 
-var debug$5 = browser$1('lib:makeAxiosResponseHandler');
+var debug$5 = browser$1('lib:xhr');
 
-var makeAxiosResponseHandler = (function () {
+// Custom axios instance
+var axios$2 = axios$1.create({
+  validateStatus: function validateStatus() {
+    return true;
+  },
+  withCredentials: true
+});
+
+// Reverse route and return a curried caller
+var xhr$3 = function xhr(routeName) {
+  var _my;
+
+  for (var _len = arguments.length, params = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    params[_key - 1] = arguments[_key];
+  }
+
+  var method = routeName.startsWith('do.') ? 'post' : 'get';
+
+  var route = (_my = my).reverseRoute.apply(_my, [routeName].concat(params));
+
+  return function () {
+    var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    return axios$2[method](route, data, options);
+  };
+};
+
+var xhrHandler = function xhrHandler() {
   var statusHandlers = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   var defaultHandler = arguments[1];
 
@@ -35386,14 +36224,156 @@ var makeAxiosResponseHandler = (function () {
 
     return handler(response.data, response);
   };
-});
+};
 
-var axios$2 = axios$1.create({
-  validateStatus: function validateStatus() {
-    return true;
-  },
-  withCredentials: true
-});
+var reverseRoute = function reverseRoute(routeName) {
+  for (var _len2 = arguments.length, params = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+    params[_key2 - 1] = arguments[_key2];
+  }
+
+  console.assert(settings.remote.routes, '"settings.remote.routes" not loaded!');
+
+  var route = settings.remote.routes[routeName];
+  var parsedPathname = void 0;
+
+  if (params.length == 1 && !~['string', 'number'].indexOf(_typeof(params[0]))) {
+    // `params[0]` contains a key-value-object.
+    // Use key-value-object and Replace `{paramName}` with corresponding key-value
+    parsedPathname = Object.entries(params[0]).reduce(function (route, _ref) {
+      var _ref2 = slicedToArray(_ref, 2),
+          key = _ref2[0],
+          value = _ref2[1];
+
+      return route.replace('{' + key + '}', value);
+    }, route);
+  } else {
+    // `params` is an array of values, so use "as-is" and replace sequentially for each pair of curlybrackets `{<whatever>}` in route
+    parsedPathname = params.reduce(function (route, param) {
+      return route.replace(/[{].*?[}]/, param);
+    }, route);
+  }
+
+  if (parsedPathname) {
+    console.assert(!parsedPathname.includes('{'), 'Not all params filled: ' + parsedPathname);
+    return normalizeUrl(settings.remote.host + '/' + parsedPathname);
+  } else throw new Error('Route not found: ' + routeName);
+};
+
+if (!"development".startsWith('prod')) {
+
+  console.warn("use 'localStorage.remoteHost' to override 'settings.remote.host'!");
+  if (window.localStorage.remoteHost) {
+    // Server cookie trumps all..
+    settings.remote.host = window.localStorage.remoteHost;
+  }
+
+  console.warn("use 'localStorage.toastAutoClose' to override 'settings.ui.toast.autoClose'!");
+  if (window.localStorage.toastAutoClose !== undefined) {
+    // Server cookie trumps all..
+    settings.ui.toast.autoClose = window.localStorage.toastAutoClose;
+  }
+
+  console.log("SETTINGS", settings);
+
+  // Utils for debugging
+  window.my = {
+    settings: function settings$$1(k, v) {
+      if (k && v != undefined) return dotProp.set(settings, k, v);
+      if (k && v == undefined) return dotProp.get(settings, k);
+      if (!k && v == undefined) return _extends({}, settings);
+    },
+    axios: axios$2,
+    reverseRoute: reverseRoute,
+    xhr: function xhr(routeName) {
+      var _my;
+
+      for (var _len = arguments.length, params = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        params[_key - 1] = arguments[_key];
+      }
+
+      var method = routeName.startsWith('do.') ? 'post' : 'get';
+
+      var route = (_my = my).reverseRoute.apply(_my, [routeName].concat(params));
+
+      console.log(route);
+
+      return function () {
+        var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+        var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        return axios$2[method](route, data, options).then(console.log);
+      };
+    }
+  };
+}
+
+/*!
+ * isobject <https://github.com/jonschlinkert/isobject>
+ *
+ * Copyright (c) 2014-2017, Jon Schlinkert.
+ * Released under the MIT License.
+ */
+
+var isobject = function isObject(val) {
+  return val != null && typeof val === 'object' && Array.isArray(val) === false;
+};
+
+function isObjectObject(o) {
+  return isobject(o) === true
+    && Object.prototype.toString.call(o) === '[object Object]';
+}
+
+var isPlainObject = function isPlainObject(o) {
+  var ctor,prot;
+
+  if (isObjectObject(o) === false) return false;
+
+  // If has modified constructor
+  ctor = o.constructor;
+  if (typeof ctor !== 'function') return false;
+
+  // If has modified prototype
+  prot = ctor.prototype;
+  if (isObjectObject(prot) === false) return false;
+
+  // If constructor does not have an Object-specific method
+  if (prot.hasOwnProperty('isPrototypeOf') === false) {
+    return false;
+  }
+
+  // Most likely a plain Object
+  return true;
+};
+
+var isExtendable = function isExtendable(val) {
+  return isPlainObject(val) || typeof val === 'function' || Array.isArray(val);
+};
+
+var object_omit = function omit(obj, props, fn) {
+  if (!isExtendable(obj)) return {};
+
+  if (typeof props === 'function') {
+    fn = props;
+    props = [];
+  }
+
+  if (typeof props === 'string') {
+    props = [props];
+  }
+
+  var isFunction = typeof fn === 'function';
+  var keys = Object.keys(obj);
+  var res = {};
+
+  for (var i = 0; i < keys.length; i++) {
+    var key = keys[i];
+    var val = obj[key];
+
+    if (!props || (props.indexOf(key) === -1 && (!isFunction || fn(val, key, obj)))) {
+      res[key] = val;
+    }
+  }
+  return res;
+};
 
 var objOmit = function objOmit(obj) {
   for (var _len = arguments.length, keys = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -35402,13 +36382,7 @@ var objOmit = function objOmit(obj) {
 
   return object_omit(obj, keys);
 };
-var objExtract = function objExtract(obj) {
-  for (var _len2 = arguments.length, keys = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-    keys[_key2 - 1] = arguments[_key2];
-  }
 
-  return filterObj(obj, keys);
-};
 
 var getCssRootVar = function getCssRootVar(varName) {
   return getComputedStyle(document.body).getPropertyValue(varName);
@@ -35448,1008 +36422,6 @@ var parseUrlSearchString = function parseUrlSearchString(q) {
   }, {});
 };
 
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-// resolves . and .. elements in a path array with directory names there
-// must be no slashes, empty elements, or device names (c:\) in the array
-// (so also no leading and trailing slashes - it does not distinguish
-// relative and absolute paths)
-
-
-// path.normalize(path)
-// posix version
-
-
-// posix version
-
-
-// posix version
-
-
-
-// path.relative(from, to)
-// posix version
-
-
-
-
-
-
-
-
-
-
-
-var substr = 'ab'.substr(-1) === 'b' ?
-    function (str, start, len) { return str.substr(start, len) } :
-    function (str, start, len) {
-        if (start < 0) start = str.length + start;
-        return str.substr(start, len);
-    };
-
-var isObj = function (x) {
-	var type = typeof x;
-	return x !== null && (type === 'object' || type === 'function');
-};
-
-var hasOwnProperty$2 = Object.prototype.hasOwnProperty;
-var propIsEnumerable = Object.prototype.propertyIsEnumerable;
-
-function toObject(val) {
-	if (val === null || val === undefined) {
-		throw new TypeError('Sources cannot be null or undefined');
-	}
-
-	return Object(val);
-}
-
-function assignKey(to, from, key) {
-	var val = from[key];
-
-	if (val === undefined || val === null) {
-		return;
-	}
-
-	if (hasOwnProperty$2.call(to, key)) {
-		if (to[key] === undefined || to[key] === null) {
-			throw new TypeError('Cannot convert undefined or null to object (' + key + ')');
-		}
-	}
-
-	if (!hasOwnProperty$2.call(to, key) || !isObj(val)) {
-		to[key] = val;
-	} else {
-		to[key] = assign$3(Object(to[key]), from[key]);
-	}
-}
-
-function assign$3(to, from) {
-	if (to === from) {
-		return to;
-	}
-
-	from = Object(from);
-
-	for (var key in from) {
-		if (hasOwnProperty$2.call(from, key)) {
-			assignKey(to, from, key);
-		}
-	}
-
-	if (Object.getOwnPropertySymbols) {
-		var symbols = Object.getOwnPropertySymbols(from);
-
-		for (var i = 0; i < symbols.length; i++) {
-			if (propIsEnumerable.call(from, symbols[i])) {
-				assignKey(to, from, symbols[i]);
-			}
-		}
-	}
-
-	return to;
-}
-
-var deepAssign = function deepAssign(target) {
-	target = toObject(target);
-
-	for (var s = 1; s < arguments.length; s++) {
-		assign$3(target, arguments[s]);
-	}
-
-	return target;
-};
-
-var strictUriEncode = function (str) {
-	return encodeURIComponent(str).replace(/[!'()*]/g, function (c) {
-		return '%' + c.charCodeAt(0).toString(16).toUpperCase();
-	});
-};
-
-/*
-object-assign
-(c) Sindre Sorhus
-@license MIT
-*/
-
-var getOwnPropertySymbols = Object.getOwnPropertySymbols;
-var hasOwnProperty$3 = Object.prototype.hasOwnProperty;
-var propIsEnumerable$1 = Object.prototype.propertyIsEnumerable;
-
-function toObject$1(val) {
-	if (val === null || val === undefined) {
-		throw new TypeError('Object.assign cannot be called with null or undefined');
-	}
-
-	return Object(val);
-}
-
-function shouldUseNative() {
-	try {
-		if (!Object.assign) {
-			return false;
-		}
-
-		// Detect buggy property enumeration order in older V8 versions.
-
-		// https://bugs.chromium.org/p/v8/issues/detail?id=4118
-		var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
-		test1[5] = 'de';
-		if (Object.getOwnPropertyNames(test1)[0] === '5') {
-			return false;
-		}
-
-		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
-		var test2 = {};
-		for (var i = 0; i < 10; i++) {
-			test2['_' + String.fromCharCode(i)] = i;
-		}
-		var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
-			return test2[n];
-		});
-		if (order2.join('') !== '0123456789') {
-			return false;
-		}
-
-		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
-		var test3 = {};
-		'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
-			test3[letter] = letter;
-		});
-		if (Object.keys(Object.assign({}, test3)).join('') !==
-				'abcdefghijklmnopqrst') {
-			return false;
-		}
-
-		return true;
-	} catch (err) {
-		// We don't expect any of the above to throw, but better to be safe.
-		return false;
-	}
-}
-
-var objectAssign = shouldUseNative() ? Object.assign : function (target, source) {
-	var from;
-	var to = toObject$1(target);
-	var symbols;
-
-	for (var s = 1; s < arguments.length; s++) {
-		from = Object(arguments[s]);
-
-		for (var key in from) {
-			if (hasOwnProperty$3.call(from, key)) {
-				to[key] = from[key];
-			}
-		}
-
-		if (getOwnPropertySymbols) {
-			symbols = getOwnPropertySymbols(from);
-			for (var i = 0; i < symbols.length; i++) {
-				if (propIsEnumerable$1.call(from, symbols[i])) {
-					to[symbols[i]] = from[symbols[i]];
-				}
-			}
-		}
-	}
-
-	return to;
-};
-
-var token = '%[a-f0-9]{2}';
-var singleMatcher = new RegExp(token, 'gi');
-var multiMatcher = new RegExp('(' + token + ')+', 'gi');
-
-function decodeComponents(components, split) {
-	try {
-		// Try to decode the entire string first
-		return decodeURIComponent(components.join(''));
-	} catch (err) {
-		// Do nothing
-	}
-
-	if (components.length === 1) {
-		return components;
-	}
-
-	split = split || 1;
-
-	// Split the array in 2 parts
-	var left = components.slice(0, split);
-	var right = components.slice(split);
-
-	return Array.prototype.concat.call([], decodeComponents(left), decodeComponents(right));
-}
-
-function decode$1(input) {
-	try {
-		return decodeURIComponent(input);
-	} catch (err) {
-		var tokens = input.match(singleMatcher);
-
-		for (var i = 1; i < tokens.length; i++) {
-			input = decodeComponents(tokens, i).join('');
-
-			tokens = input.match(singleMatcher);
-		}
-
-		return input;
-	}
-}
-
-function customDecodeURIComponent(input) {
-	// Keep track of all the replacements and prefill the map with the `BOM`
-	var replaceMap = {
-		'%FE%FF': '\uFFFD\uFFFD',
-		'%FF%FE': '\uFFFD\uFFFD'
-	};
-
-	var match = multiMatcher.exec(input);
-	while (match) {
-		try {
-			// Decode as big chunks as possible
-			replaceMap[match[0]] = decodeURIComponent(match[0]);
-		} catch (err) {
-			var result = decode$1(match[0]);
-
-			if (result !== match[0]) {
-				replaceMap[match[0]] = result;
-			}
-		}
-
-		match = multiMatcher.exec(input);
-	}
-
-	// Add `%C2` at the end of the map to make sure it does not replace the combinator before everything else
-	replaceMap['%C2'] = '\uFFFD';
-
-	var entries = Object.keys(replaceMap);
-
-	for (var i = 0; i < entries.length; i++) {
-		// Replace all decoded components
-		var key = entries[i];
-		input = input.replace(new RegExp(key, 'g'), replaceMap[key]);
-	}
-
-	return input;
-}
-
-var decodeUriComponent = function (encodedURI) {
-	if (typeof encodedURI !== 'string') {
-		throw new TypeError('Expected `encodedURI` to be of type `string`, got `' + typeof encodedURI + '`');
-	}
-
-	try {
-		encodedURI = encodedURI.replace(/\+/g, ' ');
-
-		// Try the built in decoder first
-		return decodeURIComponent(encodedURI);
-	} catch (err) {
-		// Fallback to a more advanced decoder
-		return customDecodeURIComponent(encodedURI);
-	}
-};
-
-function encoderForArrayFormat(opts) {
-	switch (opts.arrayFormat) {
-		case 'index':
-			return function (key, value, index) {
-				return value === null ? [
-					encode$2(key, opts),
-					'[',
-					index,
-					']'
-				].join('') : [
-					encode$2(key, opts),
-					'[',
-					encode$2(index, opts),
-					']=',
-					encode$2(value, opts)
-				].join('');
-			};
-
-		case 'bracket':
-			return function (key, value) {
-				return value === null ? encode$2(key, opts) : [
-					encode$2(key, opts),
-					'[]=',
-					encode$2(value, opts)
-				].join('');
-			};
-
-		default:
-			return function (key, value) {
-				return value === null ? encode$2(key, opts) : [
-					encode$2(key, opts),
-					'=',
-					encode$2(value, opts)
-				].join('');
-			};
-	}
-}
-
-function parserForArrayFormat(opts) {
-	var result;
-
-	switch (opts.arrayFormat) {
-		case 'index':
-			return function (key, value, accumulator) {
-				result = /\[(\d*)\]$/.exec(key);
-
-				key = key.replace(/\[\d*\]$/, '');
-
-				if (!result) {
-					accumulator[key] = value;
-					return;
-				}
-
-				if (accumulator[key] === undefined) {
-					accumulator[key] = {};
-				}
-
-				accumulator[key][result[1]] = value;
-			};
-
-		case 'bracket':
-			return function (key, value, accumulator) {
-				result = /(\[\])$/.exec(key);
-				key = key.replace(/\[\]$/, '');
-
-				if (!result) {
-					accumulator[key] = value;
-					return;
-				} else if (accumulator[key] === undefined) {
-					accumulator[key] = [value];
-					return;
-				}
-
-				accumulator[key] = [].concat(accumulator[key], value);
-			};
-
-		default:
-			return function (key, value, accumulator) {
-				if (accumulator[key] === undefined) {
-					accumulator[key] = value;
-					return;
-				}
-
-				accumulator[key] = [].concat(accumulator[key], value);
-			};
-	}
-}
-
-function encode$2(value, opts) {
-	if (opts.encode) {
-		return opts.strict ? strictUriEncode(value) : encodeURIComponent(value);
-	}
-
-	return value;
-}
-
-function keysSorter(input) {
-	if (Array.isArray(input)) {
-		return input.sort();
-	} else if (typeof input === 'object') {
-		return keysSorter(Object.keys(input)).sort(function (a, b) {
-			return Number(a) - Number(b);
-		}).map(function (key) {
-			return input[key];
-		});
-	}
-
-	return input;
-}
-
-var extract = function (str) {
-	var queryStart = str.indexOf('?');
-	if (queryStart === -1) {
-		return '';
-	}
-	return str.slice(queryStart + 1);
-};
-
-var parse$3 = function (str, opts) {
-	opts = objectAssign({arrayFormat: 'none'}, opts);
-
-	var formatter = parserForArrayFormat(opts);
-
-	// Create an object with no prototype
-	// https://github.com/sindresorhus/query-string/issues/47
-	var ret = Object.create(null);
-
-	if (typeof str !== 'string') {
-		return ret;
-	}
-
-	str = str.trim().replace(/^[?#&]/, '');
-
-	if (!str) {
-		return ret;
-	}
-
-	str.split('&').forEach(function (param) {
-		var parts = param.replace(/\+/g, ' ').split('=');
-		// Firefox (pre 40) decodes `%3D` to `=`
-		// https://github.com/sindresorhus/query-string/pull/37
-		var key = parts.shift();
-		var val = parts.length > 0 ? parts.join('=') : undefined;
-
-		// missing `=` should be `null`:
-		// http://w3.org/TR/2012/WD-url-20120524/#collect-url-parameters
-		val = val === undefined ? null : decodeUriComponent(val);
-
-		formatter(decodeUriComponent(key), val, ret);
-	});
-
-	return Object.keys(ret).sort().reduce(function (result, key) {
-		var val = ret[key];
-		if (Boolean(val) && typeof val === 'object' && !Array.isArray(val)) {
-			// Sort object keys, not values
-			result[key] = keysSorter(val);
-		} else {
-			result[key] = val;
-		}
-
-		return result;
-	}, Object.create(null));
-};
-
-var stringify$1 = function (obj, opts) {
-	var defaults = {
-		encode: true,
-		strict: true,
-		arrayFormat: 'none'
-	};
-
-	opts = objectAssign(defaults, opts);
-
-	if (opts.sort === false) {
-		opts.sort = function () {};
-	}
-
-	var formatter = encoderForArrayFormat(opts);
-
-	return obj ? Object.keys(obj).sort(opts.sort).map(function (key) {
-		var val = obj[key];
-
-		if (val === undefined) {
-			return '';
-		}
-
-		if (val === null) {
-			return encode$2(key, opts);
-		}
-
-		if (Array.isArray(val)) {
-			var result = [];
-
-			val.slice().forEach(function (val2) {
-				if (val2 === undefined) {
-					return;
-				}
-
-				result.push(formatter(key, val2, result.length));
-			});
-
-			return result.join('&');
-		}
-
-		return encode$2(key, opts) + '=' + encode$2(val, opts);
-	}).filter(function (x) {
-		return x.length > 0;
-	}).join('&') : '';
-};
-
-var parseUrl = function (str, opts) {
-	return {
-		url: str.split('?')[0] || '',
-		query: this.parse(this.extract(str), opts)
-	};
-};
-
-var queryString = {
-	extract: extract,
-	parse: parse$3,
-	stringify: stringify$1,
-	parseUrl: parseUrl
-};
-
-var prependHttp = createCommonjsModule(function (module) {
-module.exports = (url, opts) => {
-	if (typeof url !== 'string') {
-		throw new TypeError(`Expected \`url\` to be of type \`string\`, got \`${typeof url}\``);
-	}
-
-	url = url.trim();
-	opts = Object.assign({https: false}, opts);
-
-	if (/^\.*\/|^(?!localhost)\w+:/.test(url)) {
-		return url;
-	}
-
-	return url.replace(/^(?!(?:\w+:)?\/\/)/, opts.https ? 'https://' : 'http://');
-};
-});
-
-var toString$3 = Object.prototype.toString;
-
-var isPlainObj = function (x) {
-	var prototype;
-	return toString$3.call(x) === '[object Object]' && (prototype = Object.getPrototypeOf(x), prototype === null || prototype === Object.getPrototypeOf({}));
-};
-
-var sortKeys = createCommonjsModule(function (module) {
-module.exports = (obj, opts) => {
-	if (!isPlainObj(obj)) {
-		throw new TypeError('Expected a plain object');
-	}
-
-	opts = opts || {};
-
-	// DEPRECATED
-	if (typeof opts === 'function') {
-		throw new TypeError('Specify the compare function as an option instead');
-	}
-
-	const deep = opts.deep;
-	const seenInput = [];
-	const seenOutput = [];
-
-	const sortKeys = x => {
-		const seenIndex = seenInput.indexOf(x);
-
-		if (seenIndex !== -1) {
-			return seenOutput[seenIndex];
-		}
-
-		const ret = {};
-		const keys = Object.keys(x).sort(opts.compare);
-
-		seenInput.push(x);
-		seenOutput.push(ret);
-
-		for (let i = 0; i < keys.length; i++) {
-			const key = keys[i];
-			const val = x[key];
-
-			if (deep && Array.isArray(val)) {
-				const retArr = [];
-
-				for (let j = 0; j < val.length; j++) {
-					retArr[j] = isPlainObj(val[j]) ? sortKeys(val[j]) : val[j];
-				}
-
-				ret[key] = retArr;
-				continue;
-			}
-
-			ret[key] = deep && isPlainObj(val) ? sortKeys(val) : val;
-		}
-
-		return ret;
-	};
-
-	return sortKeys(obj);
-};
-});
-
-var punycode$2 = ( punycode$1 && punycode ) || punycode$1;
-
-var normalizeUrl = createCommonjsModule(function (module) {
-const DEFAULT_PORTS = {
-	'http:': 80,
-	'https:': 443,
-	'ftp:': 21
-};
-
-// Protocols that always contain a `//`` bit
-const slashedProtocol = {
-	http: true,
-	https: true,
-	ftp: true,
-	gopher: true,
-	file: true,
-	'http:': true,
-	'https:': true,
-	'ftp:': true,
-	'gopher:': true,
-	'file:': true
-};
-
-function testParameter(name, filters) {
-	return filters.some(filter => filter instanceof RegExp ? filter.test(name) : filter === name);
-}
-
-module.exports = (str, opts) => {
-	opts = Object.assign({
-		normalizeProtocol: true,
-		normalizeHttps: false,
-		stripFragment: true,
-		stripWWW: true,
-		removeQueryParameters: [/^utm_\w+/i],
-		removeTrailingSlash: true,
-		removeDirectoryIndex: false,
-		sortQueryParameters: true
-	}, opts);
-
-	if (typeof str !== 'string') {
-		throw new TypeError('Expected a string');
-	}
-
-	const hasRelativeProtocol = str.startsWith('//');
-
-	// Prepend protocol
-	str = prependHttp(str.trim()).replace(/^\/\//, 'http://');
-
-	const urlObj = url$2.parse(str);
-
-	if (opts.normalizeHttps && urlObj.protocol === 'https:') {
-		urlObj.protocol = 'http:';
-	}
-
-	if (!urlObj.hostname && !urlObj.pathname) {
-		throw new Error('Invalid URL');
-	}
-
-	// Prevent these from being used by `url.format`
-	delete urlObj.host;
-	delete urlObj.query;
-
-	// Remove fragment
-	if (opts.stripFragment) {
-		delete urlObj.hash;
-	}
-
-	// Remove default port
-	const port = DEFAULT_PORTS[urlObj.protocol];
-	if (Number(urlObj.port) === port) {
-		delete urlObj.port;
-	}
-
-	// Remove duplicate slashes
-	if (urlObj.pathname) {
-		urlObj.pathname = urlObj.pathname.replace(/\/{2,}/g, '/');
-	}
-
-	// Decode URI octets
-	if (urlObj.pathname) {
-		urlObj.pathname = decodeURI(urlObj.pathname);
-	}
-
-	// Remove directory index
-	if (opts.removeDirectoryIndex === true) {
-		opts.removeDirectoryIndex = [/^index\.[a-z]+$/];
-	}
-
-	if (Array.isArray(opts.removeDirectoryIndex) && opts.removeDirectoryIndex.length > 0) {
-		let pathComponents = urlObj.pathname.split('/');
-		const lastComponent = pathComponents[pathComponents.length - 1];
-
-		if (testParameter(lastComponent, opts.removeDirectoryIndex)) {
-			pathComponents = pathComponents.slice(0, pathComponents.length - 1);
-			urlObj.pathname = pathComponents.slice(1).join('/') + '/';
-		}
-	}
-
-	// Resolve relative paths, but only for slashed protocols
-	if (slashedProtocol[urlObj.protocol]) {
-		const domain = urlObj.protocol + '//' + urlObj.hostname;
-		const relative = url$2.resolve(domain, urlObj.pathname);
-		urlObj.pathname = relative.replace(domain, '');
-	}
-
-	if (urlObj.hostname) {
-		// IDN to Unicode
-		urlObj.hostname = punycode$2.toUnicode(urlObj.hostname).toLowerCase();
-
-		// Remove trailing dot
-		urlObj.hostname = urlObj.hostname.replace(/\.$/, '');
-
-		// Remove `www.`
-		if (opts.stripWWW) {
-			urlObj.hostname = urlObj.hostname.replace(/^www\./, '');
-		}
-	}
-
-	// Remove URL with empty query string
-	if (urlObj.search === '?') {
-		delete urlObj.search;
-	}
-
-	const queryParameters = queryString.parse(urlObj.search);
-
-	// Remove query unwanted parameters
-	if (Array.isArray(opts.removeQueryParameters)) {
-		for (const key in queryParameters) {
-			if (testParameter(key, opts.removeQueryParameters)) {
-				delete queryParameters[key];
-			}
-		}
-	}
-
-	// Sort query parameters
-	if (opts.sortQueryParameters) {
-		urlObj.search = queryString.stringify(sortKeys(queryParameters));
-	}
-
-	// Decode query parameters
-	if (urlObj.search !== null) {
-		urlObj.search = decodeURIComponent(urlObj.search);
-	}
-
-	// Take advantage of many of the Node `url` normalizations
-	str = url$2.format(urlObj);
-
-	// Remove ending `/`
-	if (opts.removeTrailingSlash || urlObj.pathname === '/') {
-		str = str.replace(/\/$/, '');
-	}
-
-	// Restore relative protocol, if applicable
-	if (hasRelativeProtocol && !opts.normalizeProtocol) {
-		str = str.replace(/^http:\/\//, '//');
-	}
-
-	return str;
-};
-});
-
-var settings = deepAssign({
-  remote: {
-    host: "",
-    routes: {
-      "schemas": "/api/schemas", // START HERE! Figure out how to load the schemas!
-      "current-user": "/api/user/current",
-      "do.requestCodeByEmail": "/api/auth/request",
-      "do.exchangeLoginCode2Token": "/api/auth/exchange",
-      "logout": "/api/auth/logout"
-    }
-  },
-  ui: {
-    toast: {
-      autoClose: 5000,
-      position: 'TOP_CENTER'
-    }
-  }
-}, { "remote": {}, "license": { "copyright": "Glimrende SA" } });
-
-var reverseRoute = function reverseRoute(routeName) {
-  for (var _len = arguments.length, params = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-    params[_key - 1] = arguments[_key];
-  }
-
-  console.assert(settings.remote.routes, '"settings.remote.routes" not loaded!');
-
-  var route = settings.remote.routes[routeName];
-  var parsedPathname = void 0;
-
-  if (params.length == 1 && !~['string', 'number'].indexOf(_typeof(params[0]))) {
-    // `params[0]` contains a key-value-object.
-    // Use key-value-object and Replace `{paramName}` with corresponding key-value
-    parsedPathname = Object.entries(params[0]).reduce(function (route, _ref) {
-      var _ref2 = slicedToArray(_ref, 2),
-          key = _ref2[0],
-          value = _ref2[1];
-
-      return route.replace('{' + key + '}', value);
-    }, route);
-  } else {
-    // `params` is an array of values, so use "as-is" and replace sequentially for each pair of curlybrackets `{<whatever>}` in route
-    parsedPathname = params.reduce(function (route, param) {
-      return route.replace(/[{].*?[}]/, param);
-    }, route);
-  }
-
-  if (parsedPathname) {
-    console.assert(!parsedPathname.includes('{'), 'Not all params filled: ' + parsedPathname);
-    return normalizeUrl(settings.remote.host + '/' + parsedPathname);
-  } else throw new Error('Route not found: ' + routeName);
-};
-
-function getPathSegments(path) {
-	const pathArr = path.split('.');
-	const parts = [];
-
-	for (let i = 0; i < pathArr.length; i++) {
-		let p = pathArr[i];
-
-		while (p[p.length - 1] === '\\' && pathArr[i + 1] !== undefined) {
-			p = p.slice(0, -1) + '.';
-			p += pathArr[++i];
-		}
-
-		parts.push(p);
-	}
-
-	return parts;
-}
-
-var dotProp = {
-	get(obj, path, value) {
-		if (!isObj(obj) || typeof path !== 'string') {
-			return value === undefined ? obj : value;
-		}
-
-		const pathArr = getPathSegments(path);
-
-		for (let i = 0; i < pathArr.length; i++) {
-			if (!Object.prototype.propertyIsEnumerable.call(obj, pathArr[i])) {
-				return value;
-			}
-
-			obj = obj[pathArr[i]];
-
-			if (obj === undefined || obj === null) {
-				// `obj` is either `undefined` or `null` so we want to stop the loop, and
-				// if this is not the last bit of the path, and
-				// if it did't return `undefined`
-				// it would return `null` if `obj` is `null`
-				// but we want `get({foo: null}, 'foo.bar')` to equal `undefined`, or the supplied value, not `null`
-				if (i !== pathArr.length - 1) {
-					return value;
-				}
-
-				break;
-			}
-		}
-
-		return obj;
-	},
-
-	set(obj, path, value) {
-		if (!isObj(obj) || typeof path !== 'string') {
-			return obj;
-		}
-
-		const root = obj;
-		const pathArr = getPathSegments(path);
-
-		for (let i = 0; i < pathArr.length; i++) {
-			const p = pathArr[i];
-
-			if (!isObj(obj[p])) {
-				obj[p] = {};
-			}
-
-			if (i === pathArr.length - 1) {
-				obj[p] = value;
-			}
-
-			obj = obj[p];
-		}
-
-		return root;
-	},
-
-	delete(obj, path) {
-		if (!isObj(obj) || typeof path !== 'string') {
-			return;
-		}
-
-		const pathArr = getPathSegments(path);
-
-		for (let i = 0; i < pathArr.length; i++) {
-			const p = pathArr[i];
-
-			if (i === pathArr.length - 1) {
-				delete obj[p];
-				return;
-			}
-
-			obj = obj[p];
-
-			if (!isObj(obj)) {
-				return;
-			}
-		}
-	},
-
-	has(obj, path) {
-		if (!isObj(obj) || typeof path !== 'string') {
-			return false;
-		}
-
-		const pathArr = getPathSegments(path);
-
-		for (let i = 0; i < pathArr.length; i++) {
-			if (isObj(obj)) {
-				if (!(pathArr[i] in obj)) {
-					return false;
-				}
-
-				obj = obj[pathArr[i]];
-			} else {
-				return false;
-			}
-		}
-
-		return true;
-	}
-};
-
-if (!"development".startsWith('prod')) {
-
-  console.warn("use 'localStorage.remoteHost' to override 'settings.remote.host'!");
-  if (window.localStorage.remoteHost) {
-    // Server cookie trumps all..
-    settings.remote.host = window.localStorage.remoteHost;
-  }
-
-  console.warn("use 'localStorage.toastAutoClose' to override 'settings.ui.toast.autoClose'!");
-  if (window.localStorage.toastAutoClose !== undefined) {
-    // Server cookie trumps all..
-    settings.ui.toast.autoClose = window.localStorage.toastAutoClose;
-  }
-
-  console.log("SETTINGS", settings);
-
-  // Utils for debugging
-  window.my = {
-    settings: function settings$$1(k, v) {
-      if (k && v != undefined) return dotProp.set(settings, k, v);
-      if (k && v == undefined) return dotProp.get(settings, k);
-      if (!k && v == undefined) return _extends({}, settings);
-    },
-    axios: axios$2,
-    reverseRoute: reverseRoute,
-    xhr: function xhr(_ref) {
-      var _ref2 = toArray$5(_ref),
-          routeName = _ref2[0],
-          params = _ref2.slice(1);
-
-      var _my;
-
-      var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      var responseHandler = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : console.log;
-
-      var method = routeName.startsWith('do.') ? 'post' : 'get';
-
-      var route = (_my = my).reverseRoute.apply(_my, [routeName].concat(toConsumableArray(params)));
-
-      axios$2[method](route, data).then(responseHandler);
-
-      return route;
-    }
-  };
-}
-
 var debug$6 = browser$1("lib:history$");
 
 var currentPathname = void 0;
@@ -36481,8 +36453,8 @@ var initialState = {
 };
 
 var fetchCurrentUser$ = new Subject$1().debug(debug$7, "FETCHCURRENTUSER").flatMap(function () {
-  return axios$2.get(reverseRoute('current-user'));
-}).map(makeAxiosResponseHandler({
+  return xhr$3('current-user')();
+}).map(xhrHandler({
   200: function _(data) {
     return data;
   },
@@ -36514,7 +36486,7 @@ var appReducer$ = Observable$1.of(function () {
     });
   };
 }), appActions.logout$.do(function () {
-  return axios$2.get(reverseRoute('logout'));
+  return xhr$3('logout')();
 }).do(function () {
   return redirect('/', 'Logged out!');
 }).map(function (_payload) {
@@ -36523,125 +36495,9 @@ var appReducer$ = Observable$1.of(function () {
   };
 }));
 
-var debug$8 = browser$1("reducers:loginreducer");
+var debug$8 = browser$1("reducers:navtopreducer");
 
 var initialState$1 = {
-  stepIdx: 0,
-  formData: {
-    email: 'gnimmelf@gmail.com'
-  },
-  errorSchema: {}
-};
-
-var requestCodeByEmail$ = new Subject$1().flatMap(function (_ref) {
-  var formData = _ref.formData;
-  return axios$2.post(reverseRoute('do.requestCodeByEmail'), formData);
-}).map(makeAxiosResponseHandler({
-  200: function _(data) {
-    flash("We have sent you an email with a logincode. Please copy and paste it below to log in.");
-    return { stepIdx: 1 };
-  },
-  422: function _(data) {
-    return myUiComponents.toast.warn(data.msg);
-  }
-}));
-
-var exchangeLoginCode2Token$ = new Subject$1().flatMap(function (_ref2) {
-  var formData = _ref2.formData;
-  return axios$2.post(reverseRoute('do.exchangeLoginCode2Token'), formData);
-}).map(makeAxiosResponseHandler({
-  200: function _(data) {
-    authenticate();
-    flash();
-    redirect(parseUrlSearchString(history.location.search)['redirect'] || '/', 'Logged in!');
-    return initialState$1;
-  },
-  422: function _(data) {
-    return myUiComponents.toast.warn(data.msg);
-  }
-}));
-
-var loginReducer$ = Observable$1.of(function () {
-  return initialState$1;
-}).merge(autoReduce(requestCodeByEmail$, exchangeLoginCode2Token$), loginActions.submit$.map(function (payload) {
-  return function (state) {
-    switch (state.stepIdx) {
-      case 0:
-        requestCodeByEmail$.next({ formData: payload.formData });
-        break;
-      case 1:
-        exchangeLoginCode2Token$.next({ formData: payload.formData });
-        break;
-    }
-    return _extends({}, state, {
-      formData: payload.formData
-    });
-  };
-}), loginActions.reset$.map(function (_payload) {
-  return function (_state) {
-    return initialState$1;
-  };
-}));
-
-var debug$9 = browser$1("reducers:registerreducer");
-
-var initialState$2 = {
-  formData: {
-    firstname: 'Flemming',
-    lastname: 'Hansen',
-    email: 'flemming2@glimrende.no',
-    mobile: '90066044',
-    password: 'Glimrende',
-    password_confirmation: 'Glimrende'
-  },
-  errorSchema: {},
-  errors: []
-};
-
-var doRegistration$ = new Subject$1().flatMap(function (_ref) {
-  var formData = _ref.formData;
-  return axios$2.post(reverseRoute('do.register'), formData);
-}).map(makeAxiosResponseHandler({
-  200: function _(res) {
-    redirect('/account', "Validerings-epost sent til " + payload.formData.email + ". F\xF8lg instruksene i e-posten for \xE5 logge inn.", {
-      autoClose: false
-    });
-    return initialState$2;
-  },
-  422: function _(res) {
-    flash.clear(Object.values(res.data.errors).join(', '), 'danger');
-    return {
-      errors: [],
-      errorSchema: Object.entries(res.data.errors).reduce(function (schema, _ref2) {
-        var _ref3 = slicedToArray(_ref2, 2),
-            key = _ref3[0],
-            msg = _ref3[1];
-
-        return Form.addSchemaError(schema, key, msg);
-      }, {})
-    };
-  }
-}));
-
-var registerReducer$ = Observable$1.of(function () {
-  return initialState$2;
-}).merge(autoReduce(doRegistration$), registerActions.submit$.do(function (payload) {
-  return doRegistration$.next({ formData: payload.formData });
-}).map(function (payload) {
-  return function (state) {
-    return {
-      formData: payload.formData
-    };
-  };
-}), registerActions.reset$.map(function (_payload) {
-  return function (_state) {
-    return initialState$2;
-  };
-}));
-
-var debug$10 = browser$1("reducers:navtopreducer");
-
-var initialState$3 = {
   accountDropdownIsOpen: false,
   navbarIsOpen: false
 };
@@ -36658,7 +36514,7 @@ var getMenuState = function getMenuState(payload, state, stateKey) {
 };
 
 var navTopReducer$ = Observable$1.of(function () {
-  return initialState$3;
+  return initialState$1;
 }).merge(navTopActions.accountDropdown$.map(function (payload) {
   return function (state) {
     return getMenuState(payload, state, 'accountDropdownIsOpen');
@@ -36669,14 +36525,72 @@ var navTopReducer$ = Observable$1.of(function () {
   };
 }));
 
-var debug$11 = browser$1("reducers:flashmessagereducer");
+var debug$9 = browser$1("reducers:loginreducer");
 
-var initialState$4 = {
+var initialState$2 = {
+  stepIdx: 0,
+  formData: {
+    email: 'gnimmelf@gmail.com'
+  },
+  errorSchema: {}
+};
+
+var requestCodeByEmail$ = new Subject$1().flatMap(function (_ref) {
+  var formData = _ref.formData;
+  return xhr$3('do.requestCodeByEmail')(formData);
+}).map(xhrHandler({
+  200: function _(data) {
+    return { stepIdx: 1 };
+  },
+  422: function _(data) {
+    return myUiComponents.toast.warn(data.msg);
+  }
+}));
+
+var exchangeLoginCode2Token$ = new Subject$1().flatMap(function (_ref2) {
+  var formData = _ref2.formData;
+  return xhr$3('do.exchangeLoginCode2Token')(formData);
+}).map(xhrHandler({
+  200: function _(data) {
+    authenticate();
+    redirect(parseUrlSearchString(history.location.search)['redirect'] || '/', 'Logged in!');
+    return initialState$2;
+  },
+  422: function _(data) {
+    return myUiComponents.toast.warn(data.msg);
+  }
+}));
+
+var loginReducer$ = Observable$1.of(function () {
+  return initialState$2;
+}).merge(autoReduce(requestCodeByEmail$, exchangeLoginCode2Token$), loginActions.submit$.map(function (payload) {
+  return function (state) {
+    switch (state.stepIdx) {
+      case 0:
+        requestCodeByEmail$.next({ formData: payload.formData });
+        break;
+      case 1:
+        exchangeLoginCode2Token$.next({ formData: payload.formData });
+        break;
+    }
+    return _extends({}, state, {
+      formData: payload.formData
+    });
+  };
+}), loginActions.reset$.map(function (_payload) {
+  return function (_state) {
+    return initialState$2;
+  };
+}));
+
+var debug$10 = browser$1("reducers:flashmessagereducer");
+
+var initialState$3 = {
   queue: []
 };
 
 var flashMessageReducer$ = Observable$1.of(function () {
-  return initialState$4;
+  return initialState$3;
 }).merge(flashMessageActions.push$.map(function (payload) {
   return function (state) {
     state.queue.unshift(payload);
@@ -36689,15 +36603,15 @@ var flashMessageReducer$ = Observable$1.of(function () {
   };
 }), flashMessageActions.clear$.map(function (_payload) {
   return function (_state) {
-    return _extends({}, initialState$4, {
+    return _extends({}, initialState$3, {
       queue: []
     });
   };
 }));
 
-var debug$12 = browser$1("reducers:accountreducer");
+var debug$11 = browser$1("reducers:accountreducer");
 
-var initialState$5 = {
+var initialState$4 = {
   errorSchema: {},
   errors: []
 };
@@ -36705,7 +36619,7 @@ var initialState$5 = {
 var getUpdateRequest$ = function getUpdateRequest$(payload) {
   return (
     // TODO! Pipe everything? -But need the `formData` as "context" all the way through...
-    Observable$1.from(axios$2.post(reverseRoute('do.edit'), payload.formData)).map(makeAxiosResponseHandler({
+    Observable$1.from(xhr$3('do.edit')(payload.formData)).map(xhrHandler({
       200: function _(res) {
         myUiComponents.toast.info('Konto oppdatert!');
         return {
@@ -36738,1321 +36652,10 @@ var getUpdateRequest$ = function getUpdateRequest$(payload) {
 };
 
 var accountReducer$ = Observable$1.of(function () {
-  return initialState$5;
+  return initialState$4;
 }).merge(accountActions.submit$.flatMap(getUpdateRequest$), accountActions.reset$.map(function (_payload) {
   return function (_state) {
-    return initialState$5;
-  };
-}));
-
-var debug$13 = browser$1("reducers:bookingreducer");
-
-var initialState$6 = {
-  // Selections
-  selectedService: undefined,
-  selectedVariant: undefined,
-  selectedDate: undefined,
-  // Data
-  servicesList: undefined,
-  serviceDatesList: undefined,
-  serviceDateVariantsList: undefined
-};
-
-var fetchServices$ = new Subject$1().flatMap(function () {
-  return axios$2.get(reverseRoute('services.list'));
-}).map(makeAxiosResponseHandler({
-  200: function _(res) {
-    return res.data.data;
-  }
-})).map(function (data) {
-  return data.map(function (service) {
-    return _extends({}, service, {
-      variants: service.variants.map(function (variant) {
-        return _extends({}, variant, {
-          name: variant.duration + " minutter"
-        });
-      })
-    });
-  });
-}).map(function (data) {
-  return {
-    servicesList: data,
-    selectedService: data[0],
-    selectedVariant: data[0].variants[0]
-  };
-}).do(function (data) {
-  return fetchServiceAvailability$.next({
-    serviceId: data.selectedService.id
-  });
-}).debug(debug$13, "FETCHSERVICES");
-
-var fetchServiceAvailability$ = new Subject$1().flatMap(function (_ref) {
-  var serviceId = _ref.serviceId;
-  return axios$2.get(reverseRoute('service-availability.list', serviceId));
-}).map(makeAxiosResponseHandler({
-  200: function _(res) {
-    return res.data.data;
-  }
-})).map(function (data) {
-  return {
-    serviceDatesList: data
-  };
-});
-
-var fetchServiceAvailabilityByDate$ = new Subject$1().flatMap(function (_ref2) {
-  var serviceId = _ref2.serviceId,
-      selectedDate = _ref2.selectedDate;
-  return axios$2.get(reverseRoute('service-availability-by-date.list', serviceId, selectedDate));
-}).map(makeAxiosResponseHandler({
-  200: function _(res) {
-    return res.data.data;
-  }
-})).map(function (data) {
-  return {
-    selectedDate: data.date,
-    serviceDateVariantsList: data.variants.map(function (variant) {
-      // Turn `timeslots` into an Array
-      var timeslots = data.variants.map(function (variant) {
-        return variant.timeslots;
-      });
-
-      var timeslotsList = Object.entries(timeslots[0] || []).map(function (_ref3) {
-        var _ref4 = slicedToArray(_ref3, 2),
-            timeStr = _ref4[0],
-            resourcesList = _ref4[1];
-
-        return {
-          startTime: timeStr,
-          resourcesList: resourcesList
-        };
-      });
-
-      return _extends({}, objOmit(variant, 'timeslots'), {
-        timeslotsList: timeslotsList
-      });
-    })
-  };
-});
-
-var changeResourceCapacity$ = new Subject$1().map(function (payload) {
-  return function (state) {
-
-    // TODO! Decrement some `capacities` for the reservation...?
-
-    return state;
-  };
-});
-
-Observable$1.of(function () {
-  return initialState$6;
-}).merge(autoReduce(fetchServices$, fetchServiceAvailability$, fetchServiceAvailabilityByDate$, takeOneWhen(function () {
-  return settings.remote.routes;
-}).do(function () {
-  return fetchServices$.next();
-})), changeResourceCapacity$, bookingActions.selectService$.map(function (_ref5) {
-  var serviceId = _ref5.serviceId;
-  return function (state) {
-    var selectedService = state.servicesList.find(function (s) {
-      return s.id == serviceId;
-    });
-    fetchServiceAvailability$.next({
-      serviceId: selectedService.id
-    });
-    return _extends({}, initialState$6, {
-      servicesList: state.servicesList,
-      selectedService: selectedService,
-      selectedVariant: selectedService.variants[0]
-    });
-  };
-}), bookingActions.selectVariant$.map(function (_ref6) {
-  var variantId = _ref6.variantId;
-  return function (state) {
-    return _extends({}, state, {
-      selectedVariant: state.selectedService.variants.find(function (v) {
-        return v.id == variantId;
-      })
-    });
-  };
-}), bookingActions.selectDate$.map(function (_ref7) {
-  var isoDateStr = _ref7.isoDateStr;
-  return function (state) {
-    fetchServiceAvailabilityByDate$.next({
-      serviceId: state.selectedService.id,
-      selectedDate: isoDateStr
-    });
-    return _extends({}, state, {
-      selectedDate: isoDateStr
-    });
-  };
-}), bookingActions.selectTimeslot$.map(function (_ref8) {
-  var startTime = _ref8.startTime,
-      selectedResource = _ref8.selectedResource;
-  return function (state) {
-
-    var description = [myAccounting.moment(state.selectedDate, "YYYY-MM-DD").format("DD.MM.YYYY"), state.selectedService.name, state.selectedVariant.name, selectedResource.serviceProvider.fullname, myAccounting.accounting.currency(selectedResource.price)].join(' ');
-
-    // START HERE! Figure out how to split the booking-data so that it passes to all corners gracefully!
-
-    cartActions.add$.next({
-      date: state.selectedDate,
-      startTime: startTime,
-      serviceProviderId: selectedResource.serviceProvider.id,
-      serviceId: state.selectedService.id,
-      variantId: state.selectedVariant.id,
-      description: description,
-      price: selectedResource.price,
-      hashKeys: ["date", "startTime", "variantId", "serviceProviderId"]
-    });
-
-    return state;
-  };
-}));
-
-var rusha = createCommonjsModule(function (module, exports) {
-(function webpackUniversalModuleDefinition(root, factory) {
-	module.exports = factory();
-})(typeof self !== 'undefined' ? self : commonjsGlobal, function() {
-return /******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
-/******/ })
-/************************************************************************/
-/******/ ([
-/* 0 */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/* eslint-env commonjs, browser */
-
-var RushaCore = __webpack_require__(5);
-
-var _require = __webpack_require__(1),
-    toHex = _require.toHex,
-    ceilHeapSize = _require.ceilHeapSize;
-
-var conv = __webpack_require__(6);
-
-// Calculate the length of buffer that the sha1 routine uses
-// including the padding.
-var padlen = function (len) {
-  for (len += 9; len % 64 > 0; len += 1) {}
-  return len;
-};
-
-var padZeroes = function (bin, len) {
-  var h8 = new Uint8Array(bin.buffer);
-  var om = len % 4,
-      align = len - om;
-  switch (om) {
-    case 0:
-      h8[align + 3] = 0;
-    case 1:
-      h8[align + 2] = 0;
-    case 2:
-      h8[align + 1] = 0;
-    case 3:
-      h8[align + 0] = 0;
-  }
-  for (var i = (len >> 2) + 1; i < bin.length; i++) {
-    bin[i] = 0;
-  }
-};
-
-var padData = function (bin, chunkLen, msgLen) {
-  bin[chunkLen >> 2] |= 0x80 << 24 - (chunkLen % 4 << 3);
-  // To support msgLen >= 2 GiB, use a float division when computing the
-  // high 32-bits of the big-endian message length in bits.
-  bin[((chunkLen >> 2) + 2 & ~0x0f) + 14] = msgLen / (1 << 29) | 0;
-  bin[((chunkLen >> 2) + 2 & ~0x0f) + 15] = msgLen << 3;
-};
-
-var getRawDigest = function (heap, padMaxChunkLen) {
-  var io = new Int32Array(heap, padMaxChunkLen + 320, 5);
-  var out = new Int32Array(5);
-  var arr = new DataView(out.buffer);
-  arr.setInt32(0, io[0], false);
-  arr.setInt32(4, io[1], false);
-  arr.setInt32(8, io[2], false);
-  arr.setInt32(12, io[3], false);
-  arr.setInt32(16, io[4], false);
-  return out;
-};
-
-var Rusha = function () {
-  function Rusha(chunkSize) {
-    _classCallCheck(this, Rusha);
-
-    chunkSize = chunkSize || 64 * 1024;
-    if (chunkSize % 64 > 0) {
-      throw new Error('Chunk size must be a multiple of 128 bit');
-    }
-    this._offset = 0;
-    this._maxChunkLen = chunkSize;
-    this._padMaxChunkLen = padlen(chunkSize);
-    // The size of the heap is the sum of:
-    // 1. The padded input message size
-    // 2. The extended space the algorithm needs (320 byte)
-    // 3. The 160 bit state the algoritm uses
-    this._heap = new ArrayBuffer(ceilHeapSize(this._padMaxChunkLen + 320 + 20));
-    this._h32 = new Int32Array(this._heap);
-    this._h8 = new Int8Array(this._heap);
-    this._core = new RushaCore({ Int32Array: Int32Array }, {}, this._heap);
-  }
-
-  Rusha.prototype._initState = function _initState(heap, padMsgLen) {
-    this._offset = 0;
-    var io = new Int32Array(heap, padMsgLen + 320, 5);
-    io[0] = 1732584193;
-    io[1] = -271733879;
-    io[2] = -1732584194;
-    io[3] = 271733878;
-    io[4] = -1009589776;
-  };
-
-  Rusha.prototype._padChunk = function _padChunk(chunkLen, msgLen) {
-    var padChunkLen = padlen(chunkLen);
-    var view = new Int32Array(this._heap, 0, padChunkLen >> 2);
-    padZeroes(view, chunkLen);
-    padData(view, chunkLen, msgLen);
-    return padChunkLen;
-  };
-
-  Rusha.prototype._write = function _write(data, chunkOffset, chunkLen, off) {
-    conv(data, this._h8, this._h32, chunkOffset, chunkLen, off || 0);
-  };
-
-  Rusha.prototype._coreCall = function _coreCall(data, chunkOffset, chunkLen, msgLen, finalize) {
-    var padChunkLen = chunkLen;
-    this._write(data, chunkOffset, chunkLen);
-    if (finalize) {
-      padChunkLen = this._padChunk(chunkLen, msgLen);
-    }
-    this._core.hash(padChunkLen, this._padMaxChunkLen);
-  };
-
-  Rusha.prototype.rawDigest = function rawDigest(str) {
-    var msgLen = str.byteLength || str.length || str.size || 0;
-    this._initState(this._heap, this._padMaxChunkLen);
-    var chunkOffset = 0,
-        chunkLen = this._maxChunkLen;
-    for (chunkOffset = 0; msgLen > chunkOffset + chunkLen; chunkOffset += chunkLen) {
-      this._coreCall(str, chunkOffset, chunkLen, msgLen, false);
-    }
-    this._coreCall(str, chunkOffset, msgLen - chunkOffset, msgLen, true);
-    return getRawDigest(this._heap, this._padMaxChunkLen);
-  };
-
-  Rusha.prototype.digest = function digest(str) {
-    return toHex(this.rawDigest(str).buffer);
-  };
-
-  Rusha.prototype.digestFromString = function digestFromString(str) {
-    return this.digest(str);
-  };
-
-  Rusha.prototype.digestFromBuffer = function digestFromBuffer(str) {
-    return this.digest(str);
-  };
-
-  Rusha.prototype.digestFromArrayBuffer = function digestFromArrayBuffer(str) {
-    return this.digest(str);
-  };
-
-  Rusha.prototype.resetState = function resetState() {
-    this._initState(this._heap, this._padMaxChunkLen);
-    return this;
-  };
-
-  Rusha.prototype.append = function append(chunk) {
-    var chunkOffset = 0;
-    var chunkLen = chunk.byteLength || chunk.length || chunk.size || 0;
-    var turnOffset = this._offset % this._maxChunkLen;
-    var inputLen = void 0;
-
-    this._offset += chunkLen;
-    while (chunkOffset < chunkLen) {
-      inputLen = Math.min(chunkLen - chunkOffset, this._maxChunkLen - turnOffset);
-      this._write(chunk, chunkOffset, inputLen, turnOffset);
-      turnOffset += inputLen;
-      chunkOffset += inputLen;
-      if (turnOffset === this._maxChunkLen) {
-        this._core.hash(this._maxChunkLen, this._padMaxChunkLen);
-        turnOffset = 0;
-      }
-    }
-    return this;
-  };
-
-  Rusha.prototype.getState = function getState() {
-    var turnOffset = this._offset % this._maxChunkLen;
-    var heap = void 0;
-    if (!turnOffset) {
-      var io = new Int32Array(this._heap, this._padMaxChunkLen + 320, 5);
-      heap = io.buffer.slice(io.byteOffset, io.byteOffset + io.byteLength);
-    } else {
-      heap = this._heap.slice(0);
-    }
-    return {
-      offset: this._offset,
-      heap: heap
-    };
-  };
-
-  Rusha.prototype.setState = function setState(state) {
-    this._offset = state.offset;
-    if (state.heap.byteLength === 20) {
-      var io = new Int32Array(this._heap, this._padMaxChunkLen + 320, 5);
-      io.set(new Int32Array(state.heap));
-    } else {
-      this._h32.set(new Int32Array(state.heap));
-    }
-    return this;
-  };
-
-  Rusha.prototype.rawEnd = function rawEnd() {
-    var msgLen = this._offset;
-    var chunkLen = msgLen % this._maxChunkLen;
-    var padChunkLen = this._padChunk(chunkLen, msgLen);
-    this._core.hash(padChunkLen, this._padMaxChunkLen);
-    var result = getRawDigest(this._heap, this._padMaxChunkLen);
-    this._initState(this._heap, this._padMaxChunkLen);
-    return result;
-  };
-
-  Rusha.prototype.end = function end() {
-    return toHex(this.rawEnd().buffer);
-  };
-
-  return Rusha;
-}();
-
-module.exports = Rusha;
-module.exports._core = RushaCore;
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports) {
-
-/* eslint-env commonjs, browser */
-
-//
-// toHex
-//
-
-var precomputedHex = new Array(256);
-for (var i = 0; i < 256; i++) {
-  precomputedHex[i] = (i < 0x10 ? '0' : '') + i.toString(16);
-}
-
-module.exports.toHex = function (arrayBuffer) {
-  var binarray = new Uint8Array(arrayBuffer);
-  var res = new Array(arrayBuffer.byteLength);
-  for (var _i = 0; _i < res.length; _i++) {
-    res[_i] = precomputedHex[binarray[_i]];
-  }
-  return res.join('');
-};
-
-//
-// ceilHeapSize
-//
-
-module.exports.ceilHeapSize = function (v) {
-  // The asm.js spec says:
-  // The heap object's byteLength must be either
-  // 2^n for n in [12, 24) or 2^24 * n for n ≥ 1.
-  // Also, byteLengths smaller than 2^16 are deprecated.
-  var p = 0;
-  // If v is smaller than 2^16, the smallest possible solution
-  // is 2^16.
-  if (v <= 65536) return 65536;
-  // If v < 2^24, we round up to 2^n,
-  // otherwise we round up to 2^24 * n.
-  if (v < 16777216) {
-    for (p = 1; p < v; p = p << 1) {}
-  } else {
-    for (p = 16777216; p < v; p += 16777216) {}
-  }
-  return p;
-};
-
-//
-// isDedicatedWorkerScope
-//
-
-module.exports.isDedicatedWorkerScope = function (self) {
-  var isRunningInWorker = 'WorkerGlobalScope' in self && self instanceof self.WorkerGlobalScope;
-  var isRunningInSharedWorker = 'SharedWorkerGlobalScope' in self && self instanceof self.SharedWorkerGlobalScope;
-  var isRunningInServiceWorker = 'ServiceWorkerGlobalScope' in self && self instanceof self.ServiceWorkerGlobalScope;
-
-  // Detects whether we run inside a dedicated worker or not.
-  //
-  // We can't just check for `DedicatedWorkerGlobalScope`, since IE11
-  // has a bug where it only supports `WorkerGlobalScope`.
-  //
-  // Therefore, we consider us as running inside a dedicated worker
-  // when we are running inside a worker, but not in a shared or service worker.
-  //
-  // When new types of workers are introduced, we will need to adjust this code.
-  return isRunningInWorker && !isRunningInSharedWorker && !isRunningInServiceWorker;
-};
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* eslint-env commonjs, worker */
-
-module.exports = function () {
-  var Rusha = __webpack_require__(0);
-
-  var hashData = function (hasher, data, cb) {
-    try {
-      return cb(null, hasher.digest(data));
-    } catch (e) {
-      return cb(e);
-    }
-  };
-
-  var hashFile = function (hasher, readTotal, blockSize, file, cb) {
-    var reader = new self.FileReader();
-    reader.onloadend = function onloadend() {
-      if (reader.error) {
-        return cb(reader.error);
-      }
-      var buffer = reader.result;
-      readTotal += reader.result.byteLength;
-      try {
-        hasher.append(buffer);
-      } catch (e) {
-        cb(e);
-        return;
-      }
-      if (readTotal < file.size) {
-        hashFile(hasher, readTotal, blockSize, file, cb);
-      } else {
-        cb(null, hasher.end());
-      }
-    };
-    reader.readAsArrayBuffer(file.slice(readTotal, readTotal + blockSize));
-  };
-
-  var workerBehaviourEnabled = true;
-
-  self.onmessage = function (event) {
-    if (!workerBehaviourEnabled) {
-      return;
-    }
-
-    var data = event.data.data,
-        file = event.data.file,
-        id = event.data.id;
-    if (typeof id === 'undefined') return;
-    if (!file && !data) return;
-    var blockSize = event.data.blockSize || 4 * 1024 * 1024;
-    var hasher = new Rusha(blockSize);
-    hasher.resetState();
-    var done = function (err, hash) {
-      if (!err) {
-        self.postMessage({ id: id, hash: hash });
-      } else {
-        self.postMessage({ id: id, error: err.name });
-      }
-    };
-    if (data) hashData(hasher, data, done);
-    if (file) hashFile(hasher, 0, blockSize, file, done);
-  };
-
-  return function () {
-    workerBehaviourEnabled = false;
-  };
-};
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* eslint-env commonjs, browser */
-
-var work = __webpack_require__(4);
-var Rusha = __webpack_require__(0);
-var createHash = __webpack_require__(7);
-var runWorker = __webpack_require__(2);
-
-var _require = __webpack_require__(1),
-    isDedicatedWorkerScope = _require.isDedicatedWorkerScope;
-
-var isRunningInDedicatedWorker = typeof self !== 'undefined' && isDedicatedWorkerScope(self);
-
-Rusha.disableWorkerBehaviour = isRunningInDedicatedWorker ? runWorker() : function () {};
-
-Rusha.createWorker = function () {
-  var worker = work(/*require.resolve*/(2));
-  var terminate = worker.terminate;
-  worker.terminate = function () {
-    URL.revokeObjectURL(worker.objectURL);
-    terminate.call(worker);
-  };
-  return worker;
-};
-
-Rusha.createHash = createHash;
-
-module.exports = Rusha;
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-function webpackBootstrapFunc (modules) {
-/******/  // The module cache
-/******/  var installedModules = {};
-
-/******/  // The require function
-/******/  function __webpack_require__(moduleId) {
-
-/******/    // Check if module is in cache
-/******/    if(installedModules[moduleId])
-/******/      return installedModules[moduleId].exports;
-
-/******/    // Create a new module (and put it into the cache)
-/******/    var module = installedModules[moduleId] = {
-/******/      i: moduleId,
-/******/      l: false,
-/******/      exports: {}
-/******/    };
-
-/******/    // Execute the module function
-/******/    modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-
-/******/    // Flag the module as loaded
-/******/    module.l = true;
-
-/******/    // Return the exports of the module
-/******/    return module.exports;
-/******/  }
-
-/******/  // expose the modules object (__webpack_modules__)
-/******/  __webpack_require__.m = modules;
-
-/******/  // expose the module cache
-/******/  __webpack_require__.c = installedModules;
-
-/******/  // identity function for calling harmony imports with the correct context
-/******/  __webpack_require__.i = function(value) { return value; };
-
-/******/  // define getter function for harmony exports
-/******/  __webpack_require__.d = function(exports, name, getter) {
-/******/    if(!__webpack_require__.o(exports, name)) {
-/******/      Object.defineProperty(exports, name, {
-/******/        configurable: false,
-/******/        enumerable: true,
-/******/        get: getter
-/******/      });
-/******/    }
-/******/  };
-
-/******/  // define __esModule on exports
-/******/  __webpack_require__.r = function(exports) {
-/******/    Object.defineProperty(exports, '__esModule', { value: true });
-/******/  };
-
-/******/  // getDefaultExport function for compatibility with non-harmony modules
-/******/  __webpack_require__.n = function(module) {
-/******/    var getter = module && module.__esModule ?
-/******/      function getDefault() { return module['default']; } :
-/******/      function getModuleExports() { return module; };
-/******/    __webpack_require__.d(getter, 'a', getter);
-/******/    return getter;
-/******/  };
-
-/******/  // Object.prototype.hasOwnProperty.call
-/******/  __webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-
-/******/  // __webpack_public_path__
-/******/  __webpack_require__.p = "/";
-
-/******/  // on error function for async loading
-/******/  __webpack_require__.oe = function(err) { console.error(err); throw err; };
-
-  var f = __webpack_require__(__webpack_require__.s = ENTRY_MODULE);
-  return f.default || f // try to call default if defined to also support babel esmodule exports
-}
-
-var moduleNameReqExp = '[\\.|\\-|\\+|\\w|\/|@]+';
-var dependencyRegExp = '\\((\/\\*.*?\\*\/)?\s?.*?(' + moduleNameReqExp + ').*?\\)'; // additional chars when output.pathinfo is true
-
-// http://stackoverflow.com/a/2593661/130442
-function quoteRegExp (str) {
-  return (str + '').replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&')
-}
-
-function getModuleDependencies (sources, module, queueName) {
-  var retval = {};
-  retval[queueName] = [];
-
-  var fnString = module.toString();
-  var wrapperSignature = fnString.match(/^function\s?\(\w+,\s*\w+,\s*(\w+)\)/);
-  if (!wrapperSignature) return retval
-  var webpackRequireName = wrapperSignature[1];
-
-  // main bundle deps
-  var re = new RegExp('(\\\\n|\\W)' + quoteRegExp(webpackRequireName) + dependencyRegExp, 'g');
-  var match;
-  while ((match = re.exec(fnString))) {
-    if (match[3] === 'dll-reference') continue
-    retval[queueName].push(match[3]);
-  }
-
-  // dll deps
-  re = new RegExp('\\(' + quoteRegExp(webpackRequireName) + '\\("(dll-reference\\s(' + moduleNameReqExp + '))"\\)\\)' + dependencyRegExp, 'g');
-  while ((match = re.exec(fnString))) {
-    if (!sources[match[2]]) {
-      retval[queueName].push(match[1]);
-      sources[match[2]] = __webpack_require__(match[1]).m;
-    }
-    retval[match[2]] = retval[match[2]] || [];
-    retval[match[2]].push(match[4]);
-  }
-
-  return retval
-}
-
-function hasValuesInQueues (queues) {
-  var keys = Object.keys(queues);
-  return keys.reduce(function (hasValues, key) {
-    return hasValues || queues[key].length > 0
-  }, false)
-}
-
-function getRequiredModules (sources, moduleId) {
-  var modulesQueue = {
-    main: [moduleId]
-  };
-  var requiredModules = {
-    main: []
-  };
-  var seenModules = {
-    main: {}
-  };
-
-  while (hasValuesInQueues(modulesQueue)) {
-    var queues = Object.keys(modulesQueue);
-    for (var i = 0; i < queues.length; i++) {
-      var queueName = queues[i];
-      var queue = modulesQueue[queueName];
-      var moduleToCheck = queue.pop();
-      seenModules[queueName] = seenModules[queueName] || {};
-      if (seenModules[queueName][moduleToCheck] || !sources[queueName][moduleToCheck]) continue
-      seenModules[queueName][moduleToCheck] = true;
-      requiredModules[queueName] = requiredModules[queueName] || [];
-      requiredModules[queueName].push(moduleToCheck);
-      var newModules = getModuleDependencies(sources, sources[queueName][moduleToCheck], queueName);
-      var newModulesKeys = Object.keys(newModules);
-      for (var j = 0; j < newModulesKeys.length; j++) {
-        modulesQueue[newModulesKeys[j]] = modulesQueue[newModulesKeys[j]] || [];
-        modulesQueue[newModulesKeys[j]] = modulesQueue[newModulesKeys[j]].concat(newModules[newModulesKeys[j]]);
-      }
-    }
-  }
-
-  return requiredModules
-}
-
-module.exports = function (moduleId, options) {
-  options = options || {};
-  var sources = {
-    main: __webpack_require__.m
-  };
-
-  var requiredModules = options.all ? { main: Object.keys(sources) } : getRequiredModules(sources, moduleId);
-
-  var src = '';
-
-  Object.keys(requiredModules).filter(function (m) { return m !== 'main' }).forEach(function (module) {
-    var entryModule = 0;
-    while (requiredModules[module][entryModule]) {
-      entryModule++;
-    }
-    requiredModules[module].push(entryModule);
-    sources[module][entryModule] = '(function(module, exports, __webpack_require__) { module.exports = __webpack_require__; })';
-    src = src + 'var ' + module + ' = (' + webpackBootstrapFunc.toString().replace('ENTRY_MODULE', JSON.stringify(entryModule)) + ')({' + requiredModules[module].map(function (id) { return '' + JSON.stringify(id) + ': ' + sources[module][id].toString() }).join(',') + '});\n';
-  });
-
-  src = src + '(' + webpackBootstrapFunc.toString().replace('ENTRY_MODULE', JSON.stringify(moduleId)) + ')({' + requiredModules.main.map(function (id) { return '' + JSON.stringify(id) + ': ' + sources.main[id].toString() }).join(',') + '})(self);';
-
-  var blob = new window.Blob([src], { type: 'text/javascript' });
-  if (options.bare) { return blob }
-
-  var URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
-
-  var workerUrl = URL.createObjectURL(blob);
-  var worker = new window.Worker(workerUrl);
-  worker.objectURL = workerUrl;
-
-  return worker
-};
-
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports) {
-
-// The low-level RushCore module provides the heart of Rusha,
-// a high-speed sha1 implementation working on an Int32Array heap.
-// At first glance, the implementation seems complicated, however
-// with the SHA1 spec at hand, it is obvious this almost a textbook
-// implementation that has a few functions hand-inlined and a few loops
-// hand-unrolled.
-module.exports = function RushaCore(stdlib$846, foreign$847, heap$848) {
-    'use asm';
-    var H$849 = new stdlib$846.Int32Array(heap$848);
-    function hash$850(k$851, x$852) {
-        // k in bytes
-        k$851 = k$851 | 0;
-        x$852 = x$852 | 0;
-        var i$853 = 0, j$854 = 0, y0$855 = 0, z0$856 = 0, y1$857 = 0, z1$858 = 0, y2$859 = 0, z2$860 = 0, y3$861 = 0, z3$862 = 0, y4$863 = 0, z4$864 = 0, t0$865 = 0, t1$866 = 0;
-        y0$855 = H$849[x$852 + 320 >> 2] | 0;
-        y1$857 = H$849[x$852 + 324 >> 2] | 0;
-        y2$859 = H$849[x$852 + 328 >> 2] | 0;
-        y3$861 = H$849[x$852 + 332 >> 2] | 0;
-        y4$863 = H$849[x$852 + 336 >> 2] | 0;
-        for (i$853 = 0; (i$853 | 0) < (k$851 | 0); i$853 = i$853 + 64 | 0) {
-            z0$856 = y0$855;
-            z1$858 = y1$857;
-            z2$860 = y2$859;
-            z3$862 = y3$861;
-            z4$864 = y4$863;
-            for (j$854 = 0; (j$854 | 0) < 64; j$854 = j$854 + 4 | 0) {
-                t1$866 = H$849[i$853 + j$854 >> 2] | 0;
-                t0$865 = ((y0$855 << 5 | y0$855 >>> 27) + (y1$857 & y2$859 | ~y1$857 & y3$861) | 0) + ((t1$866 + y4$863 | 0) + 1518500249 | 0) | 0;
-                y4$863 = y3$861;
-                y3$861 = y2$859;
-                y2$859 = y1$857 << 30 | y1$857 >>> 2;
-                y1$857 = y0$855;
-                y0$855 = t0$865;
-                H$849[k$851 + j$854 >> 2] = t1$866;
-            }
-            for (j$854 = k$851 + 64 | 0; (j$854 | 0) < (k$851 + 80 | 0); j$854 = j$854 + 4 | 0) {
-                t1$866 = (H$849[j$854 - 12 >> 2] ^ H$849[j$854 - 32 >> 2] ^ H$849[j$854 - 56 >> 2] ^ H$849[j$854 - 64 >> 2]) << 1 | (H$849[j$854 - 12 >> 2] ^ H$849[j$854 - 32 >> 2] ^ H$849[j$854 - 56 >> 2] ^ H$849[j$854 - 64 >> 2]) >>> 31;
-                t0$865 = ((y0$855 << 5 | y0$855 >>> 27) + (y1$857 & y2$859 | ~y1$857 & y3$861) | 0) + ((t1$866 + y4$863 | 0) + 1518500249 | 0) | 0;
-                y4$863 = y3$861;
-                y3$861 = y2$859;
-                y2$859 = y1$857 << 30 | y1$857 >>> 2;
-                y1$857 = y0$855;
-                y0$855 = t0$865;
-                H$849[j$854 >> 2] = t1$866;
-            }
-            for (j$854 = k$851 + 80 | 0; (j$854 | 0) < (k$851 + 160 | 0); j$854 = j$854 + 4 | 0) {
-                t1$866 = (H$849[j$854 - 12 >> 2] ^ H$849[j$854 - 32 >> 2] ^ H$849[j$854 - 56 >> 2] ^ H$849[j$854 - 64 >> 2]) << 1 | (H$849[j$854 - 12 >> 2] ^ H$849[j$854 - 32 >> 2] ^ H$849[j$854 - 56 >> 2] ^ H$849[j$854 - 64 >> 2]) >>> 31;
-                t0$865 = ((y0$855 << 5 | y0$855 >>> 27) + (y1$857 ^ y2$859 ^ y3$861) | 0) + ((t1$866 + y4$863 | 0) + 1859775393 | 0) | 0;
-                y4$863 = y3$861;
-                y3$861 = y2$859;
-                y2$859 = y1$857 << 30 | y1$857 >>> 2;
-                y1$857 = y0$855;
-                y0$855 = t0$865;
-                H$849[j$854 >> 2] = t1$866;
-            }
-            for (j$854 = k$851 + 160 | 0; (j$854 | 0) < (k$851 + 240 | 0); j$854 = j$854 + 4 | 0) {
-                t1$866 = (H$849[j$854 - 12 >> 2] ^ H$849[j$854 - 32 >> 2] ^ H$849[j$854 - 56 >> 2] ^ H$849[j$854 - 64 >> 2]) << 1 | (H$849[j$854 - 12 >> 2] ^ H$849[j$854 - 32 >> 2] ^ H$849[j$854 - 56 >> 2] ^ H$849[j$854 - 64 >> 2]) >>> 31;
-                t0$865 = ((y0$855 << 5 | y0$855 >>> 27) + (y1$857 & y2$859 | y1$857 & y3$861 | y2$859 & y3$861) | 0) + ((t1$866 + y4$863 | 0) - 1894007588 | 0) | 0;
-                y4$863 = y3$861;
-                y3$861 = y2$859;
-                y2$859 = y1$857 << 30 | y1$857 >>> 2;
-                y1$857 = y0$855;
-                y0$855 = t0$865;
-                H$849[j$854 >> 2] = t1$866;
-            }
-            for (j$854 = k$851 + 240 | 0; (j$854 | 0) < (k$851 + 320 | 0); j$854 = j$854 + 4 | 0) {
-                t1$866 = (H$849[j$854 - 12 >> 2] ^ H$849[j$854 - 32 >> 2] ^ H$849[j$854 - 56 >> 2] ^ H$849[j$854 - 64 >> 2]) << 1 | (H$849[j$854 - 12 >> 2] ^ H$849[j$854 - 32 >> 2] ^ H$849[j$854 - 56 >> 2] ^ H$849[j$854 - 64 >> 2]) >>> 31;
-                t0$865 = ((y0$855 << 5 | y0$855 >>> 27) + (y1$857 ^ y2$859 ^ y3$861) | 0) + ((t1$866 + y4$863 | 0) - 899497514 | 0) | 0;
-                y4$863 = y3$861;
-                y3$861 = y2$859;
-                y2$859 = y1$857 << 30 | y1$857 >>> 2;
-                y1$857 = y0$855;
-                y0$855 = t0$865;
-                H$849[j$854 >> 2] = t1$866;
-            }
-            y0$855 = y0$855 + z0$856 | 0;
-            y1$857 = y1$857 + z1$858 | 0;
-            y2$859 = y2$859 + z2$860 | 0;
-            y3$861 = y3$861 + z3$862 | 0;
-            y4$863 = y4$863 + z4$864 | 0;
-        }
-        H$849[x$852 + 320 >> 2] = y0$855;
-        H$849[x$852 + 324 >> 2] = y1$857;
-        H$849[x$852 + 328 >> 2] = y2$859;
-        H$849[x$852 + 332 >> 2] = y3$861;
-        H$849[x$852 + 336 >> 2] = y4$863;
-    }
-    return { hash: hash$850 };
-};
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports) {
-
-var _this = this;
-
-/* eslint-env commonjs, browser */
-
-var reader = void 0;
-if (typeof self !== 'undefined' && typeof self.FileReaderSync !== 'undefined') {
-  reader = new self.FileReaderSync();
-}
-
-// Convert a binary string and write it to the heap.
-// A binary string is expected to only contain char codes < 256.
-var convStr = function (str, H8, H32, start, len, off) {
-  var i = void 0,
-      om = off % 4,
-      lm = (len + om) % 4,
-      j = len - lm;
-  switch (om) {
-    case 0:
-      H8[off] = str.charCodeAt(start + 3);
-    case 1:
-      H8[off + 1 - (om << 1) | 0] = str.charCodeAt(start + 2);
-    case 2:
-      H8[off + 2 - (om << 1) | 0] = str.charCodeAt(start + 1);
-    case 3:
-      H8[off + 3 - (om << 1) | 0] = str.charCodeAt(start);
-  }
-  if (len < lm + (4 - om)) {
-    return;
-  }
-  for (i = 4 - om; i < j; i = i + 4 | 0) {
-    H32[off + i >> 2] = str.charCodeAt(start + i) << 24 | str.charCodeAt(start + i + 1) << 16 | str.charCodeAt(start + i + 2) << 8 | str.charCodeAt(start + i + 3);
-  }
-  switch (lm) {
-    case 3:
-      H8[off + j + 1 | 0] = str.charCodeAt(start + j + 2);
-    case 2:
-      H8[off + j + 2 | 0] = str.charCodeAt(start + j + 1);
-    case 1:
-      H8[off + j + 3 | 0] = str.charCodeAt(start + j);
-  }
-};
-
-// Convert a buffer or array and write it to the heap.
-// The buffer or array is expected to only contain elements < 256.
-var convBuf = function (buf, H8, H32, start, len, off) {
-  var i = void 0,
-      om = off % 4,
-      lm = (len + om) % 4,
-      j = len - lm;
-  switch (om) {
-    case 0:
-      H8[off] = buf[start + 3];
-    case 1:
-      H8[off + 1 - (om << 1) | 0] = buf[start + 2];
-    case 2:
-      H8[off + 2 - (om << 1) | 0] = buf[start + 1];
-    case 3:
-      H8[off + 3 - (om << 1) | 0] = buf[start];
-  }
-  if (len < lm + (4 - om)) {
-    return;
-  }
-  for (i = 4 - om; i < j; i = i + 4 | 0) {
-    H32[off + i >> 2 | 0] = buf[start + i] << 24 | buf[start + i + 1] << 16 | buf[start + i + 2] << 8 | buf[start + i + 3];
-  }
-  switch (lm) {
-    case 3:
-      H8[off + j + 1 | 0] = buf[start + j + 2];
-    case 2:
-      H8[off + j + 2 | 0] = buf[start + j + 1];
-    case 1:
-      H8[off + j + 3 | 0] = buf[start + j];
-  }
-};
-
-var convBlob = function (blob, H8, H32, start, len, off) {
-  var i = void 0,
-      om = off % 4,
-      lm = (len + om) % 4,
-      j = len - lm;
-  var buf = new Uint8Array(reader.readAsArrayBuffer(blob.slice(start, start + len)));
-  switch (om) {
-    case 0:
-      H8[off] = buf[3];
-    case 1:
-      H8[off + 1 - (om << 1) | 0] = buf[2];
-    case 2:
-      H8[off + 2 - (om << 1) | 0] = buf[1];
-    case 3:
-      H8[off + 3 - (om << 1) | 0] = buf[0];
-  }
-  if (len < lm + (4 - om)) {
-    return;
-  }
-  for (i = 4 - om; i < j; i = i + 4 | 0) {
-    H32[off + i >> 2 | 0] = buf[i] << 24 | buf[i + 1] << 16 | buf[i + 2] << 8 | buf[i + 3];
-  }
-  switch (lm) {
-    case 3:
-      H8[off + j + 1 | 0] = buf[j + 2];
-    case 2:
-      H8[off + j + 2 | 0] = buf[j + 1];
-    case 1:
-      H8[off + j + 3 | 0] = buf[j];
-  }
-};
-
-module.exports = function (data, H8, H32, start, len, off) {
-  if (typeof data === 'string') {
-    return convStr(data, H8, H32, start, len, off);
-  }
-  if (data instanceof Array) {
-    return convBuf(data, H8, H32, start, len, off);
-  }
-  // Safely doing a Buffer check using "this" to avoid Buffer polyfill to be included in the dist
-  if (_this && _this.Buffer && _this.Buffer.isBuffer(data)) {
-    return convBuf(data, H8, H32, start, len, off);
-  }
-  if (data instanceof ArrayBuffer) {
-    return convBuf(new Uint8Array(data), H8, H32, start, len, off);
-  }
-  if (data.buffer instanceof ArrayBuffer) {
-    return convBuf(new Uint8Array(data.buffer, data.byteOffset, data.byteLength), H8, H32, start, len, off);
-  }
-  if (data instanceof Blob) {
-    return convBlob(data, H8, H32, start, len, off);
-  }
-  throw new Error('Unsupported data type.');
-};
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/* eslint-env commonjs, browser */
-
-var Rusha = __webpack_require__(0);
-
-var _require = __webpack_require__(1),
-    toHex = _require.toHex;
-
-var Hash = function () {
-  function Hash() {
-    _classCallCheck(this, Hash);
-
-    this._rusha = new Rusha();
-    this._rusha.resetState();
-  }
-
-  Hash.prototype.update = function update(data) {
-    this._rusha.append(data);
-    return this;
-  };
-
-  Hash.prototype.digest = function digest(encoding) {
-    var digest = this._rusha.rawEnd().buffer;
-    if (!encoding) {
-      return digest;
-    }
-    if (encoding === 'hex') {
-      return toHex(digest);
-    }
-    throw new Error('unsupported digest encoding');
-  };
-
-  return Hash;
-}();
-
-module.exports = function () {
-  return new Hash();
-};
-
-/***/ })
-/******/ ]);
-});
-});
-
-unwrapExports(rusha);
-
-var stableStringify = function (obj, opts) {
-    if (!opts) opts = {};
-    if (typeof opts === 'function') opts = { cmp: opts };
-    var space = opts.space || '';
-    if (typeof space === 'number') space = Array(space+1).join(' ');
-    var cycles = (typeof opts.cycles === 'boolean') ? opts.cycles : false;
-    var replacer = opts.replacer || function(key, value) { return value; };
-
-    var cmp = opts.cmp && (function (f) {
-        return function (node) {
-            return function (a, b) {
-                var aobj = { key: a, value: node[a] };
-                var bobj = { key: b, value: node[b] };
-                return f(aobj, bobj);
-            };
-        };
-    })(opts.cmp);
-
-    var seen = [];
-    return (function stringify (parent, key, node, level) {
-        var indent = space ? ('\n' + new Array(level + 1).join(space)) : '';
-        var colonSeparator = space ? ': ' : ':';
-
-        if (node && node.toJSON && typeof node.toJSON === 'function') {
-            node = node.toJSON();
-        }
-
-        node = replacer.call(parent, key, node);
-
-        if (node === undefined) {
-            return;
-        }
-        if (typeof node !== 'object' || node === null) {
-            return JSON.stringify(node);
-        }
-        if (isArray$6(node)) {
-            var out = [];
-            for (var i = 0; i < node.length; i++) {
-                var item = stringify(node, i, node[i], level+1) || JSON.stringify(null);
-                out.push(indent + space + item);
-            }
-            return '[' + out.join(',') + indent + ']';
-        }
-        else {
-            if (seen.indexOf(node) !== -1) {
-                if (cycles) return JSON.stringify('__cycle__');
-                throw new TypeError('Converting circular structure to JSON');
-            }
-            else seen.push(node);
-
-            var keys = objectKeys$2(node).sort(cmp && cmp(node));
-            var out = [];
-            for (var i = 0; i < keys.length; i++) {
-                var key = keys[i];
-                var value = stringify(node, key, node[key], level+1);
-
-                if(!value) continue;
-
-                var keyValue = JSON.stringify(key)
-                    + colonSeparator
-                    + value;
-                
-                out.push(indent + space + keyValue);
-            }
-            return '{' + out.join(',') + indent + '}';
-        }
-    })({ '': obj }, '', obj, 0);
-};
-
-var isArray$6 = Array.isArray || function (x) {
-    return {}.toString.call(x) === '[object Array]';
-};
-
-var objectKeys$2 = Object.keys || function (obj) {
-    var has = Object.prototype.hasOwnProperty || function () { return true };
-    var keys = [];
-    for (var key in obj) {
-        if (has.call(obj, key)) keys.push(key);
-    }
-    return keys;
-};
-
-var r = new rusha;
-
-var browser$3 = function (obj) {
-  return r.digest(stableStringify(obj));
-};
-
-var debug$14 = browser$1("reducers:cartreducer");
-
-var initialState$7 = {
-  reservations: [],
-  order: undefined
-};
-
-var reserve$ = new Subject$1()
-// date+startTime+variantId
-// optional: serviceProviderId, quantity
-.debug(debug$14, "> reserve$").flatMap(function (booking) {
-  return axios$2.post(reverseRoute('do.booking-reserve'), _extends({}, objExtract(booking, "date", "startTime", "variantId", "serviceProviderId"), {
-    data: booking
-  }));
-}).map(makeAxiosResponseHandler({
-  200: function _(res) {
-    return res.data.data;
-  },
-  403: function _(res) {
-    return {};
-  }
-})).map(function (_ref) {
-  var uuid = _ref.uuid,
-      data = _ref.data;
-  return function (state) {
-    if (uuid) {
-      console.assert(uuid && data.hashKey, "Cannot resolve reservation: `uuid` returned without `hashKey`");
-
-      var reservation = state.reservations.find(function (r) {
-        return r.hashKey == data.hashKey;
-      });
-      reservation.uuids.push(uuid);
-
-      myUiComponents.toast.success('Behandling reservert, se handlekurv for detaljer.');
-    } else {
-      myUiComponents.toast.warn('Beklager, behandlingen er ikke lenger tilgjengelig!');
-    }
-    return state;
-  };
-});
-
-var fetchOrder$ = new Subject$1().flatMap(function () {
-  return axios$2.get(reverseRoute('booking-order'));
-}).map(makeAxiosResponseHandler({
-  200: function _(res) {
-    return res.data.data;
-  }
-})).map(function (payload) {
-  return _extends({}, objOmit(payload, 'bookings'), {
-    items: payload.items || payload.bookings
-  });
-}).debug(debug$14, "FETCHORDER").map(function (payload) {
-  return function (state) {
-    // TODO! Remove later, not needed?
-    state.order = payload;
-
-    payload.items.forEach(function (item) {
-      var hashKey = item.data.hashKey;
-      var reservation = state.reservations.find(function (r) {
-        return r.hashKey == hashKey;
-      });
-
-      if (!reservation) {
-        reservation = _extends({}, item.data, {
-          uuids: []
-        });
-        state.reservations.push(reservation);
-      }
-      reservation.uuids.push(item.uuid);
-    });
-
-    return state;
-  };
-});
-
-Observable$1.of(function () {
-  return initialState$7;
-}).merge(autoReduce(takeOneWhen(function () {
-  return settings.remote.routes;
-}).do(function () {
-  return fetchOrder$.next();
-})), reserve$, fetchOrder$, cartActions.add$.debug(debug$14, "> add$").map(function (_ref2) {
-  var hashKeys = _ref2.hashKeys,
-      booking = objectWithoutProperties(_ref2, ["hashKeys"]);
-  return function (state) {
-    var hashKey = browser$3(objExtract.apply(undefined, [booking].concat(toConsumableArray(hashKeys))));
-    var reservation = state.reservations.find(function (r) {
-      return r.hashKey == hashKey;
-    });
-
-    if (!reservation) {
-      reservation = _extends({}, booking, {
-        hashKey: hashKey,
-        uuids: []
-      });
-      state.reservations.push(reservation);
-    }
-    reserve$.next(objOmit(reservation, "uuids"));
-
-    return state;
-  };
-}), cartActions.remove$.debug(debug$14, "> remove$").flatMap(function (_ref3) {
-  var uuid = _ref3.uuid;
-  return axios$2.post(reverseRoute('do.booking-cancel'), { uuid: uuid });
-}).map(makeAxiosResponseHandler({
-  200: function _(res) {
-    return res.data.data;
-  }
-})).map(function (_ref4) {
-  var uuid = _ref4.uuid,
-      variantId = _ref4.variantId;
-  return function (state) {
-    var found = state.reservations.find(function (r) {
-      return ~r.uuids.indexOf(uuid);
-    });
-    // Place back on shelf
-    return state;
-  };
-}), cartActions.clear$.debug(debug$14, "> clear$").map(function (_payload) {
-  return function (state) {
-    while (state.reservations.length) {
-      var reservation = state.reservations.pop();
-      while (reservation.uuids.length) {
-        cartActions.remove$.next({ uuid: reservation.uuids.pop() });
-      }
-    }
-    return state;
-  };
-}), cartActions.submit$.debug(debug$14, "SUBMIT").map(function (payload) {
-  return function (state) {
-    return state;
+    return initialState$4;
   };
 }));
 
@@ -38060,28 +36663,23 @@ var rootReducer$ = Observable$1.merge(appReducer$.map(function (reducer) {
   return ["app", reducer];
 }), loginReducer$.map(function (reducer) {
   return ["login", reducer];
-}), registerReducer$.map(function (reducer) {
-  return ["register", reducer];
 }), navTopReducer$.map(function (reducer) {
   return ["navTop", reducer];
 }), flashMessageReducer$.map(function (reducer) {
   return ["flashMessage", reducer];
 }), accountReducer$.map(function (reducer) {
   return ["account", reducer];
-})
-//bookingReducer$.map(reducer => ["booking", reducer]),
-//cartReducer$.map(reducer => ["cart", reducer]),
-);
+}));
 
 // TODO! Use a React Portal package...
 
-var css = "body{overflow-y:scroll;overflow-x:hidden}.src-css-___app__app-container___-J-TS{max-width:960px;margin-left:auto;margin-right:auto;min-height:100vh;min-width:375px;padding-bottom:16px;padding-bottom:1rem}.src-css-___app__app-container___-J-TS:before{content:\"\";display:table}.src-css-___app__app-container___-J-TS:after{content:\"\";display:table;clear:both}.src-css-___app__header-container___3d5ZZ{-webkit-box-shadow:0 20px 33px -12px rgba(0,0,0,.75);box-shadow:0 20px 33px -12px rgba(0,0,0,.75);margin-bottom:20px;border-bottom-right-radius:15px;border-bottom-left-radius:15px;overflow:hidden}.src-css-___app__flash-container___z6gsC{max-width:66.6%;margin-left:auto;margin-right:auto;padding-left:40px;padding-right:40px;min-width:375px;text-align:center}.src-css-___app__flash-container___z6gsC:before{content:\"\";display:table}.src-css-___app__flash-container___z6gsC:after{content:\"\";display:table;clear:both}.src-css-___app__page-container___27fuD{position:relative}.src-css-___app__link-row___2yU3p a{padding:10px}.src-css-___app__dialog-container___3fBF_{max-width:39.96%;margin-left:auto;margin-right:auto;padding-left:40px;padding-right:40px;min-width:375px}.src-css-___app__dialog-container___3fBF_:before{content:\"\";display:table}.src-css-___app__dialog-container___3fBF_:after{content:\"\";display:table;clear:both}.src-css-___app__dialog-container___3fBF_ .src-css-___app__pull-right___3cJj6{margin-left:auto}.src-css-___app__form-container___3h-ps{max-width:66.6%;margin-left:auto;margin-right:auto;padding-left:40px;padding-right:40px;min-width:375px}.src-css-___app__form-container___3h-ps:before{content:\"\";display:table}.src-css-___app__form-container___3h-ps:after{content:\"\";display:table;clear:both}form.rjsf fieldset legend#root__title{text-align:center}form.rjsf .btn-group{display:block;text-align:center}form.rjsf .help-block{font-size:80%;filter:url('data:image/svg+xml;charset=utf-8,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"filter\"><feComponentTransfer color-interpolation-filters=\"sRGB\"><feFuncA type=\"table\" tableValues=\"0 0.5\" /></feComponentTransfer></filter></svg>#filter');-webkit-filter:opacity(.5);filter:opacity(.5)}";
+var css = "body{overflow-y:scroll;overflow-x:hidden}.src-css-___app__app-container___-J-TS{max-width:960px;margin-left:auto;margin-right:auto;min-height:100vh;min-width:375px;padding-bottom:16px;padding-bottom:1rem}.src-css-___app__app-container___-J-TS:before{content:\"\";display:table}.src-css-___app__app-container___-J-TS:after{content:\"\";display:table;clear:both}.src-css-___app__header-container___3d5ZZ{-webkit-box-shadow:0 20px 33px -12px rgba(0,0,0,.75);box-shadow:0 20px 33px -12px rgba(0,0,0,.75);margin-bottom:20px;border-bottom-right-radius:15px;border-bottom-left-radius:15px;overflow:hidden}.src-css-___app__flash-container___z6gsC{max-width:66.6%;margin-left:auto;margin-right:auto;padding-left:40px;padding-right:40px;min-width:375px;text-align:center}.src-css-___app__flash-container___z6gsC:before{content:\"\";display:table}.src-css-___app__flash-container___z6gsC:after{content:\"\";display:table;clear:both}.src-css-___app__page-container___27fuD{position:relative}.src-css-___app__link-row___2yU3p a{padding:10px}.src-css-___app__dialog-container___3fBF_{max-width:39.96%;margin-left:auto;margin-right:auto;padding-left:40px;padding-right:40px;min-width:375px;text-align:center}.src-css-___app__dialog-container___3fBF_:before{content:\"\";display:table}.src-css-___app__dialog-container___3fBF_:after{content:\"\";display:table;clear:both}.src-css-___app__dialog-container___3fBF_ .src-css-___app__pull-right___3cJj6{margin-left:auto}.src-css-___app__dialog-container___3fBF_ input{text-align:center}.src-css-___app__form-container___3h-ps{max-width:66.6%;margin-left:auto;margin-right:auto;padding-left:40px;padding-right:40px;min-width:375px}.src-css-___app__form-container___3h-ps:before{content:\"\";display:table}.src-css-___app__form-container___3h-ps:after{content:\"\";display:table;clear:both}form.rjsf fieldset legend#root__title{text-align:center}form.rjsf .btn-group{display:block;text-align:center}form.rjsf .help-block{font-size:80%;filter:url('data:image/svg+xml;charset=utf-8,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"filter\"><feComponentTransfer color-interpolation-filters=\"sRGB\"><feFuncA type=\"table\" tableValues=\"0 0.5\" /></feComponentTransfer></filter></svg>#filter');-webkit-filter:opacity(.5);filter:opacity(.5)}";
 __$$styleInject(css);
 
-var debug$15 = browser$1("component:login");
+var debug$12 = browser$1("component:login");
 
 var schemas = [{
-  title: "Request a logincode by email",
+  title: "Login",
   type: "object",
   required: ["email"],
   properties: {
@@ -38097,7 +36695,7 @@ var schemas = [{
   required: ["code"],
   properties: {
     code: {
-      type: "number",
+      type: "string",
       title: "Logincode"
     }
 
@@ -38105,13 +36703,13 @@ var schemas = [{
 }];
 
 var uiSchema = {
-  password: {
-    "ui:widget": "password"
+  code: {
+    "ui:help": "We have sent you an e-mail with a logincode. Please copy it from the e-mail, and paste it here to log in."
   }
 };
 
 var LoginForm = function LoginForm(props) {
-  debug$15("LOGINFORM.props", props);
+  debug$12("LOGINFORM.props", props);
 
   var schema = schemas[props.stepIdx];
 
@@ -38158,10 +36756,10 @@ var css$1 = ".src-css-___nav-top__pull-right___2ZlDn{margin-left:auto}";
 __$$styleInject(css$1);
 
 // https://www.npmjs.com/package/babel-plugin-jsx-control-statements
-var debug$16 = browser$1("component:navtop");
+var debug$13 = browser$1("component:navtop");
 
 var NavItems = function NavItems(props) {
-  debug$16("NavItems.props", props);
+  debug$13("NavItems.props", props);
   return function (location, user) {
     return user ? [function (url, key) {
       return function (isActive, key) {
@@ -38188,28 +36786,16 @@ var NavItems = function NavItems(props) {
           React.createElement(
             myUiComponents.NavLink,
             { href: "", onClick: props.logout$ },
-            "Logg ut"
+            "Log out"
           )
         );
       }.call(this, url == location, "1");
-    }.call(this, '/logout', "1")] : function (url) {
-      return function (isActive) {
-        return React.createElement(
-          myUiComponents.NavItem,
-          { active: isActive },
-          React.createElement(
-            myUiComponents.NavLink,
-            { active: isActive, href: url },
-            "Logg inn"
-          )
-        );
-      }.call(this, url == location);
-    }.call(this, '/login');
+    }.call(this, '/logout', "1")] : null;
   }.call(this, props.location.pathname, props.user);
 };
 
 var NavTop = function NavTop(props) {
-  debug$16("NAVTOP.props", props);
+  debug$13("NAVTOP.props", props);
   return React.createElement(
     myUiComponents.Navbar,
     { color: "faded", light: true, expand: "md", className: "src-css-___nav-top__nav-bar___1_s6t" },
@@ -38241,13 +36827,13 @@ var NavTop$1 = connect(function (_ref) {
 var css$2 = ".src-css-___flash-message__dismiss-button___1f2ng{position:absolute;top:8px;right:5px;cursor:pointer}.src-css-___flash-message__alert-content___3mGLm{margin-right:40px;overflow-x:auto}";
 __$$styleInject(css$2);
 
-var debug$17 = browser$1("component:flashmessage");
+var debug$14 = browser$1("component:flashmessage");
 
 var FlashMessage = function FlashMessage(_ref) {
   var queue = _ref.queue,
       props = objectWithoutProperties(_ref, ["queue"]);
 
-  debug$17("FLASHMESSAGE.props", queue, props);
+  debug$14("FLASHMESSAGE.props", queue, props);
   return function (message) {
     return message ? function (content, status) {
       return React.createElement(
@@ -38273,7 +36859,7 @@ var FlashMessage$1 = connect(function (_ref2) {
   return flashMessage$$1;
 }, flashMessageActions)(FlashMessage);
 
-var debug$18 = browser$1("components:account");
+var debug$15 = browser$1("components:account");
 
 var schema = {
   title: "Konto",
@@ -38300,7 +36886,7 @@ var schema = {
 };
 
 var AccountForm = function AccountForm(props) {
-  debug$18("ACCOUNTFORM.props", props);
+  debug$15("ACCOUNTFORM.props", props);
   return React.createElement(
     "div",
     { className: "src-css-___app__form-container___3h-ps" },
@@ -38352,7 +36938,7 @@ var Cms = (function () {
 var css$3 = ".src-css-___util__overflowScrollX___3-yYs{overflow-x:scroll}.src-css-___util__center-text___2-2n9{text-align:center}";
 __$$styleInject(css$3);
 
-var debug$19 = browser$1("component:app");
+var debug$16 = browser$1("component:app");
 
 var router = function router(props) {
   var restrict = function restrict(com) {
@@ -38369,7 +36955,7 @@ var router = function router(props) {
 };
 
 var App = function App(props) {
-  debug$19("APP.props", props);
+  debug$16("APP.props", props);
   return function (status, Page) {
     return React.createElement(
       "div",
@@ -38399,7 +36985,7 @@ var App$1 = connect(function (_ref) {
   return app$$1;
 }, appActions)(App);
 
-var debug$20 = browser$1("app");
+var debug$17 = browser$1("app");
 
 // Restyle toasts
 myUiComponents.style({
@@ -38413,7 +36999,7 @@ var toastProps = _extends({}, settings.ui.toast);
 toastProps.position = myUiComponents.toast.POSITION[toastProps.position || 'TOP_RIGHT'];
 toastProps.autoClose = parseInt(toastProps.autoClose) || false;
 
-debug$20("toastProps", toastProps);
+debug$17("toastProps", toastProps);
 
 ReactDOM.render(React.createElement(
   'div',
@@ -38428,5 +37014,5 @@ ReactDOM.render(React.createElement(
   )
 ), document.getElementById("app"));
 
-}(React,PropTypes,MyHistorySingleton,MyUiComponents,MyJsonschemaForm,MyAccounting,ReactDOM));
+}(React,PropTypes,MyHistorySingleton,MyUiComponents,MyJsonschemaForm,ReactDOM));
 //# sourceMappingURL=app.js.map

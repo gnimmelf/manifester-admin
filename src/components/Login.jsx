@@ -12,7 +12,7 @@ const debug = _debug("component:login")
 
 export const schemas = [
   {
-    title: "Request a logincode by email",
+    title: "Login",
     type: "object",
     required: ["email"],
     properties: {
@@ -29,7 +29,7 @@ export const schemas = [
     required: ["code"],
     properties: {
       code: {
-        type: "number",
+        type: "string",
         title: "Logincode",
       },
 
@@ -38,8 +38,8 @@ export const schemas = [
 ];
 
 export const uiSchema =  {
-  password: {
-    "ui:widget": "password",
+  code: {
+    "ui:help": "We have sent you an e-mail with a logincode. Please copy it from the e-mail, and paste it here to log in.",
   }
 };
 

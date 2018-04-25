@@ -47,7 +47,7 @@ export const NavItems = (props) => {
           <With url={'/logout'}>
             <With isActive={url==location}>
               <NavItem active={isActive}>
-                <NavLink href="" onClick={props.logout$}>Logg ut</NavLink>
+                <NavLink href="" onClick={props.logout$}>Log out</NavLink>
               </NavItem>
             </With>
           </With>
@@ -56,13 +56,6 @@ export const NavItems = (props) => {
 
         <Otherwise>
 
-          <With url={'/login'}>
-            <With isActive={url==location}>
-              <NavItem active={isActive}>
-                <NavLink active={isActive} href={url}>Logg inn</NavLink>
-              </NavItem>
-            </With>
-          </With>
 
         </Otherwise>
 

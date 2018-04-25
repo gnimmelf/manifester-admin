@@ -2,13 +2,12 @@ import _debug from "debug";
 import { Observable } from "rxjs";
 import { addSchemaError } from 'my-jsonschema-form';
 import { toast } from "my-ui-components";
-import { axios, makeAxiosResponseHandler } from "../lib/utils";
-import settings, { reverseRoute } from "../lib/settings"
 import {
   accountActions,
   flash,
   redirect
 } from "../actions";
+import { xhr, xhrHandler } from "../lib/xhr";
 
 const debug = _debug("reducers:accountreducer")
 
@@ -19,8 +18,8 @@ const initialState = {
 
 export const getUpdateRequest$ = (payload) =>
   // TODO! Pipe everything? -But need the `formData` as "context" all the way through...
-  Observable.from(axios.post(reverseRoute('do.edit'), payload.formData))
-    .map(makeAxiosResponseHandler({
+  Observable.from(xhr('do.edit')(payload.formData))
+    .map(xhrHandler({
       200: (res) => {
         toast.info('Konto oppdatert!')
         return {

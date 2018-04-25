@@ -45,6 +45,12 @@
   .pull-right {
     margin-left: auto;
   }
+
+  text-align: center;
+
+  input {
+    text-align: center;
+  }
 }
 
 .form-container {

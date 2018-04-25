@@ -1,15 +1,6 @@
-import Axios from "axios";
 import objectOmit from "object.omit";
 import filterObj from "filter-obj";
 import { Observable, pipe } from "rxjs";
-
-export { default as makeAxiosResponseHandler } from './makeAxiosResponseHandler';
-
-// Custom axios instance
-export const axios = Axios.create({
-  validateStatus: () => true,
-  withCredentials: true,
-})
 
 export const objOmit = (obj, ...keys) => objectOmit(obj, keys);
 export const objExtract = (obj, ...keys) => filterObj(obj, keys);

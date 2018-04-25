@@ -6,9 +6,7 @@ import {
 } from 'rxjs/operators';
 import normalizeUrl from 'normalize-url'
 import {
-  axios,
   objOmit,
-  makeAxiosResponseHandler,
   autoReduce,
   takeOneWhen,
 } from "../lib/utils";
@@ -16,7 +14,8 @@ import {
   appActions,
   redirect
 } from "../actions";
-import settings, { reverseRoute } from "../lib/settings";
+import { xhr, xhrHandler } from "../lib/xhr";
+import settings from "../lib/settings";
 import history$ from '../lib/history$';
 
 const debug = _debug("reducers:appreducer")
@@ -29,8 +28,8 @@ const initialState = {
 
 export const fetchCurrentUser$ = new Subject()
   .debug(debug, "FETCHCURRENTUSER")
-  .flatMap(() => axios.get(reverseRoute('current-user')))
-  .map(makeAxiosResponseHandler({
+  .flatMap(() => xhr('current-user')())
+  .map(xhrHandler({
       200: (data) => data,
       401: (data) => false,
     }))
@@ -48,6 +47,7 @@ export default Observable.of(() => initialState)
         .do(() => fetchCurrentUser$.next()),
       takeOneWhen(() => settings.remote.routes)
         .do(() => fetchCurrentUser$.next()),
+
     ),
 
     history$
@@ -61,7 +61,7 @@ export default Observable.of(() => initialState)
       })),
 
     appActions.logout$
-      .do(() => axios.get(reverseRoute('logout')))
+      .do(() => xhr('logout')())
       .do(() => redirect('/', 'Logged out!'))
       .map(_payload =>  state => ({
         ...state,

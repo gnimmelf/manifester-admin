@@ -4,13 +4,11 @@ import { addSchemaError } from 'my-jsonschema-form';
 import { toast } from "my-ui-components";
 import history from "my-history-singleton";
 import {
-  axios,
-  makeAxiosResponseHandler,
   autoReduce,
   parseUrlSearchString,
  } from "../lib/utils";
-
-import settings, { reverseRoute } from "../lib/settings";
+import { xhr, xhrHandler } from "../lib/xhr";
+import settings from "../lib/settings";
 
 import {
   loginActions,
@@ -30,21 +28,17 @@ const initialState = {
 };
 
 export const requestCodeByEmail$ = new Subject()
-  .flatMap(({formData}) => axios.post(reverseRoute('do.requestCodeByEmail'), formData))
-  .map(makeAxiosResponseHandler({
-      200: (data) => {
-        flash(`We have sent you an email with a logincode. Please copy and paste it below to log in.`)
-        return { stepIdx: 1 };
-      },
+  .flatMap(({formData}) => xhr('do.requestCodeByEmail')(formData))
+  .map(xhrHandler({
+      200: (data) => ({ stepIdx: 1 }),
       422: (data) => toast.warn(data.msg)
     }))
 
 export const exchangeLoginCode2Token$ = new Subject()
-  .flatMap(({formData}) => axios.post(reverseRoute('do.exchangeLoginCode2Token'), formData))
-  .map(makeAxiosResponseHandler({
+  .flatMap(({formData}) => xhr('do.exchangeLoginCode2Token')(formData))
+  .map(xhrHandler({
       200: (data) => {
         authenticate();
-        flash();
         redirect(parseUrlSearchString(history.location.search)['redirect'] || '/', 'Logged in!');
         return initialState;
       },

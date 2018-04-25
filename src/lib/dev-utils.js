@@ -1,6 +1,10 @@
-import { axios } from './utils';
-import settings, { reverseRoute } from "./settings";
 import dotProp from 'dot-prop'
+import {
+  axios,
+  xhr,
+  reverseRoute,
+} from './xhr';
+import settings from "./settings";
 
 
 if (!process.env.ENV.startsWith('prod')) {
@@ -28,15 +32,14 @@ if (!process.env.ENV.startsWith('prod')) {
     },
     axios: axios,
     reverseRoute: reverseRoute,
-    xhr: ([routeName, ...params], data={}, responseHandler=console.log) => {
+    xhr: (routeName, ...params) => {
       const method = routeName.startsWith('do.') ? 'post' : 'get';
 
       const route = my.reverseRoute(routeName, ...params)
 
-      axios[method](route, data)
-        .then(responseHandler)
+      console.log(route)
 
-      return route;
-    }
+      return (data={}, options={}) => axios[method](route, data, options).then(console.log);
+    },
   }
 }
