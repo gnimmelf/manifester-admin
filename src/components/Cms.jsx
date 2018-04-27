@@ -24,7 +24,9 @@ const Cms = (props) => {
 
       <Choose>
         <When condition={props.schemaNames}>
+
           <SelectSchemaWidget {...props} />
+
         </When>
       </Choose>
     </div>
@@ -35,7 +37,5 @@ export default connect(({ cms, app }) => ({
   user: app.user,
   ...cms,
 }), cmsActions, {
-  componentDidMount: (props)=> {
-    ;(!props.schemasNames && cmsActions.fetchSchemas$.next());
-  }
+  componentDidMount: (props)=> (!props.schemaNames && cmsActions.fetchSchemas$.next()),
 })(Cms);

@@ -17315,8 +17315,7 @@ var settings = deepAssign({
   remote: {
     host: "",
     routes: {
-      "schemas:list": "/api/schemas/{filter}",
-      "schemas:schema": "/api/schemas/{schemaName}",
+      "schemas": "/api/schemas/{filter}",
       "user:current": "/api/user/current",
       "user:logout": "/api/user/logout",
       "do.auth:requestCodeByEmail": "/api/auth/request",
@@ -36140,7 +36139,7 @@ var appActions = createActions(["authenticate$", "logout$"]);
 
 var cmsActions = createActions(["fetchSchemas$", "selectSchema$"]);
 
-var accountActions = createActions(["submit$", "reset$"]);
+var accountActions = createActions(["fetchSchema$", "submit$", "reset$"]);
 
 var flashMessageActions = createActions(["push$", "pop$", "clear$"]);
 
@@ -36627,43 +36626,56 @@ var initialState$4 = {
 };
 
 var getUpdateRequest$ = function getUpdateRequest$(payload) {
-  return (
-    // TODO! Pipe everything? -But need the `formData` as "context" all the way through...
-    Observable$1.from(xhr$3('do.edit')(payload.formData)).map(xhrHandler({
-      200: function _(res) {
-        myUiComponents.toast.info('Konto oppdatert!');
-        return {
-          errors: [],
-          errorSchema: {}
-        };
-      },
-      422: function _(res) {
-        flash.clear(Object.values(res.data.errors).join(', '), 'danger');
-        return {
-          errors: [],
-          errorSchema: Object.entries(res.data.errors).reduce(function (schema, _ref) {
-            var _ref2 = slicedToArray(_ref, 2),
-                key = _ref2[0],
-                msg = _ref2[1];
-
-            return Form.addSchemaError(schema, key, msg);
-          }, {})
-        };
-      }
-    })).map(function () {
-      var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      return function (state) {
-        return _extends({}, state, data, {
-          formData: payload.formData
-        });
+  return Observable$1.from(xhr$3('do.edit')(payload.formData)).map(xhrHandler({
+    200: function _(res) {
+      myUiComponents.toast.info('Konto oppdatert!');
+      return {
+        errors: [],
+        errorSchema: {}
       };
-    })
-  );
+    },
+    422: function _(res) {
+      flash.clear(Object.values(res.data.errors).join(', '), 'danger');
+      return {
+        errors: [],
+        errorSchema: Object.entries(res.data.errors).reduce(function (schema, _ref) {
+          var _ref2 = slicedToArray(_ref, 2),
+              key = _ref2[0],
+              msg = _ref2[1];
+
+          return Form.addSchemaError(schema, key, msg);
+        }, {})
+      };
+    }
+  })).map(function () {
+    var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    return function (state) {
+      return _extends({}, state, data, {
+        formData: payload.formData
+      });
+    };
+  });
 };
 
 var accountReducer$ = Observable$1.of(function () {
   return initialState$4;
-}).merge(accountActions.submit$.flatMap(getUpdateRequest$), accountActions.reset$.map(function (_payload) {
+}).merge(accountActions.fetchSchema$.flatMap(function () {
+  return xhr$3('schemas', 'user.json')();
+}).map(xhrHandler({
+  200: function _(data) {
+    return data;
+  },
+  401: function _(data) {
+    return false;
+  }
+})).map(function (_ref3) {
+  var schema = _ref3.schema;
+  return function (state) {
+    return _extends({}, state, {
+      schema: schema
+    });
+  };
+}), accountActions.submit$.flatMap(getUpdateRequest$), accountActions.reset$.map(function (_payload) {
   return function (_state) {
     return initialState$4;
   };
@@ -36678,8 +36690,8 @@ var initialState$5 = {
 
 var cmsReducer$ = Observable$1.of(function () {
   return initialState$5;
-}).merge(cmsActions.fetchSchemas$.debug(debug$12, "FETCHSCHEMAS").flatMap(function () {
-  return xhr$3('schemas:list', 'content.*')();
+}).merge(cmsActions.fetchSchemas$.flatMap(function () {
+  return xhr$3('schemas', 'content.*')();
 }).map(xhrHandler({
   200: function _(data) {
     return data;
@@ -36718,7 +36730,7 @@ var rootReducer$ = Observable$1.merge(navTopReducer$.map(function (reducer) {
 
 // TODO! Use a React Portal package...
 
-var css = "body{overflow-y:scroll;overflow-x:hidden}.src-css-___app__app-container___-J-TS{max-width:960px;margin-left:auto;margin-right:auto;min-height:100vh;min-width:375px;padding-bottom:16px;padding-bottom:1rem}.src-css-___app__app-container___-J-TS:before{content:\"\";display:table}.src-css-___app__app-container___-J-TS:after{content:\"\";display:table;clear:both}.src-css-___app__header-container___3d5ZZ{-webkit-box-shadow:0 20px 33px -12px rgba(0,0,0,.75);box-shadow:0 20px 33px -12px rgba(0,0,0,.75);margin-bottom:20px;border-bottom-right-radius:15px;border-bottom-left-radius:15px;overflow:hidden}.src-css-___app__flash-container___z6gsC{max-width:66.6%;margin-left:auto;margin-right:auto;padding-left:40px;padding-right:40px;min-width:375px;text-align:center}.src-css-___app__flash-container___z6gsC:before{content:\"\";display:table}.src-css-___app__flash-container___z6gsC:after{content:\"\";display:table;clear:both}.src-css-___app__page-container___27fuD{position:relative}.src-css-___app__link-row___2yU3p a{padding:10px}.src-css-___app__dialog-container___3fBF_{max-width:39.96%;margin-left:auto;margin-right:auto;padding-left:40px;padding-right:40px;min-width:375px;text-align:center}.src-css-___app__dialog-container___3fBF_:before{content:\"\";display:table}.src-css-___app__dialog-container___3fBF_:after{content:\"\";display:table;clear:both}.src-css-___app__dialog-container___3fBF_ .src-css-___app__pull-right___3cJj6{margin-left:auto}.src-css-___app__dialog-container___3fBF_ input{text-align:center}.src-css-___app__form-container___3h-ps{max-width:66.6%;margin-left:auto;margin-right:auto;padding-left:40px;padding-right:40px;min-width:375px}.src-css-___app__form-container___3h-ps:before{content:\"\";display:table}.src-css-___app__form-container___3h-ps:after{content:\"\";display:table;clear:both}form.rjsf fieldset legend#root__title{text-align:center}form.rjsf .btn-group{display:block;text-align:center}form.rjsf .help-block{font-size:80%;filter:url('data:image/svg+xml;charset=utf-8,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"filter\"><feComponentTransfer color-interpolation-filters=\"sRGB\"><feFuncA type=\"table\" tableValues=\"0 0.5\" /></feComponentTransfer></filter></svg>#filter');-webkit-filter:opacity(.5);filter:opacity(.5)}";
+var css = "body{overflow-y:scroll;overflow-x:hidden}.src-css-___app__app-container___-J-TS{max-width:960px;margin-left:auto;margin-right:auto;min-height:100vh;min-width:375px;padding-bottom:16px;padding-bottom:1rem}.src-css-___app__app-container___-J-TS:before{content:\"\";display:table}.src-css-___app__app-container___-J-TS:after{content:\"\";display:table;clear:both}.src-css-___app__header-container___3d5ZZ{-webkit-box-shadow:0 20px 33px -12px rgba(0,0,0,.75);box-shadow:0 20px 33px -12px rgba(0,0,0,.75);margin-bottom:20px;border-bottom-right-radius:15px;border-bottom-left-radius:15px;overflow:hidden}.src-css-___app__flash-container___z6gsC{max-width:66.6%;margin-left:auto;margin-right:auto;padding-left:40px;padding-right:40px;min-width:375px;text-align:center}.src-css-___app__flash-container___z6gsC:before{content:\"\";display:table}.src-css-___app__flash-container___z6gsC:after{content:\"\";display:table;clear:both}.src-css-___app__page-container___27fuD{position:relative}.src-css-___app__link-row___2yU3p a{padding:10px}.src-css-___app__dialog-container___3fBF_{max-width:39.96%;margin-left:auto;margin-right:auto;padding-left:40px;padding-right:40px;min-width:375px;text-align:center}.src-css-___app__dialog-container___3fBF_:before{content:\"\";display:table}.src-css-___app__dialog-container___3fBF_:after{content:\"\";display:table;clear:both}.src-css-___app__dialog-container___3fBF_ .src-css-___app__pull-right___3cJj6{margin-left:auto}.src-css-___app__dialog-container___3fBF_ input{text-align:center}.src-css-___app__form-container___3h-ps{max-width:66.6%;margin-left:auto;margin-right:auto;padding-left:40px;padding-right:40px;min-width:375px}.src-css-___app__form-container___3h-ps:before{content:\"\";display:table}.src-css-___app__form-container___3h-ps:after{content:\"\";display:table;clear:both}form.rjsf fieldset legend#root__title{text-align:center}form.rjsf .btn-group{display:block;text-align:center}form.rjsf .help-block{font-size:80%;filter:url('data:image/svg+xml;charset=utf-8,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"filter\"><feComponentTransfer color-interpolation-filters=\"sRGB\"><feFuncA type=\"table\" tableValues=\"0 0.5\" /></feComponentTransfer></filter></svg>#filter');-webkit-filter:opacity(.5);filter:opacity(.5)}form.rjsf .field-description{font-size:80%}form.rjsf .field-description:before{content:\"- \"};";
 __$$styleInject(css);
 
 var debug$13 = browser$1("component:login");
@@ -36901,39 +36913,15 @@ var FlashMessage$1 = connect(function (_ref2) {
 
 var debug$16 = browser$1("components:account");
 
-var schema = {
-  title: "Konto",
-  type: "object",
-  properties: {
-    firstName: {
-      type: "string",
-      title: "Fornavn"
-    },
-    lastName: {
-      type: "string",
-      title: "Etternavn"
-    },
-    email: {
-      type: "string",
-      title: "E-mail address",
-      format: "email"
-    },
-    cellPhoneNo: {
-      type: "string",
-      title: "Telefon/mobil"
-    }
-  }
-};
-
 var AccountForm = function AccountForm(props) {
   debug$16("ACCOUNTFORM.props", props);
   return React.createElement(
     "div",
     { className: "src-css-___app__form-container___3h-ps" },
-    React.createElement(
+    props.schema ? React.createElement(
       Form__default,
       {
-        schema: schema,
+        schema: props.schema,
         formData: props.formData,
         errorSchema: props.errorSchema,
         onSubmit: props.submit$ },
@@ -36951,7 +36939,7 @@ var AccountForm = function AccountForm(props) {
           "Lagre"
         )
       )
-    )
+    ) : null
   );
 };
 
@@ -36960,7 +36948,11 @@ var Account = connect(function (_ref) {
       app$$1 = _ref.app;
   return _extends({
     formData: app$$1.user }, account);
-}, accountActions)(AccountForm);
+}, accountActions, {
+  componentDidMount: function componentDidMount(props) {
+    return !props.schema && accountActions.fetchSchema$.next();
+  }
+})(AccountForm);
 
 var debug$17 = browser$1("components:cms");
 
@@ -37000,7 +36992,7 @@ var Cms$1 = connect(function (_ref) {
   }, cms);
 }, cmsActions, {
   componentDidMount: function componentDidMount(props) {
-    !props.schemasNames && cmsActions.fetchSchemas$.next();
+    return !props.schemaNames && cmsActions.fetchSchemas$.next();
   }
 })(Cms);
 

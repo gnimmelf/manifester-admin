@@ -17,7 +17,6 @@ const initialState = {
 };
 
 export const getUpdateRequest$ = (payload) =>
-  // TODO! Pipe everything? -But need the `formData` as "context" all the way through...
   Observable.from(xhr('do.edit')(payload.formData))
     .map(xhrHandler({
       200: (res) => {
@@ -43,6 +42,20 @@ export const getUpdateRequest$ = (payload) =>
 
 export default Observable.of(() => initialState)
   .merge(
+
+
+
+    accountActions.fetchSchema$
+      .flatMap(() => xhr('schemas', 'user.json')())
+      .map(xhrHandler({
+          200: (data) => data,
+          401: (data) => false,
+        }))
+      .map(({schema}) => state => ({
+        ...state,
+        schema: schema,
+      })),
+
     accountActions.submit$.flatMap(getUpdateRequest$),
     accountActions.reset$.map(_payload => _state => initialState),
   );

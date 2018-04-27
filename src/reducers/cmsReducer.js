@@ -29,8 +29,7 @@ export default Observable.of(() => initialState)
   .merge(
 
     cmsActions.fetchSchemas$
-      .debug(debug, "FETCHSCHEMAS")
-      .flatMap(() => xhr('schemas:list', 'content.*')())
+      .flatMap(() => xhr('schemas', 'content.*')())
       .map(xhrHandler({
           200: (data) => data,
           401: (data) => false,

@@ -72,4 +72,12 @@
     font-size: 80%;
     filter: opacity(0.5);
   }
+
+  :global(.field-description) {
+    font-size: 80%;
+
+    &:before {
+      content: "- ";
+    };
+  }
 }

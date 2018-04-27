@@ -5,8 +5,7 @@ const settings = deepAssign({
   remote: {
     host: "",
     routes: {
-      "schemas:list": "/api/schemas/{filter}",
-      "schemas:schema": "/api/schemas/{schemaName}",
+      "schemas": "/api/schemas/{filter}",
       "user:current": "/api/user/current",
       "user:logout": "/api/user/logout",
       "do.auth:requestCodeByEmail": "/api/auth/request",

@@ -11,45 +11,26 @@ import appCss from '../css/app.css';
 
 const debug = _debug("components:account")
 
-export const schema = {
-  title: "Konto",
-  type: "object",
-  properties: {
-    firstName: {
-      type: "string",
-      title: "Fornavn",
-    },
-    lastName: {
-      type: "string",
-      title: "Etternavn",
-    },
-    email: {
-      type: "string",
-      title: "E-mail address",
-      format: "email",
-    },
-    cellPhoneNo: {
-      type: "string",
-      title: "Telefon/mobil",
-    },
-  }
-};
-
 export const AccountForm = function(props) {
   debug("ACCOUNTFORM.props", props)
   return (
-
     <div styleName="appCss.form-container">
-      <Form
-          schema={schema}
-          formData={props.formData}
-          errorSchema={props.errorSchema}
-          onSubmit={props.submit$}>
-        <ButtonGroup>
-          <Button onClick={props.reset$} id="reset">Resett</Button>
-          <Button color="primary" type="submit">Lagre</Button>
-        </ButtonGroup>
-      </Form>
+      <Choose>
+        <When condition={props.schema}>
+
+          <Form
+              schema={props.schema}
+              formData={props.formData}
+              errorSchema={props.errorSchema}
+              onSubmit={props.submit$}>
+            <ButtonGroup>
+              <Button onClick={props.reset$} id="reset">Resett</Button>
+              <Button color="primary" type="submit">Lagre</Button>
+            </ButtonGroup>
+          </Form>
+
+        </When>
+      </Choose>
     </div>
   )
 }
@@ -57,4 +38,6 @@ export const AccountForm = function(props) {
 export default connect(({ account, app }) => ({
   formData: app.user, // <-- This first, very important
   ...account,
-}), accountActions)(AccountForm);
+}), accountActions, {
+  componentDidMount: (props)=> (!props.schema && accountActions.fetchSchema$.next()),
+})(AccountForm);

@@ -54,11 +54,6 @@ export const NavItems = (props) => {
 
         </When>
 
-        <Otherwise>
-
-
-        </Otherwise>
-
       </Choose>
     </With>
   )
