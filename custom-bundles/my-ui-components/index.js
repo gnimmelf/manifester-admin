@@ -1,5 +1,7 @@
 // http://jamesknelson.com/re-exporting-es6-modules/
 // https://github.com/atom2ueki/react-drawer/blob/master/src/ReactDrawer.scss
+import TreebeardObj  from 'react-treebeard';
+
 export * from 'reactstrap';
 
 export { default as Carousel } from 'react-slick';

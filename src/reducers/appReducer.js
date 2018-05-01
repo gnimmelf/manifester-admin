@@ -1,9 +1,5 @@
 import _debug from "debug";
 import { Observable, Subject } from "rxjs";
-import {
-  map,
-  flatMap,
-} from 'rxjs/operators';
 import normalizeUrl from 'normalize-url';
 import { toast } from "my-ui-components";
 import {

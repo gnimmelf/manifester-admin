@@ -1,20 +1,54 @@
 import _debug from "debug";
 import { connect } from "../state/RxState";
+import { basename } from "path";
 import PropTypes from "prop-types";
+import dotProp from "dot-prop";
 
 import { cmsActions } from "../actions";
+
+import CmsJsonSchemaForm from "./partials/CmsJsonSchemaForm.jsx";
+
+import {
+  Link,
+  Button,
+  FontAwesome as Fa,
+} from 'my-ui-components'
+
 
 import appCss from '../css/app.css';
 
 const debug = _debug("components:cms")
 
-const SelectSchemaWidget = (props) => (
-  <ul>
-    <For each="schemaName" of={ props.schemaNames }>
-      <li key={ schemaName }>{ schemaName }</li>
+const SchemaGroupItems = ({children, itemGenerator}) => {
+  console.log("schemaGroups", children);
+
+  return (
+    <For each="group" of={children}>
+
+      {itemGenerator(group)}
+
+      <If condition={group.children && group.children.length}>
+        <ul>
+          <SchemaGroupItems children={group.children} itemGenerator={itemGenerator} />
+        </ul>
+      </If>
+
     </For>
-  </ul>
-)
+  )
+};
+
+const SelectSchemaWidget = (props) => {
+
+  const itemGenerator = (group) => group.isLeaf ?
+    (<li onClick={ ()=>props.selectSchema$(group.id) }>{group.name}</li>) :
+    (<li>{group.name}</li>);
+
+  return (
+    <ul>
+      <SchemaGroupItems children={props.schemaGroups} itemGenerator={itemGenerator} />
+    </ul>
+  )
+}
 
 const Cms = (props) => {
   debug("CMS.props", props)
@@ -23,12 +57,16 @@ const Cms = (props) => {
       <h1>CMS</h1>
 
       <Choose>
-        <When condition={props.schemaNames}>
+        <When condition={props.schemaGroups}>
 
           <SelectSchemaWidget {...props} />
 
         </When>
+
       </Choose>
+
+      <CmsJsonSchemaForm {...props} />
+
     </div>
   );
 }

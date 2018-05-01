@@ -36137,7 +36137,7 @@ Observable$1.prototype.debug = function (debugInstance) {
 
 var appActions = createActions(["authenticate$", "logout$"]);
 
-var cmsActions = createActions(["fetchSchemas$", "selectSchema$"]);
+var cmsActions = createActions(["fetchSchemas$", "groupSchemaName$", "selectSchema$", "loadData$", "saveData$"]);
 
 var accountActions = createActions(["fetchSchema$", "submit$", "reset$"]);
 
@@ -36625,17 +36625,17 @@ var initialState$4 = {
   errors: []
 };
 
-var getUpdateRequest$ = function getUpdateRequest$(payload) {
+var getSubmitRequest$ = function getSubmitRequest$(payload) {
   return Observable$1.from(xhr$3('do.edit')(payload.formData)).map(xhrHandler({
     200: function _(res) {
-      myUiComponents.toast.info('Konto oppdatert!');
+      myUiComponents.toast.info('Changes saved!');
       return {
         errors: [],
         errorSchema: {}
       };
     },
     422: function _(res) {
-      flash.clear(Object.values(res.data.errors).join(', '), 'danger');
+      flash(Object.values(res.data.errors).join(', '), 'danger');
       return {
         errors: [],
         errorSchema: Object.entries(res.data.errors).reduce(function (schema, _ref) {
@@ -36675,7 +36675,7 @@ var accountReducer$ = Observable$1.of(function () {
       schema: schema
     });
   };
-}), accountActions.submit$.flatMap(getUpdateRequest$), accountActions.reset$.map(function (_payload) {
+}), accountActions.submit$.flatMap(getSubmitRequest$), accountActions.reset$.map(function (_payload) {
   return function (_state) {
     return initialState$4;
   };
@@ -36685,7 +36685,9 @@ var debug$12 = browser$1("reducers:cmsreducer");
 
 var initialState$5 = {
   schemaNames: undefined,
-  currentSchema: undefined
+  currentSchema: undefined,
+  schemas: undefined,
+  schemaGroups: undefined
 };
 
 var cmsReducer$ = Observable$1.of(function () {
@@ -36702,15 +36704,65 @@ var cmsReducer$ = Observable$1.of(function () {
 })).map(function (_ref) {
   var schemas = _ref.schemas;
   return function (state) {
+
+    var childrenKey = "children";
+
+    var groups = [];
+
+    (schemas || []).forEach(function (schemaName) {
+
+      var parts = schemaName.replace(/\.json$/, '').split(".");
+      var children = groups;
+      var group = void 0;
+
+      parts.forEach(function (part, idx) {
+
+        var found = children.find(function (group) {
+          return group.id == part;
+        });
+
+        if (found) {
+          group = found;
+        } else {
+          group = { id: part, name: part };
+          group[childrenKey] = [];
+          if (idx == parts.length - 1) {
+            // It's a leaf
+            group[childrenKey].push({ id: schemaName, name: part, isLeaf: true });
+          }
+          children.push(group);
+        }
+        children = group[childrenKey];
+      });
+    });
+
     return _extends({}, state, {
-      schemaNames: schemas
+      schemaNames: schemas,
+      schemaGroups: groups
     });
   };
-}), cmsActions.selectSchema$.do(function () {
-  return xhr$3('schema.load')();
-}).map(function (payload) {
+}), cmsActions.selectSchema$
+// TODO! Schema should be loaded implicitly by selecting data...
+.flatMap(function (schemaName) {
+  return xhr$3('schemas', schemaName)();
+}).map(xhrHandler({
+  200: function _(data) {
+    return data;
+  }
+})).map(function (_ref2) {
+  var schema = _ref2.schema;
   return function (state) {
-    return _extends({}, state);
+    return _extends({}, state, {
+      currentSchema: schema
+    });
+  };
+}), cmsActions.loadData$.map(function (payload) {
+  return function (state) {
+    return state;
+  };
+}), cmsActions.saveData$.map(function (payload) {
+  return function (state) {
+    return state;
   };
 }));
 
@@ -36911,13 +36963,13 @@ var FlashMessage$1 = connect(function (_ref2) {
   return flashMessage$$1;
 }, flashMessageActions)(FlashMessage);
 
-var debug$16 = browser$1("components:account");
+var debug$16 = browser$1("components:partials:cmsjsonschemaform");
 
-var AccountForm = function AccountForm(props) {
+var CmsJsonSchemaForm = function CmsJsonSchemaForm(props) {
   debug$16("ACCOUNTFORM.props", props);
   return React.createElement(
-    "div",
-    { className: "src-css-___app__form-container___3h-ps" },
+    'div',
+    { className: 'src-css-___app__form-container___3h-ps' },
     props.schema ? React.createElement(
       Form__default,
       {
@@ -36930,48 +36982,76 @@ var AccountForm = function AccountForm(props) {
         null,
         React.createElement(
           myUiComponents.Button,
-          { onClick: props.reset$, id: "reset" },
-          "Resett"
+          { onClick: props.reset$, id: 'reset' },
+          'Reset'
         ),
         React.createElement(
           myUiComponents.Button,
-          { color: "primary", type: "submit" },
-          "Lagre"
+          { color: 'primary', type: 'submit' },
+          'Save'
         )
       )
     ) : null
   );
 };
 
+var debug$17 = browser$1("components:account");
+
 var Account = connect(function (_ref) {
   var account = _ref.account,
-      app$$1 = _ref.app;
+      app = _ref.app;
   return _extends({
-    formData: app$$1.user }, account);
+    formData: app.user }, account);
 }, accountActions, {
   componentDidMount: function componentDidMount(props) {
     return !props.schema && accountActions.fetchSchema$.next();
   }
-})(AccountForm);
+})(CmsJsonSchemaForm);
 
-var debug$17 = browser$1("components:cms");
+var debug$18 = browser$1("components:cms");
+
+var SchemaGroupItems = function SchemaGroupItems(_ref) {
+  var children = _ref.children,
+      itemGenerator = _ref.itemGenerator;
+
+  console.log("schemaGroups", children);
+
+  return children.map(function (group, index) {
+    return [itemGenerator(group), group.children && group.children.length ? React.createElement(
+      "ul",
+      {
+        key: "1"
+      },
+      React.createElement(SchemaGroupItems, { children: group.children, itemGenerator: itemGenerator })
+    ) : null];
+  }, this);
+};
 
 var SelectSchemaWidget = function SelectSchemaWidget(props) {
+
+  var itemGenerator = function itemGenerator(group) {
+    return group.isLeaf ? React.createElement(
+      "li",
+      { onClick: function onClick() {
+          return props.selectSchema$(group.id);
+        } },
+      group.name
+    ) : React.createElement(
+      "li",
+      null,
+      group.name
+    );
+  };
+
   return React.createElement(
     "ul",
     null,
-    props.schemaNames.map(function (schemaName, index) {
-      return React.createElement(
-        "li",
-        { key: schemaName },
-        schemaName
-      );
-    }, this)
+    React.createElement(SchemaGroupItems, { children: props.schemaGroups, itemGenerator: itemGenerator })
   );
 };
 
 var Cms = function Cms(props) {
-  debug$17("CMS.props", props);
+  debug$18("CMS.props", props);
   return React.createElement(
     "div",
     null,
@@ -36980,13 +37060,14 @@ var Cms = function Cms(props) {
       null,
       "CMS"
     ),
-    props.schemaNames ? React.createElement(SelectSchemaWidget, props) : null
+    props.schemaGroups ? React.createElement(SelectSchemaWidget, props) : null,
+    React.createElement(CmsJsonSchemaForm, props)
   );
 };
 
-var Cms$1 = connect(function (_ref) {
-  var cms = _ref.cms,
-      app$$1 = _ref.app;
+var Cms$1 = connect(function (_ref2) {
+  var cms = _ref2.cms,
+      app$$1 = _ref2.app;
   return _extends({
     user: app$$1.user
   }, cms);
@@ -36999,7 +37080,7 @@ var Cms$1 = connect(function (_ref) {
 var css$3 = ".src-css-___util__overflowScrollX___3-yYs{overflow-x:scroll}.src-css-___util__center-text___2-2n9{text-align:center}";
 __$$styleInject(css$3);
 
-var debug$18 = browser$1("component:app");
+var debug$19 = browser$1("component:app");
 
 var router = function router(props) {
   var restrict = function restrict(com) {
@@ -37016,7 +37097,7 @@ var router = function router(props) {
 };
 
 var App = function App(props) {
-  debug$18("APP.props", props);
+  debug$19("APP.props", props);
   return function (Page) {
     return React.createElement(
       "div",
@@ -37046,7 +37127,7 @@ var App$1 = connect(function (_ref) {
   return app$$1;
 }, appActions)(App);
 
-var debug$19 = browser$1("app");
+var debug$20 = browser$1("app");
 
 // Restyle toasts
 myUiComponents.style({
@@ -37060,7 +37141,7 @@ var toastProps = _extends({}, settings.ui.toast);
 toastProps.position = myUiComponents.toast.POSITION[toastProps.position || 'TOP_RIGHT'];
 toastProps.autoClose = parseInt(toastProps.autoClose) || false;
 
-debug$19("toastProps", toastProps);
+debug$20("toastProps", toastProps);
 
 ReactDOM.render(React.createElement(
   'div',
