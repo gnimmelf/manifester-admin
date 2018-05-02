@@ -36687,7 +36687,11 @@ var initialState$5 = {
   schemaNames: undefined,
   currentSchema: undefined,
   schemas: undefined,
-  schemaGroups: undefined
+  schemaGroups: undefined,
+  // Per schema
+  formData: {},
+  errorSchema: {},
+  errors: []
 };
 
 var cmsReducer$ = Observable$1.of(function () {
@@ -37008,13 +37012,14 @@ var Account = connect(function (_ref) {
   }
 })(CmsJsonSchemaForm);
 
+var css$3 = ".src-css-___cms__leaf___1QsU5{cursor:pointer}";
+__$$styleInject(css$3);
+
 var debug$18 = browser$1("components:cms");
 
 var SchemaGroupItems = function SchemaGroupItems(_ref) {
   var children = _ref.children,
       itemGenerator = _ref.itemGenerator;
-
-  console.log("schemaGroups", children);
 
   return children.map(function (group, index) {
     return [itemGenerator(group), group.children && group.children.length ? React.createElement(
@@ -37032,7 +37037,7 @@ var SelectSchemaWidget = function SelectSchemaWidget(props) {
   var itemGenerator = function itemGenerator(group) {
     return group.isLeaf ? React.createElement(
       "li",
-      { onClick: function onClick() {
+      { className: "src-css-___cms__leaf___1QsU5", onClick: function onClick() {
           return props.selectSchema$(group.id);
         } },
       group.name
@@ -37061,24 +37066,24 @@ var Cms = function Cms(props) {
       "CMS"
     ),
     props.schemaGroups ? React.createElement(SelectSchemaWidget, props) : null,
-    React.createElement(CmsJsonSchemaForm, props)
+    React.createElement(CmsJsonSchemaForm, _extends({}, props, { schema: props.currentSchema }))
   );
 };
 
 var Cms$1 = connect(function (_ref2) {
-  var cms = _ref2.cms,
-      app$$1 = _ref2.app;
+  var cms$$1 = _ref2.cms,
+      app = _ref2.app;
   return _extends({
-    user: app$$1.user
-  }, cms);
+    user: app.user
+  }, cms$$1);
 }, cmsActions, {
   componentDidMount: function componentDidMount(props) {
     return !props.schemaNames && cmsActions.fetchSchemas$.next();
   }
 })(Cms);
 
-var css$3 = ".src-css-___util__overflowScrollX___3-yYs{overflow-x:scroll}.src-css-___util__center-text___2-2n9{text-align:center}";
-__$$styleInject(css$3);
+var css$4 = ".src-css-___util__overflowScrollX___3-yYs{overflow-x:scroll}.src-css-___util__center-text___2-2n9{text-align:center}";
+__$$styleInject(css$4);
 
 var debug$19 = browser$1("component:app");
 

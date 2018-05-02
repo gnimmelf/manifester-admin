@@ -21,6 +21,10 @@ const initialState = {
   currentSchema: undefined,
   schemas: undefined,
   schemaGroups: undefined,
+  // Per schema
+  formData: {},
+  errorSchema: {},
+  errors: [],
 };
 
 export default Observable.of(() => initialState)

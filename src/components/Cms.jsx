@@ -15,13 +15,11 @@ import {
 } from 'my-ui-components'
 
 
-import appCss from '../css/app.css';
+import cmsCss from '../css/cms.css';
 
 const debug = _debug("components:cms")
 
 const SchemaGroupItems = ({children, itemGenerator}) => {
-  console.log("schemaGroups", children);
-
   return (
     <For each="group" of={children}>
 
@@ -40,7 +38,7 @@ const SchemaGroupItems = ({children, itemGenerator}) => {
 const SelectSchemaWidget = (props) => {
 
   const itemGenerator = (group) => group.isLeaf ?
-    (<li onClick={ ()=>props.selectSchema$(group.id) }>{group.name}</li>) :
+    (<li styleName="cmsCss.leaf" onClick={ ()=>props.selectSchema$(group.id) }>{group.name}</li>) :
     (<li>{group.name}</li>);
 
   return (
@@ -65,7 +63,7 @@ const Cms = (props) => {
 
       </Choose>
 
-      <CmsJsonSchemaForm {...props} />
+      <CmsJsonSchemaForm {...props} schema={props.currentSchema} />
 
     </div>
   );
