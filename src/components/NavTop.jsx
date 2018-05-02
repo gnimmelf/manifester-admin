@@ -39,7 +39,7 @@ export const NavItems = (props) => {
             <With isActive={url==location}>
               <NavItem active={isActive}>
                 <NavLink onClick={()=>props.accountDropdown$('CLOSE')}
-                         active={isActive} href={url}>Min Konto</NavLink>
+                         active={isActive} href={url}>My account</NavLink>
               </NavItem>
             </With>
           </With>

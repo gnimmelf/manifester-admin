@@ -36881,7 +36881,7 @@ var NavItems = function NavItems(props) {
                 return props.accountDropdown$('CLOSE');
               },
               active: isActive, href: url },
-            "Min Konto"
+            "My account"
           )
         );
       }.call(this, url == location, "0");
@@ -37012,7 +37012,7 @@ var Account = connect(function (_ref) {
   }
 })(CmsJsonSchemaForm);
 
-var css$3 = ".src-css-___cms__leaf___1QsU5{cursor:pointer}";
+var css$3 = "li{text-transform:capitalize}.src-css-___cms__leaf___1QsU5{cursor:pointer}";
 __$$styleInject(css$3);
 
 var debug$18 = browser$1("components:cms");
